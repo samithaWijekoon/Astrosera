@@ -85,6 +85,7 @@ const Navbar = () => {
                         className="bg-purple-600 text-white text-center font-bold py-3 rounded-xl mt-4 focus:outline-none"
                     >
                         Get Started
+
                     </Link>
                 </div>
             )}
