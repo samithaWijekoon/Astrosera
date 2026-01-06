@@ -1,32 +1,25 @@
 import React from 'react'
-import Hero from './component/landingpage/Hero'
-import RagExplanationSection from './component/landingpage/RagExplanationSection'
-import FeaturesSection from './component/landingpage/FeaturesSection'
-import DailyQuizSection from './component/landingpage/DailyQuizSection'
-import EventsSection from './component/landingpage/EventsSection'
-import StatsSection from './component/landingpage/StatsSection'
-import GetStartedSection from './component/landingpage/GetStartedSection'
-import Footer from './component/Footer'
+import { Routes, Route } from 'react-router-dom'
 import Navbar from './component/Navbar'
-import PricingSection from './component/landingpage/PricingSection'
-import LocationFeature from './component/landingpage/LocationFeature'
+import Footer from './component/Footer'
+import Home from './Pages/Home'
 
 const App = () => {
-  return (<>
-    <Navbar />
-    <div id="main"><Hero /></div>
-    <div id="about"><RagExplanationSection /></div>
-    <FeaturesSection />
-    <div id="chat"><DailyQuizSection /></div>
-    <LocationFeature />
-    <div id="news"><EventsSection /></div>
-    <StatsSection />
-    <PricingSection />
-    <div id="dashboard"><GetStartedSection /></div>
-    <Footer />
-  </>
+  return (
+    <>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/chat" element={<Home />} />
+        <Route path="/events" element={<Home />} />
+        <Route path="/quiz" element={<Home />} />
+        <Route path="/achievements" element={<Home />} />
+        <Route path="/analytics" element={<Home />} />
+        <Route path="/news" element={<Home />} />
+      </Routes>
+      <Footer />
+    </>
   )
 }
-
 
 export default App
