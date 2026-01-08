@@ -46,6 +46,17 @@ const Member6 = () => {
         { id: 6, type: 'video', title: 'Solar Flare', src: '#' },
     ];
 
+    // Filter news based on search term
+    const filteredNews = newsFeed.filter(item =>
+        item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.summary.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    // Filter gallery items based on search term
+    const filteredGallery = galleryItems.filter(item =>
+        item.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <div className="member6-container">
             <header className="media-header">
@@ -86,10 +97,11 @@ const Member6 = () => {
                 </button>
             </div>
 
-            <div className="content-area">
-                {activeTab === 'news' && (
-                    <div className="news-feed">
-                        {newsFeed.map(item => (
+        <div className="content-area">
+            {activeTab === 'news' && (
+                <div className="news-feed">
+                    {filteredNews.length > 0 ? (
+                        filteredNews.map(item => (
                             <div key={item.id} className="news-card">
                                 <div className="news-meta">
                                     <span className="news-source">{item.source}</span>
@@ -99,26 +111,41 @@ const Member6 = () => {
                                 <p>{item.summary}</p>
                                 <button className="read-more">Read Full Story →</button>
                             </div>
-                        ))}
+                        ))
+                    ) : (
+                        <p style={{ textAlign: 'center', color: '#666', padding: '40px' }}>
+                            No news found matching "{searchTerm}"
+                        </p>
+                    )}
+                    {filteredNews.length > 0 && (
                         <div className="loading-trigger">Loading more cosmic news...</div>
-                    </div>
-                )}
+                    )}
+                </div>
+            )}
 
-                {activeTab === 'gallery' && (
-                    <div className="media-grid">
-                        {galleryItems.map(item => (
+            {activeTab === 'gallery' && (
+                <div className="media-grid">
+                    {filteredGallery.length > 0 ? (
+                        filteredGallery.map(item => (
                             <div key={item.id} className="media-item">
-                                <div className="media-placeholder">{item.type === 'video' ? '▶️' : '📷'}</div>
+                                <div className="media-placeholder">
+                                    {item.type === 'video' ? '▶️' : '📷'}
+                                </div>
                                 <div className="media-info">
                                     <h4>{item.title}</h4>
                                 </div>
                             </div>
-                        ))}
-                    </div>
-                )}
-            </div>
+                        ))
+                    ) : (
+                        <p style={{ textAlign: 'center', color: '#666', padding: '40px', gridColumn: '1 / -1' }}>
+                            No gallery items found matching "{searchTerm}"
+                        </p>
+                    )}
+                </div>
+            )}
         </div>
-    );
+    </div>
+);
 };
 
 export default Member6;
