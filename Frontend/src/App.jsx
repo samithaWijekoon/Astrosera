@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import Navbar from './component/Navbar'
 import Footer from './component/Footer'
 import Home from './Pages/Home'
+import Member6 from './Pages/Member6/member6'
 
 const App = () => {
   return (
@@ -15,7 +16,7 @@ const App = () => {
         <Route path="/quiz" element={<Home />} />
         <Route path="/achievements" element={<Home />} />
         <Route path="/analytics" element={<Home />} />
-        <Route path="/news" element={<Home />} />
+        <Route path="/news" element={<Member6 />} />
       </Routes>
       <Footer />
     </>
