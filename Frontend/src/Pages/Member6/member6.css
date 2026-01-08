@@ -1,0 +1,232 @@
+.member6-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: #000;
+    color: #fff;
+    min-height: 100vh;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.media-header {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 100;
+    border-bottom: 1px solid #333;
+}
+
+.search-bar {
+    display: flex;
+    gap: 10px;
+    background-color: #222;
+    border-radius: 30px;
+    padding: 5px 15px;
+    width: 40%;
+}
+
+.search-bar input {
+    background: transparent;
+    border: none;
+    color: white;
+    flex: 1;
+    padding: 8px;
+    outline: none;
+}
+
+.search-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+/* APOD Hero */
+.apod-section {
+    height: 60vh;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+}
+
+.apod-section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to top, #000 10%, transparent 80%);
+}
+
+.apod-content {
+    position: relative;
+    z-index: 2;
+    padding: 40px;
+    max-width: 800px;
+}
+
+.apod-content .badge {
+    background-color: #e11d48;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.apod-content h2 {
+    font-size: 3rem;
+    margin: 10px 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.apod-content p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    opacity: 0.9;
+}
+
+/* Content Tabs */
+.content-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 30px 0;
+    border-bottom: 1px solid #222;
+}
+
+.tab-btn {
+    background: transparent;
+    border: 1px solid #444;
+    color: #888;
+    padding: 10px 25px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.tab-btn.active {
+    background-color: white;
+    color: black;
+    border-color: white;
+}
+
+.tab-btn:hover:not(.active) {
+    border-color: #888;
+    color: white;
+}
+
+/* News Feed */
+.news-feed {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.news-card {
+    background-color: #111;
+    border: 1px solid #333;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    transition: transform 0.2s;
+}
+
+.news-card:hover {
+    border-color: #555;
+    transform: translateY(-3px);
+}
+
+.news-meta {
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.news-source {
+    color: #3b82f6;
+    font-weight: bold;
+}
+
+.news-card h3 {
+    font-size: 1.5rem;
+    margin: 0 0 10px 0;
+}
+
+.read-more {
+    background: transparent;
+    border: none;
+    color: #3b82f6;
+    padding: 0;
+    margin-top: 15px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.loading-trigger {
+    text-align: center;
+    padding: 30px;
+    color: #444;
+    font-style: italic;
+}
+
+/* Media Gallery */
+.media-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+    padding: 20px;
+}
+
+.media-item {
+    position: relative;
+    aspect-ratio: 1;
+    /* Square */
+    background-color: #1a1a1a;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.media-placeholder {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: #333;
+    transition: background-color 0.3s;
+}
+
+.media-item:hover .media-placeholder {
+    background-color: #252525;
+}
+
+.media-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 15px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+    transform: translateY(100%);
+    transition: transform 0.3s;
+}
+
+.media-item:hover .media-info {
+    transform: translateY(0);
+}
+
+.media-info h4 {
+    margin: 0;
+    font-size: 0.9rem;
+}
