@@ -16,7 +16,7 @@ db = Chroma(
 )
 
 # Search for relevant documents
-query = "moon radius"
+query = "moon missions"
 
 retriever = db.as_retriever(search_kwargs={"k": 1})
 
