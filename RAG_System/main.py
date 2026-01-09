@@ -41,3 +41,29 @@ class Citation(BaseModel):
 class ChatResponse(BaseModel):
     answer: str
     citations: List[Citation]
+
+#  FastAPI App Setup 
+app = FastAPI(title="AstraBot RAG API")
+
+# Allow React Frontend to connect
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://localhost:5173"], # Adjust for your React port
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.post("/chat", response_model=ChatResponse)
+async def chat_endpoint(request: ChatRequest):
+    if not db:
+        raise HTTPException(status_code=500, detail="Database not initialized. Run ingestion first.")
+
+    session_id = request.session_id
+    user_question = request.question
+
+    # Initialize history for new session
+    if session_id not in chat_sessions:
+        chat_sessions[session_id] = []
+    
+    history = chat_sessions[session_id]    
