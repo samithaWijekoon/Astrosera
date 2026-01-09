@@ -146,28 +146,49 @@ const Member6 = () => {
             </div>
 
         <div className="content-area">
-               {activeTab === 'news' && (
-                    <div className="news-feed">
-                        {displayedNews.length > 0 ? (
-                            displayedNews.map(item => (
-                                <div key={item.id} className="news-card">
-                                    <div className="news-meta">
-                                        <span className="news-source">{item.source}</span>
-                                        <span className="news-date">{item.date}</span>
-                                    </div>
-                                    <h3>{item.title}</h3>
-                                    <p>{item.summary}</p>
-                                    <button className="read-more">Read Full Story →</button>
+        {activeTab === 'news' && (
+            <div className="news-feed">
+                {displayedNews.length > 0 ? (
+                    <>
+                        {displayedNews.map(item => (
+                            <div key={item.id} className="news-card">
+                                <div className="news-meta">
+                                    <span className="news-source">{item.source}</span>
+                                    <span className="news-date">{item.date}</span>
                                 </div>
-                            ))
-                        ) : (
-                            <p style={{ textAlign: 'center', color: '#666', padding: '40px' }}>
-                                No news found matching "{searchTerm}"
-                            </p>
+                                <h3>{item.title}</h3>
+                                <p>{item.summary}</p>
+                                <button className="read-more">Read Full Story →</button>
+                            </div>
+                        ))}
+                        
+                        {/* Load More Button */}
+                        {hasMoreNews && (
+                            <div className="load-more-container">
+                                <button 
+                                    className="load-more-btn" 
+                                    onClick={loadMoreNews}
+                                    disabled={loading}
+                                >
+                                    {loading ? 'Loading...' : 'Load More Cosmic News 🚀'}
+                                </button>
+                            </div>
                         )}
-                    </div>
-                )}
 
+                        {/* End of feed message */}
+                        {!hasMoreNews && displayedNews.length > 3 && (
+                            <div className="end-of-feed">
+                                ✨ You've reached the end of cosmic news
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    <p style={{ textAlign: 'center', color: '#666', padding: '40px' }}>
+                        No news found matching "{searchTerm}"
+                    </p>
+                )}
+            </div>
+        )}
             {activeTab === 'gallery' && (
                 <div className="media-grid">
                     {filteredGallery.length > 0 ? (
