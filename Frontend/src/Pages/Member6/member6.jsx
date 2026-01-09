@@ -34,6 +34,34 @@ const Member6 = () => {
             summary: "Updates on the next test flight of the massive Starship rocket.",
             source: "SpaceNews",
             date: "2024-03-15"
+        },
+        {
+            id: 4,
+            title: "Mars Rover Discovers Ancient Water Signs",
+            summary: "Perseverance rover finds compelling evidence of ancient water on Mars.",
+            source: "NASA JPL",
+            date: "2024-03-12"
+        },
+        {
+            id: 5,
+            title: "New Exoplanet Could Harbor Life",
+            summary: "Astronomers discover a potentially habitable exoplanet in the Goldilocks zone.",
+            source: "Science Daily",
+            date: "2024-03-10"
+        },
+        {
+            id: 6,
+            title: "ISS Celebrates 25 Years in Orbit",
+            summary: "The International Space Station marks a quarter century of continuous human presence in space.",
+            source: "NASA Blogs",
+            date: "2024-03-08"
+        },
+        {
+            id: 7,
+            title: "China's Moon Base Plans Revealed",
+            summary: "China announces ambitious timeline for lunar research station construction.",
+            source: "SpaceNews",
+            date: "2024-03-05"
         }
     ];
 
