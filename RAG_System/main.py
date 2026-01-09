@@ -79,3 +79,7 @@ async def chat_endpoint(request: ChatRequest):
         reformulated = model.invoke(messages)
         search_question = reformulated.content.strip()
         print(f"Original: {user_question} | Search: {search_question}")      
+
+# 2. Retrieve Documents ---
+    retriever = db.as_retriever(search_kwargs={"k": 3})
+    docs = retriever.invoke(search_question)
