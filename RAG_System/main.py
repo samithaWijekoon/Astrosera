@@ -25,3 +25,7 @@ else:
     db = None
 
 model = ChatOpenAI(model="gpt-4o")
+# Memory Management (Simple In-Memory) 
+
+chat_sessions: dict[str, List[BaseMessage]] = {}
+
