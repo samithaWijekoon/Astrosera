@@ -29,3 +29,15 @@ model = ChatOpenAI(model="gpt-4o")
 
 chat_sessions: dict[str, List[BaseMessage]] = {}
 
+#  Pydantic Models 
+class ChatRequest(BaseModel):
+    session_id: str
+    question: str
+
+class Citation(BaseModel):
+    title: str
+    url: str # We will map file path or source metadata to this
+
+class ChatResponse(BaseModel):
+    answer: str
+    citations: List[Citation]
