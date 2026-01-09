@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect  } from 'react';
 import './member6.css';
 
 // Member 06: Space News Feed & Media Library
 const Member6 = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [activeTab, setActiveTab] = useState("news"); // 'news' or 'gallery'
-
+    const [visibleNews, setVisibleNews] = useState(3); // For infinite scroll
+    const [loading, setLoading] = useState(false);
+    
     const apod = {
         title: "The Pillars of Creation",
         url: "https://images.nasa.gov/details/PIA25656", // Placeholder link
@@ -85,6 +87,24 @@ const Member6 = () => {
         item.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    // Load more news (infinite scroll)
+    const loadMoreNews = () => {
+        setLoading(true);
+        setTimeout(() => {
+            setVisibleNews(prev => Math.min(prev + 3, filteredNews.length));
+            setLoading(false);
+        }, 500);
+    };
+
+    // Reset visible news when search changes
+    useEffect(() => {
+        setVisibleNews(3);
+    }, [searchTerm]);
+
+    // Get currently visible news
+    const displayedNews = filteredNews.slice(0, visibleNews);
+    const hasMoreNews = visibleNews < filteredNews.length;
+    
     return (
         <div className="member6-container">
             <header className="media-header">
@@ -126,30 +146,27 @@ const Member6 = () => {
             </div>
 
         <div className="content-area">
-            {activeTab === 'news' && (
-                <div className="news-feed">
-                    {filteredNews.length > 0 ? (
-                        filteredNews.map(item => (
-                            <div key={item.id} className="news-card">
-                                <div className="news-meta">
-                                    <span className="news-source">{item.source}</span>
-                                    <span className="news-date">{item.date}</span>
+               {activeTab === 'news' && (
+                    <div className="news-feed">
+                        {displayedNews.length > 0 ? (
+                            displayedNews.map(item => (
+                                <div key={item.id} className="news-card">
+                                    <div className="news-meta">
+                                        <span className="news-source">{item.source}</span>
+                                        <span className="news-date">{item.date}</span>
+                                    </div>
+                                    <h3>{item.title}</h3>
+                                    <p>{item.summary}</p>
+                                    <button className="read-more">Read Full Story →</button>
                                 </div>
-                                <h3>{item.title}</h3>
-                                <p>{item.summary}</p>
-                                <button className="read-more">Read Full Story →</button>
-                            </div>
-                        ))
-                    ) : (
-                        <p style={{ textAlign: 'center', color: '#666', padding: '40px' }}>
-                            No news found matching "{searchTerm}"
-                        </p>
-                    )}
-                    {filteredNews.length > 0 && (
-                        <div className="loading-trigger">Loading more cosmic news...</div>
-                    )}
-                </div>
-            )}
+                            ))
+                        ) : (
+                            <p style={{ textAlign: 'center', color: '#666', padding: '40px' }}>
+                                No news found matching "{searchTerm}"
+                            </p>
+                        )}
+                    </div>
+                )}
 
             {activeTab === 'gallery' && (
                 <div className="media-grid">
