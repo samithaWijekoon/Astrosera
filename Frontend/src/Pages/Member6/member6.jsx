@@ -68,13 +68,43 @@ const Member6 = () => {
     ];
 
     const galleryItems = [
-        { id: 1, type: 'image', title: 'Spiral Galaxy', src: '#' },
-        { id: 2, type: 'video', title: 'Black Hole Simulation', src: '#' },
-        { id: 3, type: 'image', title: 'Nebula Colors', src: '#' },
-        { id: 4, type: 'image', title: 'Mars Rover Selfie', src: '#' },
-        { id: 5, type: 'image', title: 'Earth from ISS', src: '#' },
-        { id: 6, type: 'video', title: 'Solar Flare', src: '#' },
-    ];
+        { 
+            id: 1, 
+            type: 'image', 
+            title: 'Spiral Galaxy',
+            thumbnail: 'https://images.unsplash.com/photo-1543722530-d2c3201371e7?w=400&h=400&fit=crop'
+        },
+        { 
+            id: 2, 
+            type: 'video', 
+            title: 'Black Hole Simulation',
+            thumbnail: 'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=400&h=400&fit=crop'
+        },
+        { 
+            id: 3, 
+            type: 'image', 
+            title: 'Nebula Colors',
+            thumbnail: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=400&h=400&fit=crop'
+        },
+        { 
+            id: 4, 
+            type: 'image', 
+            title: 'Mars Rover Selfie',
+            thumbnail: 'https://images.unsplash.com/photo-1614313913007-2b4ae8ce32d6?w=400&h=400&fit=crop'
+        },
+        { 
+            id: 5, 
+            type: 'image', 
+            title: 'Earth from ISS',
+            thumbnail: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=400&h=400&fit=crop'
+        },
+        { 
+            id: 6, 
+            type: 'video', 
+            title: 'Solar Flare',
+            thumbnail: 'https://images.unsplash.com/photo-1532693322450-2cb5c511067d?w=400&h=400&fit=crop'
+        }
+      ];
 
     // Filter news based on search term
     const filteredNews = newsFeed.filter(item =>
@@ -189,14 +219,19 @@ const Member6 = () => {
                 )}
             </div>
         )}
-            {activeTab === 'gallery' && (
+               {activeTab === 'gallery' && (
                 <div className="media-grid">
                     {filteredGallery.length > 0 ? (
                         filteredGallery.map(item => (
                             <div key={item.id} className="media-item">
-                                <div className="media-placeholder">
-                                    {item.type === 'video' ? '▶️' : '📷'}
-                                </div>
+                                <img 
+                                    src={item.thumbnail} 
+                                    alt={item.title}
+                                    className="media-thumbnail"
+                                />
+                                {item.type === 'video' && (
+                                    <div className="video-overlay">▶️</div>
+                                )}
                                 <div className="media-info">
                                     <h4>{item.title}</h4>
                                 </div>
