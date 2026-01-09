@@ -66,4 +66,16 @@ async def chat_endpoint(request: ChatRequest):
     if session_id not in chat_sessions:
         chat_sessions[session_id] = []
     
-    history = chat_sessions[session_id]    
+    history = chat_sessions[session_id] 
+
+ # 1.Contextualize Question 
+    search_question = user_question
+    if history:
+        messages = [
+            SystemMessage(content="Given the chat history, rewrite the user's question to be standalone and searchable."),
+        ] + history[-4:] + [ # Limit context to last 4 messages to save tokens
+            HumanMessage(content=f"New question: {user_question}")
+        ]
+        reformulated = model.invoke(messages)
+        search_question = reformulated.content.strip()
+        print(f"Original: {user_question} | Search: {search_question}")      
