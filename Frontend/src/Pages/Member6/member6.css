@@ -207,28 +207,6 @@
 .media-item:hover .media-thumbnail {
     transform: scale(1.1);
 }
-
-.video-overlay {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 3rem;
-    background: rgba(0, 0, 0, 0.7);
-    width: 80px;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: all 0.3s;
-}
-
-.media-item:hover .video-overlay {
-    background: rgba(102, 126, 234, 0.9);
-    transform: translate(-50%, -50%) scale(1.1);
-}
-
 .media-info {
     position: absolute;
     bottom: 0;
@@ -284,4 +262,128 @@
     color: #666;
     font-style: italic;
     font-size: 0.95rem;
+}
+
+.media-item.clickable {
+    cursor: pointer;
+}
+
+.media-item.clickable:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(139, 92, 246, 0.4);
+}
+
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.media-item:hover .video-overlay {
+    opacity: 1;
+}
+
+.play-button {
+    font-size: 4rem;
+    color: white;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.video-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.video-modal-content {
+    background: #111;
+    border-radius: 16px;
+    padding: 40px;
+    max-width: 900px;
+    width: 90%;
+    position: relative;
+    animation: slideUp 0.4s ease;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+@keyframes slideUp {
+    from { 
+        opacity: 0;
+        transform: translateY(50px) scale(0.95);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 1.5rem;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-modal:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(90deg);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.video-modal-content h3 {
+    margin: 0 0 25px 0;
+    color: white;
+    font-size: 1.8rem;
+    padding-right: 50px;
+}
+
+.video-wrapper {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.video-wrapper iframe {
+    border-radius: 12px;
+    display: block;
 }

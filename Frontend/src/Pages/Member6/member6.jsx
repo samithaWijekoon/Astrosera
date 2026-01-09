@@ -7,6 +7,7 @@ const Member6 = () => {
     const [activeTab, setActiveTab] = useState("news"); // 'news' or 'gallery'
     const [visibleNews, setVisibleNews] = useState(3); // For infinite scroll
     const [loading, setLoading] = useState(false);
+    const [selectedVideo, setSelectedVideo] = useState(null);
     
     const apod = {
         title: "The Pillars of Creation",
@@ -68,43 +69,45 @@ const Member6 = () => {
     ];
 
     const galleryItems = [
-        { 
-            id: 1, 
-            type: 'image', 
-            title: 'Spiral Galaxy',
-            thumbnail: 'https://images.unsplash.com/photo-1543722530-d2c3201371e7?w=400&h=400&fit=crop'
-        },
-        { 
-            id: 2, 
-            type: 'video', 
-            title: 'Black Hole Simulation',
-            thumbnail: 'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=400&h=400&fit=crop'
-        },
-        { 
-            id: 3, 
-            type: 'image', 
-            title: 'Nebula Colors',
-            thumbnail: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=400&h=400&fit=crop'
-        },
-        { 
-            id: 4, 
-            type: 'image', 
-            title: 'Mars Rover Selfie',
-            thumbnail: 'https://images.unsplash.com/photo-1614313913007-2b4ae8ce32d6?w=400&h=400&fit=crop'
-        },
-        { 
-            id: 5, 
-            type: 'image', 
-            title: 'Earth from ISS',
-            thumbnail: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=400&h=400&fit=crop'
-        },
-        { 
-            id: 6, 
-            type: 'video', 
-            title: 'Solar Flare',
-            thumbnail: 'https://images.unsplash.com/photo-1532693322450-2cb5c511067d?w=400&h=400&fit=crop'
-        }
-      ];
+    { 
+        id: 1, 
+        type: 'image', 
+        title: 'Spiral Galaxy',
+        thumbnail: 'https://images.unsplash.com/photo-1543722530-d2c3201371e7?w=400&h=400&fit=crop'
+    },
+    { 
+        id: 2, 
+        type: 'video', 
+        title: 'Black Hole Visualization',
+        thumbnail: 'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=400&h=400&fit=crop',
+        videoUrl: 'https://www.youtube.com/embed/t9YLtDJZtPY'
+    },
+    { 
+        id: 3, 
+        type: 'image', 
+        title: 'Nebula Colors',
+        thumbnail: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=400&h=400&fit=crop'
+    },
+    { 
+        id: 4, 
+        type: 'image', 
+        title: 'Mars Rover Discovery',
+        thumbnail: 'https://images.unsplash.com/photo-1614313913007-2b4ae8ce32d6?w=400&h=400&fit=crop'
+    },
+    { 
+        id: 5, 
+        type: 'image', 
+        title: 'Earth from Space',
+        thumbnail: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=400&h=400&fit=crop'
+    },
+    { 
+        id: 6, 
+        type: 'video', 
+        title: 'Solar System Journey',
+        thumbnail: 'https://images.unsplash.com/photo-1532693322450-2cb5c511067d?w=400&h=400&fit=crop',
+        videoUrl: 'https://www.youtube.com/embed/libKVRa01L8'
+    }
+];
 
     // Filter news based on search term
     const filteredNews = newsFeed.filter(item =>
@@ -219,18 +222,24 @@ const Member6 = () => {
                 )}
             </div>
         )}
-               {activeTab === 'gallery' && (
+            {activeTab === 'gallery' && (
                 <div className="media-grid">
                     {filteredGallery.length > 0 ? (
                         filteredGallery.map(item => (
-                            <div key={item.id} className="media-item">
+                            <div 
+                                key={item.id} 
+                                className={`media-item ${item.type === 'video' ? 'clickable' : ''}`}
+                                onClick={() => item.type === 'video' && setSelectedVideo(item)}
+                            >
                                 <img 
                                     src={item.thumbnail} 
                                     alt={item.title}
                                     className="media-thumbnail"
                                 />
                                 {item.type === 'video' && (
-                                    <div className="video-overlay">▶️</div>
+                                    <div className="video-overlay">
+                                        <div className="play-button">▶️</div>
+                                    </div>
                                 )}
                                 <div className="media-info">
                                     <h4>{item.title}</h4>
@@ -244,8 +253,34 @@ const Member6 = () => {
                     )}
                 </div>
             )}
+     </div>
+
+    {/* Video Modal */}
+    {selectedVideo && (
+        <div className="video-modal" onClick={() => setSelectedVideo(null)}>
+            <div className="video-modal-content" onClick={(e) => e.stopPropagation()}>
+                <button 
+                    className="close-modal" 
+                    onClick={() => setSelectedVideo(null)}
+                >
+                    ✕
+                </button>
+                <h3>{selectedVideo.title}</h3>
+                <div className="video-wrapper">
+                    <iframe
+                        width="100%"
+                        height="450"
+                        src={selectedVideo.videoUrl}
+                        title={selectedVideo.title}
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                    ></iframe>
+                </div>
+            </div>
         </div>
-    </div>
+    )}
+</div>
 );
 };
 
