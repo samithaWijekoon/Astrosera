@@ -83,3 +83,12 @@ async def chat_endpoint(request: ChatRequest):
 # 2. Retrieve Documents ---
     retriever = db.as_retriever(search_kwargs={"k": 3})
     docs = retriever.invoke(search_question)
+# Format Citations for Frontend
+    citations_list = []
+    doc_context = []
+    
+    for doc in docs:
+        doc_context.append(doc.page_content)
+        # Extract metadata for citation
+        source = doc.metadata.get("source", "Unknown Source")
+        citations_list.append(Citation(title=os.path.basename(source), url=source))
