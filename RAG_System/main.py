@@ -92,3 +92,40 @@ async def chat_endpoint(request: ChatRequest):
         # Extract metadata for citation
         source = doc.metadata.get("source", "Unknown Source")
         citations_list.append(Citation(title=os.path.basename(source), url=source))
+
+# 3. Generate Answer 
+    context_text = "\n\n".join(doc_context)
+    
+    system_prompt = """You are AstraBot, an intelligent astronomy assistant. 
+    Answer the user's question based strictly on the provided context documents.
+    If the answer is not in the documents, admit you don't know."""
+
+    prompt = f"""Context:
+    {context_text}
+
+    Question: 
+    {user_question}
+    """
+
+    messages = [
+        SystemMessage(content=system_prompt)
+    ] + history[-4:] + [
+        HumanMessage(content=prompt)
+    ]
+
+    ai_response = model.invoke(messages)
+    answer_text = ai_response.content
+
+    # 4. Update History 
+    chat_sessions[session_id].append(HumanMessage(content=user_question))
+    chat_sessions[session_id].append(AIMessage(content=answer_text))
+
+    return ChatResponse(
+        answer=answer_text,
+        citations=citations_list
+    )
+
+if __name__ == "__main__":
+    import uvicorn
+    # Run with: python main.py
+    uvicorn.run(app, host="0.0.0.0", port=8000)   
