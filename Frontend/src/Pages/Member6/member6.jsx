@@ -5,7 +5,7 @@ import './member6.css';
 const Member6 = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [activeTab, setActiveTab] = useState("news"); // 'news' or 'gallery'
-    const [visibleNews, setVisibleNews] = useState(3); // For infinite scroll
+    const [visibleNews, setVisibleNews] = useState(5); // For infinite scroll
     const [loading, setLoading] = useState(false);
     const [selectedVideo, setSelectedVideo] = useState(null);
     
@@ -204,14 +204,14 @@ const Member6 = () => {
     const loadMoreNews = () => {
         setLoading(true);
         setTimeout(() => {
-            setVisibleNews(prev => Math.min(prev + 3, filteredNews.length));
+            setVisibleNews(prev => Math.min(prev + 5, filteredNews.length));
             setLoading(false);
         }, 500);
     };
 
     // Reset visible news when search changes
     useEffect(() => {
-        setVisibleNews(3);
+        setVisibleNews(5);
     }, [searchTerm]);
 
     // Get currently visible news
@@ -299,7 +299,7 @@ const Member6 = () => {
                         )}
 
                         {/* End of feed message */}
-                        {!hasMoreNews && displayedNews.length > 3 && (
+                        {!hasMoreNews && displayedNews.length > 5 && (
                             <div className="end-of-feed">
                                 ✨ You've reached the end of cosmic news
                             </div>
