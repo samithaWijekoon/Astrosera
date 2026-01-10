@@ -9,11 +9,19 @@ const Member6 = () => {
     const [loading, setLoading] = useState(false);
     const [selectedVideo, setSelectedVideo] = useState(null);
     
+    // Dynamic date function
+    const getTodayDate = () => {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return new Date().toLocaleDateString('en-US', options);
+    };
+
     const apod = {
         title: "The Pillars of Creation",
-        url: "https://images.nasa.gov/details/PIA25656", // Placeholder link
-        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Pillars_of_creation_2014_HST_WFC3-UVIS_full-res_denoised.jpg/800px-Pillars_of_creation_2014_HST_WFC3-UVIS_full-res_denoised.jpg", // Wiki common public domain
-        explanation: "New processing of Hubble data showing the famous Pillars of Creation in the Eagle Nebula."
+        date: getTodayDate(), // Now shows TODAY's date automatically
+        url: "https://images.nasa.gov/details/PIA25656",
+        img: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1600&h=900&fit=crop",
+        explanation: "The James Webb Space Telescope captured this stunning view of the iconic Pillars of Creation in the Eagle Nebula. These towering structures of interstellar gas and dust are approximately 6,500 light-years away in the constellation Serpens.",
+        photographer: "NASA/ESA/CSA/STScI"
     };
 
     const newsFeed = [
@@ -155,10 +163,20 @@ const Member6 = () => {
 
             {/* Hero Section: APOD */}
             <section className="apod-section" style={{ backgroundImage: `url(${apod.img})` }}>
+                <div className="apod-overlay"></div>
                 <div className="apod-content">
-                    <span className="badge">Astronomy Picture of the Day</span>
+                    <div className="apod-header-info">
+                        <span className="badge">🌟 Astronomy Picture of the Day</span>
+                        <span className="apod-date">{apod.date}</span>
+                    </div>
                     <h2>{apod.title}</h2>
                     <p>{apod.explanation}</p>
+                    <div className="apod-footer">
+                        <span className="apod-credit">📷 {apod.photographer}</span>
+                        <a href={apod.url} target="_blank" rel="noopener noreferrer" className="apod-link">
+                            View Full Resolution →
+                        </a>
+                    </div>
                 </div>
             </section>
 
