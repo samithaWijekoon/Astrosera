@@ -7,6 +7,8 @@ import Member6 from './Pages/Member6/member6'
 import Member3 from './Pages/Member03/member3'
 import Member4 from './Pages/Member4/member4'
 
+import Chat from './Pages/chat/chat'
+
 const App = () => {
   return (
 
@@ -15,7 +17,7 @@ const App = () => {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/chat" element={<Home />} />
+        <Route path="/chat" element={<Chat />} />
         <Route path="/events" element={<Home />} />
         <Route path="/quiz" element={<Member3 />} />
         <Route path="/achievements" element={<Member4 />} />
