@@ -3,7 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import Navbar from './component/Navbar'
 import Footer from './component/Footer'
 import Home from './Pages/Home'
-import chat from './Pages/chat/chat'
+
 import Chat from './Pages/chat/chat'
 
 const App = () => {
