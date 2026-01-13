@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './member1.css';
+import './chat.css';
 
 // Member 01: Intelligent Chatbot & RAG Engine (AstraBot)
-const Member1 = () => {
+const Chat = () => {
   const [messages, setMessages] = useState([
     { id: 1, text: "Hello! I am AstraBot. Ask me anything about the cosmos.", sender: 'bot' }
   ]);
@@ -64,7 +64,7 @@ const Member1 = () => {
   };
 
   return (
-    <div className="member1-container">
+    <div className="chat-container">
       <header className="chat-header">
         <h1>AstraBot</h1>
         <p>Your AI Astronomy Assistant</p>
@@ -104,4 +104,4 @@ const Member1 = () => {
   );
 };
 
-export default Member1;
+export default Chat;
