@@ -5,7 +5,7 @@ import './member6.css';
 const Member6 = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [activeTab, setActiveTab] = useState("news"); // 'news' or 'gallery'
-    const [visibleNews, setVisibleNews] = useState(3); // For infinite scroll
+    const [visibleNews, setVisibleNews] = useState(5); // For infinite scroll
     const [loading, setLoading] = useState(false);
     const [selectedVideo, setSelectedVideo] = useState(null);
     
@@ -73,40 +73,75 @@ const Member6 = () => {
             summary: "China announces ambitious timeline for lunar research station construction.",
             source: "SpaceNews",
             date: "2024-03-05"
+        },
+        {
+            id: 8,
+            title: "Hubble Discovers Dark Matter Mystery",
+            summary: "New observations challenge our understanding of dark matter distribution in galaxy clusters.",
+            source: "NASA Blogs",
+            date: "2024-03-02"
+        },
+        {
+            id: 9,
+            title: "Commercial Space Station Plans Progress",
+            summary: "Private companies move forward with plans for commercial space stations as ISS retirement approaches.",
+            source: "SpaceNews",
+            date: "2024-02-28"
+        },
+        {
+            id: 10,
+            title: "Solar Flare Activity Reaches Decade High",
+            summary: "Scientists observe increased solar activity that could impact Earth's communications.",
+            source: "NASA JPL",
+            date: "2024-02-25"
+        },
+        {
+            id: 11,
+            title: "Europa Clipper Mission Update",
+            summary: "NASA's mission to explore Jupiter's icy moon Europa enters final testing phase.",
+            source: "NASA Blogs",
+            date: "2024-02-22"
+        },
+        {
+            id: 12,
+            title: "New Asteroid Detection System Operational",
+            summary: "Advanced AI-powered system dramatically improves near-Earth asteroid tracking capabilities.",
+            source: "Science Daily",
+            date: "2024-02-20"
         }
-    ];
+  ];
 
     const galleryItems = [
     { 
         id: 1, 
         type: 'image', 
-        title: 'Spiral Galaxy',
-        thumbnail: 'https://images.unsplash.com/photo-1543722530-d2c3201371e7?w=400&h=400&fit=crop'
-    },
-    { 
-        id: 2, 
-        type: 'video', 
-        title: 'Black Hole Visualization',
-        thumbnail: 'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=400&h=400&fit=crop',
-        videoUrl: 'https://www.youtube.com/embed/t9YLtDJZtPY'
-    },
-    { 
-        id: 3, 
-        type: 'image', 
         title: 'Nebula Colors',
         thumbnail: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=400&h=400&fit=crop'
     },
     { 
+        id: 2, 
+        type: 'video', 
+        title: 'ISS Time-lapse',
+        thumbnail: 'https://images.unsplash.com/photo-1581822261290-991b38693d1b?w=400&h=400&fit=crop',
+        videoUrl: 'https://www.youtube.com/embed/4czjS9h4Fpg'
+    },
+    { 
+        id: 3, 
+        type: 'image', 
+        title: 'Spiral Galaxy',
+        thumbnail: 'https://images.unsplash.com/photo-1543722530-d2c3201371e7?w=400&h=400&fit=crop'
+    },
+    { 
         id: 4, 
         type: 'image', 
-        title: 'Mars Rover Discovery',
-        thumbnail: 'https://images.unsplash.com/photo-1614313913007-2b4ae8ce32d6?w=400&h=400&fit=crop'
+        title: 'Saturn and Rings',
+        thumbnail: 'https://images.unsplash.com/photo-1614728423169-3f65fd722b7e?w=400&h=400&fit=crop'
     },
     { 
         id: 5, 
         type: 'image', 
-        title: 'Earth from Space',
-        thumbnail: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=400&h=400&fit=crop'
+        title: 'Aurora Borealis',
+        thumbnail: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=400&h=400&fit=crop'
     },
     { 
         id: 6, 
@@ -114,6 +149,43 @@ const Member6 = () => {
         title: 'Solar System Journey',
         thumbnail: 'https://images.unsplash.com/photo-1532693322450-2cb5c511067d?w=400&h=400&fit=crop',
         videoUrl: 'https://www.youtube.com/embed/libKVRa01L8'
+    },
+    { 
+        id: 7, 
+        type: 'image', 
+        title: 'Horsehead Nebula',
+        thumbnail: 'https://images.unsplash.com/photo-1464802686167-b939a6910659?w=400&h=400&fit=crop'
+    },
+    { 
+        id: 8, 
+        type: 'image', 
+        title: 'Mars Rover Discovery',
+        thumbnail: 'https://images.unsplash.com/photo-1614313913007-2b4ae8ce32d6?w=400&h=400&fit=crop'
+    },
+    { 
+        id: 9, 
+        type: 'image', 
+        title: 'Milky Way Galaxy',
+        thumbnail: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=400&h=400&fit=crop'
+    },
+    { 
+        id: 10, 
+        type: 'video', 
+        title: 'Black Hole Visualization',
+        thumbnail: 'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=400&h=400&fit=crop',
+        videoUrl: 'https://www.youtube.com/embed/t9YLtDJZtPY'
+    },
+    { 
+        id: 11, 
+        type: 'image', 
+        title: 'Supernova Remnant',
+        thumbnail: 'https://images.unsplash.com/photo-1502134249126-9f3755a50d78?w=400&h=400&fit=crop'
+    },
+    { 
+        id: 12, 
+        type: 'image', 
+        title: 'Earth from Space',
+        thumbnail: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=400&h=400&fit=crop'
     }
 ];
 
@@ -132,14 +204,14 @@ const Member6 = () => {
     const loadMoreNews = () => {
         setLoading(true);
         setTimeout(() => {
-            setVisibleNews(prev => Math.min(prev + 3, filteredNews.length));
+            setVisibleNews(prev => Math.min(prev + 5, filteredNews.length));
             setLoading(false);
         }, 500);
     };
 
     // Reset visible news when search changes
     useEffect(() => {
-        setVisibleNews(3);
+        setVisibleNews(5);
     }, [searchTerm]);
 
     // Get currently visible news
@@ -227,7 +299,7 @@ const Member6 = () => {
                         )}
 
                         {/* End of feed message */}
-                        {!hasMoreNews && displayedNews.length > 3 && (
+                        {!hasMoreNews && displayedNews.length > 5 && (
                             <div className="end-of-feed">
                                 ✨ You've reached the end of cosmic news
                             </div>
