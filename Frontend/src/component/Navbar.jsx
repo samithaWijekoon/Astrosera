@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { HiMenu, HiX } from "react-icons/hi";
+import AuthContext from '../context/AuthContext';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
+    const { user, logout } = useContext(AuthContext);
 
     const toggleMenu = () => {
         setIsOpen(!isOpen);
@@ -48,13 +50,34 @@ const Navbar = () => {
 
                 {/* Right Side - Button & Mobile Toggle */}
                 <div className="flex items-center space-x-4">
-                    {/* Get Started Button - Right Aligned (Desktop) */}
-                    <Link
-                        to="/dashboard"
-                        className="hidden md:block bg-purple-600 hover:bg-purple-700 text-white text-sm font-bold py-3 px-8 rounded-full transition-all duration-300 shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_25px_rgba(168,85,247,0.5)] focus:outline-none"
-                    >
-                        Get Started
-                    </Link>
+                    {/* Auth Buttons */}
+                    {user ? (
+                        <div className="hidden md:flex items-center space-x-4">
+                            <span className="text-gray-300 text-sm">Hi, {user.username}</span>
+                            <button
+                                onClick={logout}
+                                className="bg-red-600/80 hover:bg-red-600 text-white text-sm font-bold py-2 px-6 rounded-full transition-all duration-300 shadow-[0_0_15px_rgba(220,38,38,0.3)] hover:shadow-[0_0_25px_rgba(220,38,38,0.5)] focus:outline-none"
+                            >
+                                Logout
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="hidden md:flex items-center space-x-4">
+                            <Link
+                                to="/login"
+                                className="text-gray-300 hover:text-white font-medium transition-colors text-sm"
+                            >
+                                Login
+                            </Link>
+                            <Link
+                                to="/signup"
+                                className="bg-purple-600 hover:bg-purple-700 text-white text-sm font-bold py-3 px-8 rounded-full transition-all duration-300 shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_25px_rgba(168,85,247,0.5)] focus:outline-none"
+                            >
+                                Get Started
+                            </Link>
+                        </div>
+                    )}
+
 
                     {/* Mobile Menu Button */}
                     <button
@@ -79,13 +102,35 @@ const Navbar = () => {
                             {link.name}
                         </Link>
                     ))}
-                    <Link
-                        to="/dashboard"
-                        onClick={() => setIsOpen(false)}
-                        className="bg-purple-600 text-white text-center font-bold py-3 rounded-xl mt-4 focus:outline-none"
-                    >
-                        Get Started
-                    </Link>
+
+                    {user ? (
+                        <>
+                            <div className="text-gray-300 text-lg border-b border-white/5 pb-2">Hi, {user.username}</div>
+                            <button
+                                onClick={() => { logout(); setIsOpen(false); }}
+                                className="bg-red-600 text-white text-center font-bold py-3 rounded-xl mt-4 focus:outline-none w-full"
+                            >
+                                Logout
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <Link
+                                to="/login"
+                                onClick={() => setIsOpen(false)}
+                                className="text-white text-center font-medium py-2 hover:text-purple-400"
+                            >
+                                Login
+                            </Link>
+                            <Link
+                                to="/signup"
+                                onClick={() => setIsOpen(false)}
+                                className="bg-purple-600 text-white text-center font-bold py-3 rounded-xl mt-2 focus:outline-none"
+                            >
+                                Get Started
+                            </Link>
+                        </>
+                    )}
                 </div>
             )}
         </nav>
@@ -93,3 +138,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

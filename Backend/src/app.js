@@ -1,13 +1,26 @@
-const express = require('express')
+const express = require('express');
+const cors = require('cors');
+const connectDB = require('./config/db');
+const authRoutes = require('./routes/authRoutes');
 
-const app = express()
+// Connect to database
+connectDB();
+
+const app = express();
 
 // Middleware
-app.use(express.json())
+app.use(express.json());
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true
+}));
+
+// Routes
+app.use('/api/auth', authRoutes);
 
 // Test route
 app.get('/', (req, res) => {
-    res.send('🚀 Express server is running')
-})
+    res.send('🚀 Express server is running');
+});
 
-module.exports = app
+module.exports = app;
