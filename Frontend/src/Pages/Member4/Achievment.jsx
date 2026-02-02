@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Achievment.css';
 
 // DATA
@@ -6,11 +6,28 @@ import './Achievment.css';
 const COMBO_DAYS = [1,2,3,5,6,7,8,10,11,12,15,16,17,18,19,22,23,24,25,26,28,29,30,31];
 
 const COMBO_BADGES = [
-  { id: "cb1", icon: "🔥", name: "First Spark",      desc: "Complete your first combo day",    started: "Jan 1, 2025", ended: "Jan 1, 2025",  earned: true,  color: "#f97316" },
-  { id: "cb2", icon: "⚡", name: "3-Day Surge",      desc: "Maintain a 3-day combo streak",    started: "Jan 5, 2025", ended: "Jan 7, 2025",  earned: true,  color: "#a855f7" },
+{ 
+    id: "cb1", 
+    image: "/images/badges/cb1.png",   // PNG image
+    name: "First Spark",      
+    desc: "Complete your first combo day",    
+    started: "Jan 1, 2025", 
+    ended: "Jan 1, 2025",  
+    earned: true,  
+   // color: "#f97316" 
+  },  { id: "cb2", icon: "⚡", name: "3-Day Surge",      desc: "Maintain a 3-day combo streak",    started: "Jan 5, 2025", ended: "Jan 7, 2025",  earned: true,  color: "#a855f7" },
   { id: "cb3", icon: "🌊", name: "Week Warrior",     desc: "Achieve a 7-day combo streak",     started: "Jan 10, 2025", ended: "Jan 16, 2025", earned: true, color: "#06b6d4" },
   { id: "cb4", icon: "💎", name: "Fortnight Force",  desc: "Hit a 14-day combo streak",        started: "—",           ended: "—",            earned: false, color: "#8b5cf6" },
   { id: "cb5", icon: "👑", name: "Month Master",     desc: "Complete a full 30-day combo",     started: "—",           ended: "—",            earned: false, color: "#eab308" },
+  { id: "cb5", icon: "👑", name: "Month Master",     desc: "Complete a full 30-day combo",     started: "—",           ended: "—",            earned: false, color: "#eab308" },
+  // { id: "cb5", icon: "👑", name: "Month Master",     desc: "Complete a full 30-day combo",     started: "—",           ended: "—",            earned: false, color: "#eab308" },
+ {id: "cb1", 
+    image: "/images/badges/cb1.png",   // PNG image
+    name: "First Spark",      
+    desc: "Complete your first combo day",    
+    started: "Jan 1, 2025", 
+    ended: "Jan 1, 2025",  
+    earned: true,} 
 ];
 
 const MISSION_BADGES = [
@@ -52,7 +69,8 @@ const LEADERBOARD_DATA = [
   { rank: 5, name: "Zeph A.",   avatar: "ZA",  score: 3100, streak: 15 },
 ];
 
-// FUNCTIONS
+// FUNCTIONS  
+//Badge Modal Component
 function BadgeModal({ badge, onClose }) {
   if (!badge) return null;
 
@@ -68,7 +86,13 @@ function BadgeModal({ badge, onClose }) {
             className={`modal-icon ${badge.earned ? 'modal-icon--earned' : 'modal-icon--locked'}`}
             style={badge.earned ? { background: `radial-gradient(circle at 30% 30%, ${badge.color}55, ${badge.color}15)`, boxShadow: `0 0 30px ${badge.color}25`, filter: `drop-shadow(0 0 12px ${badge.color}60)` } : {}}
           >
-            {badge.icon}
+            {/* {badge.icon} */}
+            {badge.image ? (
+  <img src={badge.image} alt={badge.name} className="modal-badge-img" />
+) : (
+  badge.icon
+)}
+
           </div>
         </div>
 
@@ -115,7 +139,7 @@ function SectionHeader({ title, earnedCount, totalCount }) {
     </div>
   );
 }
-
+// BadgeRow Component
 function BadgeRow({ badges, onSelect }) {
   return (
     <div className="badge-row">
@@ -131,7 +155,12 @@ function BadgeRow({ badges, onSelect }) {
             className="badge-item__icon"
             style={b.earned ? { filter: `drop-shadow(0 0 6px ${b.color}50)` } : {}}
           >
-            {b.icon}
+            {/* {b.icon} */}
+            {b.image ? (
+  <img src={b.image} alt={b.name} className="badge-img" />
+) : (
+  b.icon
+)}
           </span>
           <span className="badge-item__name">{b.name}</span>
         </button>
@@ -175,72 +204,75 @@ const Member4 = () => {
                 </svg>
               </div>
             </div>
-            <span className="avatar-online" />
+            {/* <span className="avatar-online" /> */}
           </div>
 
           {/* Name + rank + score */}
           <div className="profile-info">
-            <h1 className="profile-name">Stellar You</h1>
+            <h1 className="profile-name">Chang Chung</h1>
             <div className="profile-meta">
               <span className="profile-rank">🥈 Rank <strong>#2</strong></span>
               <span className="profile-dot" />
-              <span className="profile-score">Score: <strong>4,210</strong></span>
+              <span className="profile-score">Score: <strong>100</strong></span>
             </div>
           </div>
         </div>
 
         {/* Combo button */}
         <button className={`combo-btn ${showCalendar ? 'combo-btn--active' : ''}`} onClick={() => setShowCalendar(!showCalendar)}>
-          <div className="combo-btn__fire">🔥</div>
+          <div>
+            <div className="combo-btn__fire">🔥</div>
+                          <span className="combo-btn__days">24 days</span>
+
           <div className="combo-btn__text">
-            <span className="combo-btn__label">Combo</span>
-            <span className="combo-btn__days">24 days</span>
+            {/* <span className="combo-btn__label">Combo</span>
+            <div>
+              <span className={`combo-btn__arrow ${showCalendar ? 'combo-btn__arrow--open' : ''}`}>▼</span>
+            </div> */}
+
           </div>
-          <span className={`combo-btn__arrow ${showCalendar ? 'combo-btn__arrow--open' : ''}`}>▼</span>
+          </div>
         </button>
       </header>
 
-      {/* ─── LEVEL / XP BAR ───
-      <div className="level-info">
-        <div className="level-badge">Lvl {level}</div>
-        <div className="xp-bar-container">
-          <div className="xp-bar-fill" style={{ width: `${progressPercent}%` }} />
-          <span className="xp-text">{xp} / {nextLevelXp} XP</span>
-        </div>
-      </div> */}
-
-      {/* ─── CALENDAR ─── */}
+      {/* ─── CALENDAR (modal popup) ─── */}
       {showCalendar && (
-        <div className="calendar-card">
-          <div className="calendar-month">{monthName}</div>
+        <div className="calendar-modal-overlay" onClick={() => setShowCalendar(false)}>
+          <div className="calendar-modal-card" onClick={e => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setShowCalendar(false)}>✕</button>
 
-          <div className="calendar-weekdays">
-            {["Su","Mo","Tu","We","Th","Fr","Sa"].map(d => (
-              <span key={d} className="calendar-weekday">{d}</span>
-            ))}
-          </div>
+            <div className="calendar-card calendar-card--modal" role="dialog" aria-modal="true" aria-label="Combo calendar">
+              <div className="calendar-month">{monthName}</div>
 
-          <div className="calendar-grid">
-            {/* Empty cells for offset */}
-            {Array.from({ length: firstDayOfWeek }, (_, i) => (
-              <div key={"empty-" + i} />
-            ))}
-            {/* Day cells */}
-            {Array.from({ length: daysInMonth }, (_, i) => {
-              const day = i + 1;
-              const isCombo = COMBO_DAYS.includes(day);
-              return (
-                <div key={day} className={`calendar-day ${isCombo ? 'calendar-day--combo' : ''}`}>
-                  {day}
-                  {isCombo && <span className="calendar-day__dot" />}
-                </div>
-              );
-            })}
-          </div>
+              <div className="calendar-weekdays">
+                {["Su","Mo","Tu","We","Th","Fr","Sa"].map(d => (
+                  <span key={d} className="calendar-weekday">{d}</span>
+                ))}
+              </div>
 
-          <div className="calendar-legend">
-            <span className="calendar-legend__combo" /> <span className="calendar-legend__label">Combo day</span>
-            <span className="calendar-legend__inactive" /> <span className="calendar-legend__label calendar-legend__label--dim">Inactive</span>
+              <div className="calendar-grid">
+                {/* Empty cells for offset */}
+                {Array.from({ length: firstDayOfWeek }, (_, i) => (
+                  <div key={"empty-" + i} />
+                ))}
+                {/* Day cells */}
+                {Array.from({ length: daysInMonth }, (_, i) => {
+                  const day = i + 1;
+                  const isCombo = COMBO_DAYS.includes(day);
+                  return (
+                    <div key={day} className={`calendar-day ${isCombo ? 'calendar-day--combo' : ''}`}>
+                      {day}
+                      {isCombo && <span className="calendar-day__dot" />}
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="calendar-legend">
+                <span className="calendar-legend__combo" /> <span className="calendar-legend__label">Combo day</span>
+                <span className="calendar-legend__inactive" /> <span className="calendar-legend__label calendar-legend__label--dim">Inactive</span>
+              </div>
+            </div>
           </div>
         </div>
       )}
