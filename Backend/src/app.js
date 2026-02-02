@@ -8,8 +8,23 @@ connectDB();
 
 const app = express();
 app.use(express.json());
+console.log("FRONTEND_URI:", process.env.FRONTEND_URI);
+
 app.use(cors({
-    origin: process.env.FRONTEND_URI,
+    origin: function (origin, callback) {
+        const allowedOrigin = process.env.FRONTEND_URI;
+        console.log("Request Origin:", origin, "| Allowed Origin:", allowedOrigin);
+
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+
+        if (origin === allowedOrigin || origin === allowedOrigin + '/') {
+            return callback(null, true);
+        } else {
+            console.error("CORS Error: Origin not allowed");
+            return callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true
 }));
 

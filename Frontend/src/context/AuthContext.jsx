@@ -2,7 +2,7 @@ import { createContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
-const backendurl = "http://localhost:5000";
+const backendurl = "http://localhost:5001";
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
