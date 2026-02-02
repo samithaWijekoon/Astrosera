@@ -25,7 +25,7 @@ const Navbar = () => {
     };
 
     return (
-        <nav className="fixed top-0 left-0 w-full z-50 py-6 font-outfit bg-black/80 backdrop-blur-md border-b border-white/10">
+        <nav className="sticky top-0 left-0 w-full z-50 py-6 font-outfit bg-black/80 backdrop-blur-md border-b border-white/10">
             <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between relative">
 
                 {/* Logo - Left Aligned */}
