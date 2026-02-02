@@ -1,13 +1,37 @@
-const express = require('express')
+const express = require('express');
+const cors = require('cors');
+const connectDB = require('./config/db');
+const authRoutes = require('./routes/authRoutes');
+require('dotenv').config();
 
-const app = express()
+connectDB();
 
-// Middleware
-app.use(express.json())
+const app = express();
+app.use(express.json());
+console.log("FRONTEND_URI:", process.env.FRONTEND_URI);
 
-// Test route
+app.use(cors({
+    origin: function (origin, callback) {
+        const allowedOrigin = process.env.FRONTEND_URI;
+        console.log("Request Origin:", origin, "| Allowed Origin:", allowedOrigin);
+
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+
+        if (origin === allowedOrigin || origin === allowedOrigin + '/') {
+            return callback(null, true);
+        } else {
+            console.error("CORS Error: Origin not allowed");
+            return callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true
+}));
+
+app.use('/api/auth', authRoutes);
+
 app.get('/', (req, res) => {
-    res.send('🚀 Express server is running')
-})
+    res.send('🚀 Express server is running');
+});
 
-module.exports = app
+module.exports = app;
