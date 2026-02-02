@@ -8,7 +8,7 @@ import Login from './Pages/Login'
 import Signup from './Pages/Signup'
 import Member6 from './Pages/Member6/member6'
 import Member3 from './Pages/Member03/member3'
-import Member4 from './Pages/Member4/member4'
+import Member4 from './Pages/Member4/Achievment'
 
 const App = () => {
   return (
