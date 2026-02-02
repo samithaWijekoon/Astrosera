@@ -1,17 +1,15 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+require('dotenv').config();
 
-// Generate JWT
-const generateToken = (id) => {
-    return jwt.sign({ id }, "astrosera_secret_key_123", { // Using a hardcoded secret for now as requested/simple setup, usually .env
-        expiresIn: '30d',
+
+const generateToken = (id, username, email) => {
+    return jwt.sign({ id, username, email }, process.env.JWT_SECRET, {
     });
 };
 
-// @desc    Register new user
-// @route   POST /api/auth/signup
-// @access  Public
+
 const registerUser = async (req, res) => {
     try {
         const { username, email, password } = req.body;
@@ -20,14 +18,14 @@ const registerUser = async (req, res) => {
             return res.status(400).json({ message: 'Please add all fields' });
         }
 
-        // Check if user exists
+
         const userExists = await User.findOne({ email });
 
         if (userExists) {
             return res.status(400).json({ message: 'User already exists' });
         }
 
-        // Create user
+
         const user = await User.create({
             username,
             email,
@@ -39,7 +37,7 @@ const registerUser = async (req, res) => {
                 _id: user.id,
                 username: user.username,
                 email: user.email,
-                token: generateToken(user._id),
+                token: generateToken(user._id, user.username, user.email),
             });
         } else {
             res.status(400).json({ message: 'Invalid user data' });
@@ -50,14 +48,12 @@ const registerUser = async (req, res) => {
     }
 };
 
-// @desc    Authenticate a user
-// @route   POST /api/auth/login
-// @access  Public
+
 const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Check for user email
+
         const user = await User.findOne({ email });
 
         if (user && (await user.matchPassword(password))) {
@@ -65,7 +61,7 @@ const loginUser = async (req, res) => {
                 _id: user.id,
                 username: user.username,
                 email: user.email,
-                token: generateToken(user._id),
+                token: generateToken(user._id, user.username, user.email),
             });
         } else {
             res.status(401).json({ message: 'Invalid credentials' });
@@ -76,15 +72,24 @@ const loginUser = async (req, res) => {
     }
 };
 
-// @desc    Get user data
-// @route   GET /api/auth/me
-// @access  Private (To be implemented with middleware)
+
 const getMe = async (req, res) => {
     res.status(200).json(req.user);
+};
+
+const getAllUsers = async (req, res) => {
+    try {
+        const users = await User.find();
+        res.status(200).json(users);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
 };
 
 module.exports = {
     registerUser,
     loginUser,
     getMe,
+    getAllUsers,
 };

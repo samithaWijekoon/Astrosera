@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const storedUser = localStorage.getItem('user');
+        const storedUser = sessionStorage.getItem('user');
         if (storedUser) {
             setUser(JSON.parse(storedUser));
         }
@@ -31,8 +31,8 @@ export const AuthProvider = ({ children }) => {
 
             if (response.ok) {
                 setUser(data);
-                localStorage.setItem('user', JSON.stringify(data));
-                localStorage.setItem('token', data.token);
+                sessionStorage.setItem('user', JSON.stringify(data));
+                sessionStorage.setItem('token', data.token);
                 navigate('/');
                 return { success: true };
             } else {
@@ -58,8 +58,8 @@ export const AuthProvider = ({ children }) => {
 
             if (response.ok) {
                 setUser(data);
-                localStorage.setItem('user', JSON.stringify(data));
-                localStorage.setItem('token', data.token);
+                sessionStorage.setItem('user', JSON.stringify(data));
+                sessionStorage.setItem('token', data.token);
                 navigate('/');
                 return { success: true };
             } else {
@@ -73,8 +73,8 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         setUser(null);
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
+        sessionStorage.removeItem('user');
+        sessionStorage.removeItem('token');
         navigate('/login');
     };
 
