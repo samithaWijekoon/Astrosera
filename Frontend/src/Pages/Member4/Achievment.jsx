@@ -6,37 +6,33 @@ import './Achievment.css';
 const COMBO_DAYS = [1,2,3,5,6,7,8,10,11,12,15,16,17,18,19,22,23,24,25,26,28,29,30,31];
 
 const COMBO_BADGES = [
-{ 
-    id: "cb1", 
-    image: "/images/badges/cb1.png",   // PNG image
-    name: "First Spark",      
-    desc: "Complete your first combo day",    
-    started: "Jan 1, 2025", 
-    ended: "Jan 1, 2025",  
-    earned: true,  
-   // color: "#f97316" 
-  },  { id: "cb2", icon: "⚡", name: "3-Day Surge",      desc: "Maintain a 3-day combo streak",    started: "Jan 5, 2025", ended: "Jan 7, 2025",  earned: true,  color: "#a855f7" },
-  { id: "cb3", icon: "🌊", name: "Week Warrior",     desc: "Achieve a 7-day combo streak",     started: "Jan 10, 2025", ended: "Jan 16, 2025", earned: true, color: "#06b6d4" },
-  { id: "cb4", icon: "💎", name: "Fortnight Force",  desc: "Hit a 14-day combo streak",        started: "—",           ended: "—",            earned: false, color: "#8b5cf6" },
-  { id: "cb5", icon: "👑", name: "Month Master",     desc: "Complete a full 30-day combo",     started: "—",           ended: "—",            earned: false, color: "#eab308" },
-  { id: "cb5", icon: "👑", name: "Month Master",     desc: "Complete a full 30-day combo",     started: "—",           ended: "—",            earned: false, color: "#eab308" },
+  { id: "cb1", image: "/images/badges/cb1.png",name: "First Orbit",desc: "Complete your first combo day",    started: "Jan 1, 2025", ended: "Jan 1, 2025",  earned: true,}, 
+  { id: "cb2", image: "/images/badges/cb1.png", name: "Stable Orbit",      desc: "Maintain a 3-day combo streak",    started: "Jan 5, 2025", ended: "Jan 7, 2025",  earned: true,  color: "#a855f7" },
+  { id: "cb3", image: "/images/badges/cb1.png", name: "Week Warrior",     desc: "Achieve a 7-day combo streak",     started: "Jan 10, 2025", ended: "Jan 16, 2025", earned: true, color: "#06b6d4" },
+  { id: "cb4", image: "/images/badges/cb1.png", name: "Rising Constellation",  desc: "Hit a 14-day combo streak",        started: "—",           ended: "—",            earned: false, color: "#8b5cf6" },
+  { id: "cb5", image: "/images/badges/cb1.png", name: "Solar Pathfinder",     desc: "Complete a full 30-day combo",     started: "—",           ended: "—",            earned: false, color: "#eab308" },
+  { id: "cb6", image: "/images/badges/cb1.png", name: "Galaxy Runner",     desc: "Complete a full 30-day combo",     started: "—",           ended: "—",            earned: false, color: "#eab308" },
   // { id: "cb5", icon: "👑", name: "Month Master",     desc: "Complete a full 30-day combo",     started: "—",           ended: "—",            earned: false, color: "#eab308" },
- {id: "cb1", 
-    image: "/images/badges/cb1.png",   // PNG image
-    name: "First Spark",      
-    desc: "Complete your first combo day",    
-    started: "Jan 1, 2025", 
-    ended: "Jan 1, 2025",  
-    earned: true,} 
+  {id: "cb7", image: "/images/badges/cb1.png", name: "Nebula Voyager",desc: "Complete your first combo day",    started: "Jan 1, 2025", ended: "Jan 1, 2025",  earned: false,} ,
+  { id: "cb8", image: "/images/badges/cb1.png", name: "Orbit Master",     desc: "Complete a full 30-day combo",     started: "—",           ended: "—",            earned: false, color: "#eab308" },
+  { id: "cb9", image: "/images/badges/cb1.png", name: "Cosmic Titan",     desc: "Complete a full 30-day combo",     started: "—",           ended: "—",            earned: false, color: "#eab308" },
+  { id: "cb10", image: "/images/badges/cb1.png", name: "Supernova Force",     desc: "Complete a full 30-day combo",     started: "—",           ended: "—",            earned: false, color: "#eab308" },
+  { id: "cb11", image: "/images/badges/cb1.png", name: "Galactic Legend",     desc: "Complete a full 30-day combo",     started: "—",           ended: "—",            earned: false, color: "#eab308" },
 ];
 
 const MISSION_BADGES = [
-  { id: "mm1", icon: "🎯", name: "First Mission",       desc: "Complete your first mission",  started: "Jan 2, 2025",  ended: "Jan 2, 2025",  earned: true,  color: "#10b981" },
-  { id: "mm2", icon: "🏆", name: "Mission Pro",         desc: "Complete 5 missions",          started: "Jan 8, 2025",  ended: "Jan 15, 2025", earned: true,  color: "#f59e0b" },
-  { id: "mm3", icon: "🚀", name: "Mission Ace",         desc: "Complete 10 missions",         started: "—",            ended: "—",            earned: false, color: "#6366f1" },
-  { id: "mm4", icon: "🌟", name: "Mission Legend",      desc: "Complete 25 missions",         started: "—",            ended: "—",            earned: false, color: "#ec4899" },
-  { id: "mm5", icon: "⭐", name: "Ultimate Conqueror",  desc: "Complete all missions",        started: "—",            ended: "—",            earned: false, color: "#84cc16" },
+  { id: "mm1", image: "/images/badges/cb1.png", name: "Light Speed",       desc: "Finish a quiz under 2 minutes for the first time.",  started: "Jan 2, 2025",  ended: "Jan 2, 2025",  earned: true,  color: "#10b981" },
+  { id: "mm2", image: "/images/badges/cb1.png", name: "Photon Mind",         desc: "Finish quizzes under 2 minutes 3 times.",          started: "Jan 8, 2025",  ended: "Jan 15, 2025", earned: true,  color: "#f59e0b" },
+  { id: "mm3", image: "/images/badges/cb1.png", name: "Nova Burst",         desc: "Finish quizzes under 2 minutes 5 times.",         started: "—",            ended: "—",            earned: false, color: "#6366f1" },
+  { id: "mm4", image: "/images/badges/cb1.png", name: "Solar Flare",  desc: "Get full marks for the first time in a quiz.",        started: "—",            ended: "—",            earned: false, color: "#84cc16" },
+  { id: "mm5", image: "/images/badges/cb1.png", name: "Mission Legend",      desc: "Pass 5 times in quizzes without failing.",         started: "—",            ended: "—",            earned: false, color: "#ec4899" },
+  { id: "mm6", image: "/images/badges/cb1.png", name: "Mission Commander",  desc: "Pass 10 times in quizzes without failing.",        started: "—",            ended: "—",            earned: false, color: "#84cc16" },
+  { id: "mm7", image: "/images/badges/cb1.png", name: "Boss Mission",       desc: "Pass 20 times in quizzes without failing.",  started: "Jan 2, 2025",  ended: "Jan 2, 2025",  earned: true,  color: "#10b981" },
+  { id: "mm8", image: "/images/badges/cb1.png", name: "Stable Orbit",         desc: "Get the same score 3 times in a row.",          started: "Jan 8, 2025",  ended: "Jan 15, 2025", earned: true,  color: "#f59e0b" },
+  { id: "mm9", image: "/images/badges/cb1.png", name: "Twin Signal",         desc: "Get the same score for 2 consecutive days.",         started: "—",            ended: "—",            earned: false, color:"#6366f1" },
+  { id: "mm10", image: "/images/badges/cb1.png", name: "Supernova Growth",      desc: "Get a new personal best in a quiz.",         started: "—",            ended: "—",            earned: false, color: "#ec4899" },
 ];
+
 
 const NOTES_BADGES = [
   { id: "nb1", icon: "📝", name: "First Note",   desc: "Write your first note",  started: "Jan 3, 2025",  ended: "Jan 3, 2025",  earned: true,  color: "#14b8a6" },
@@ -150,7 +146,7 @@ function BadgeRow({ badges, onSelect }) {
           style={b.earned ? { background: `linear-gradient(135deg, ${b.color}15, ${b.color}08)`, borderColor: `${b.color}35` } : {}}
           onClick={() => onSelect(b)}
         >
-          {b.earned && <span className="badge-item__dot" style={{ background: b.color, boxShadow: `0 0 6px ${b.color}` }} />}
+          {/* {b.earned && <span className="badge-item__dot" style={{ background: b.color, boxShadow: `0 0 6px ${b.color}` }} />} */}
           <span
             className="badge-item__icon"
             style={b.earned ? { filter: `drop-shadow(0 0 6px ${b.color}50)` } : {}}
