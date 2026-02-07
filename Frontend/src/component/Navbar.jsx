@@ -18,6 +18,7 @@ const Navbar = () => {
         { name: 'Achievements', path: '/achievements' },
         { name: 'Analytics', path: '/analytics' },
         { name: 'News', path: '/news' },
+        
     ];
 
     const isActive = (path) => {
