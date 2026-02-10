@@ -3,66 +3,59 @@ import './Achievment.css';
 
 // DATA
 
-const COMBO_DAYS = [1,2,3,5,6,7,8,10,11,12,15,16,17,18,19,22,23,24,25,26,28,29,30,31];
+const COMBO_DAYS = [1, 2, 3, 5, 6, 7, 8, 10, 11, 12, 15, 16, 17, 18, 19, 22, 23, 24, 25, 26, 28, 29, 30, 31];
 
 const COMBO_BADGES = [
-  { id: "cb1", image: "/images/badges/cb1.png",name: "First Orbit",desc: "Complete your first combo day",    started: "Jan 1, 2025", ended: "Jan 1, 2025",  earned: true,}, 
-  { id: "cb2", image: "/images/badges/cb1.png", name: "Stable Orbit",      desc: "Maintain a 3-day combo streak",    started: "Jan 5, 2025", ended: "Jan 7, 2025",  earned: true,  color: "#a855f7" },
-  { id: "cb3", image: "/images/badges/cb1.png", name: "Week Warrior",     desc: "Achieve a 7-day combo streak",     started: "Jan 10, 2025", ended: "Jan 16, 2025", earned: true, color: "#06b6d4" },
-  { id: "cb4", image: "/images/badges/cb1.png", name: "Rising Constellation",  desc: "Hit a 14-day combo streak",        started: "—",           ended: "—",            earned: false, color: "#8b5cf6" },
-  { id: "cb5", image: "/images/badges/cb1.png", name: "Solar Pathfinder",     desc: "Complete a full 30-day combo",     started: "—",           ended: "—",            earned: false, color: "#eab308" },
-  { id: "cb6", image: "/images/badges/cb1.png", name: "Galaxy Runner",     desc: "Complete a full 30-day combo",     started: "—",           ended: "—",            earned: false, color: "#eab308" },
+  { id: "cb1", image: "/images/badges/cb1.png", name: "First Orbit", desc: "Complete your first combo day", started: "Jan 1, 2025", ended: "Jan 1, 2025", earned: true, },
+  { id: "cb2", image: "/images/badges/cb1.png", name: "Stable Orbit", desc: "Maintain a 3-day combo streak", started: "Jan 5, 2025", ended: "Jan 7, 2025", earned: true, color: "#a855f7" },
+  { id: "cb3", image: "/images/badges/cb1.png", name: "Week Warrior", desc: "Achieve a 7-day combo streak", started: "Jan 10, 2025", ended: "Jan 16, 2025", earned: true, color: "#06b6d4" },
+  { id: "cb4", image: "/images/badges/cb1.png", name: "Rising Constellation", desc: "Hit a 14-day combo streak", started: "—", ended: "—", earned: false, color: "#8b5cf6" },
+  { id: "cb5", image: "/images/badges/cb1.png", name: "Solar Pathfinder", desc: "Complete a full 30-day combo", started: "—", ended: "—", earned: false, color: "#eab308" },
+  { id: "cb6", image: "/images/badges/cb1.png", name: "Galaxy Runner", desc: "Complete a full 30-day combo", started: "—", ended: "—", earned: false, color: "#eab308" },
   // { id: "cb5", icon: "👑", name: "Month Master",     desc: "Complete a full 30-day combo",     started: "—",           ended: "—",            earned: false, color: "#eab308" },
-  {id: "cb7", image: "/images/badges/cb1.png", name: "Nebula Voyager",desc: "Complete your first combo day",    started: "Jan 1, 2025", ended: "Jan 1, 2025",  earned: false,} ,
-  { id: "cb8", image: "/images/badges/cb1.png", name: "Orbit Master",     desc: "Complete a full 30-day combo",     started: "—",           ended: "—",            earned: false, color: "#eab308" },
-  { id: "cb9", image: "/images/badges/cb1.png", name: "Cosmic Titan",     desc: "Complete a full 30-day combo",     started: "—",           ended: "—",            earned: false, color: "#eab308" },
-  { id: "cb10", image: "/images/badges/cb1.png", name: "Supernova Force",     desc: "Complete a full 30-day combo",     started: "—",           ended: "—",            earned: false, color: "#eab308" },
-  { id: "cb11", image: "/images/badges/cb1.png", name: "Galactic Legend",     desc: "Complete a full 30-day combo",     started: "—",           ended: "—",            earned: false, color: "#eab308" },
+  { id: "cb7", image: "/images/badges/cb1.png", name: "Nebula Voyager", desc: "Complete your first combo day", started: "Jan 1, 2025", ended: "Jan 1, 2025", earned: false, },
+  { id: "cb8", image: "/images/badges/cb1.png", name: "Orbit Master", desc: "Complete a full 30-day combo", started: "—", ended: "—", earned: false, color: "#eab308" },
+  { id: "cb9", image: "/images/badges/cb1.png", name: "Cosmic Titan", desc: "Complete a full 30-day combo", started: "—", ended: "—", earned: false, color: "#eab308" },
+  { id: "cb10", image: "/images/badges/cb1.png", name: "Supernova Force", desc: "Complete a full 30-day combo", started: "—", ended: "—", earned: false, color: "#eab308" },
+  { id: "cb11", image: "/images/badges/cb1.png", name: "Galactic Legend", desc: "Complete a full 30-day combo", started: "—", ended: "—", earned: false, color: "#eab308" },
 ];
 
 const MISSION_BADGES = [
-  { id: "mm1", image: "/images/badges/cb1.png", name: "Light Speed",       desc: "Finish a quiz under 2 minutes for the first time.",  started: "Jan 2, 2025",  ended: "Jan 2, 2025",  earned: true,  color: "#10b981" },
-  { id: "mm2", image: "/images/badges/cb1.png", name: "Photon Mind",         desc: "Finish quizzes under 2 minutes 3 times.",          started: "Jan 8, 2025",  ended: "Jan 15, 2025", earned: true,  color: "#f59e0b" },
-  { id: "mm3", image: "/images/badges/cb1.png", name: "Nova Burst",         desc: "Finish quizzes under 2 minutes 5 times.",         started: "—",            ended: "—",            earned: false, color: "#6366f1" },
-  { id: "mm4", image: "/images/badges/cb1.png", name: "Solar Flare",  desc: "Get full marks for the first time in a quiz.",        started: "—",            ended: "—",            earned: false, color: "#84cc16" },
-  { id: "mm5", image: "/images/badges/cb1.png", name: "Mission Legend",      desc: "Pass 5 times in quizzes without failing.",         started: "—",            ended: "—",            earned: false, color: "#ec4899" },
-  { id: "mm6", image: "/images/badges/cb1.png", name: "Mission Commander",  desc: "Pass 10 times in quizzes without failing.",        started: "—",            ended: "—",            earned: false, color: "#84cc16" },
-  { id: "mm7", image: "/images/badges/cb1.png", name: "Boss Mission",       desc: "Pass 20 times in quizzes without failing.",  started: "Jan 2, 2025",  ended: "Jan 2, 2025",  earned: true,  color: "#10b981" },
-  { id: "mm8", image: "/images/badges/cb1.png", name: "Stable Orbit",         desc: "Get the same score 3 times in a row.",          started: "Jan 8, 2025",  ended: "Jan 15, 2025", earned: true,  color: "#f59e0b" },
-  { id: "mm9", image: "/images/badges/cb1.png", name: "Twin Signal",         desc: "Get the same score for 2 consecutive days.",         started: "—",            ended: "—",            earned: false, color:"#6366f1" },
-  { id: "mm10", image: "/images/badges/cb1.png", name: "Supernova Growth",      desc: "Get a new personal best in a quiz.",         started: "—",            ended: "—",            earned: false, color: "#ec4899" },
+  { id: "mm1", image: "/images/badges/cb1.png", name: "Light Speed", desc: "Finish a quiz under 2 minutes for the first time.", started: "Jan 2, 2025", ended: "Jan 2, 2025", earned: true, color: "#10b981" },
+  { id: "mm2", image: "/images/badges/cb1.png", name: "Photon Mind", desc: "Finish quizzes under 2 minutes 3 times.", started: "Jan 8, 2025", ended: "Jan 15, 2025", earned: true, color: "#f59e0b" },
+  { id: "mm3", image: "/images/badges/cb1.png", name: "Nova Burst", desc: "Finish quizzes under 2 minutes 5 times.", started: "—", ended: "—", earned: false, color: "#6366f1" },
+  { id: "mm4", image: "/images/badges/cb1.png", name: "Solar Flare", desc: "Get full marks for the first time in a quiz.", started: "—", ended: "—", earned: false, color: "#84cc16" },
+  { id: "mm5", image: "/images/badges/cb1.png", name: "Mission Legend", desc: "Pass 5 times in quizzes without failing.", started: "—", ended: "—", earned: false, color: "#ec4899" },
+  { id: "mm6", image: "/images/badges/cb1.png", name: "Mission Commander", desc: "Pass 10 times in quizzes without failing.", started: "—", ended: "—", earned: false, color: "#84cc16" },
+  { id: "mm7", image: "/images/badges/cb1.png", name: "Boss Mission", desc: "Pass 20 times in quizzes without failing.", started: "Jan 2, 2025", ended: "Jan 2, 2025", earned: true, color: "#10b981" },
+  { id: "mm8", image: "/images/badges/cb1.png", name: "Stable Orbit", desc: "Get the same score 3 times in a row.", started: "Jan 8, 2025", ended: "Jan 15, 2025", earned: true, color: "#f59e0b" },
+  { id: "mm9", image: "/images/badges/cb1.png", name: "Twin Signal", desc: "Get the same score for 2 consecutive days.", started: "—", ended: "—", earned: false, color: "#6366f1" },
+  { id: "mm10", image: "/images/badges/cb1.png", name: "Supernova Growth", desc: "Get a new personal best in a quiz.", started: "—", ended: "—", earned: false, color: "#ec4899" },
 ];
 
 
-const NOTES_BADGES = [
-  { id: "nb1", icon: "📝", name: "First Note",   desc: "Write your first note",  started: "Jan 3, 2025",  ended: "Jan 3, 2025",  earned: true,  color: "#14b8a6" },
-  { id: "nb2", icon: "📓", name: "Note Keeper",  desc: "Write 5 notes",          started: "Jan 5, 2025",  ended: "Jan 12, 2025", earned: true,  color: "#f43f5e" },
-  { id: "nb3", icon: "📚", name: "Scholar",      desc: "Write 15 notes",         started: "—",            ended: "—",            earned: false, color: "#3b82f6" },
-  { id: "nb4", icon: "🖊️", name: "Wordsmith",    desc: "Write 30 notes",         started: "—",            ended: "—",            earned: false, color: "#8b5cf6" },
-  { id: "nb5", icon: "📖", name: "Author",       desc: "Write 50 notes",         started: "—",            ended: "—",            earned: false, color: "#f97316" },
-];
+
 
 const TOTAL_DAYS_BADGES = [
-  { id: "td1", icon: "🌅", name: "Day One",        desc: "Your first day on AstroSera",  started: "Jan 1, 2025",  ended: "Jan 1, 2025",  earned: true,  color: "#fb923c" },
-  { id: "td2", icon: "📅", name: "Week In",        desc: "7 total days logged",          started: "Jan 1, 2025",  ended: "Jan 7, 2025",  earned: true,  color: "#22c55e" },
-  { id: "td3", icon: "🗓️", name: "Two Weeks",     desc: "14 total days logged",         started: "Jan 1, 2025",  ended: "Jan 14, 2025", earned: true,  color: "#06b6d4" },
-  { id: "td4", icon: "🏅", name: "30 Days Strong", desc: "30 total days logged",         started: "—",            ended: "—",            earned: false, color: "#a855f7" },
-  { id: "td5", icon: "🎖️", name: "Centurion",     desc: "100 total days logged",        started: "—",            ended: "—",            earned: false, color: "#eab308" },
+  { id: "td1", icon: "🌅", name: "Day One", desc: "Your first day on AstroSera", started: "Jan 1, 2025", ended: "Jan 1, 2025", earned: true, color: "#fb923c" },
+  { id: "td2", icon: "📅", name: "Week In", desc: "7 total days logged", started: "Jan 1, 2025", ended: "Jan 7, 2025", earned: true, color: "#22c55e" },
+  { id: "td3", icon: "🗓️", name: "Two Weeks", desc: "14 total days logged", started: "Jan 1, 2025", ended: "Jan 14, 2025", earned: true, color: "#06b6d4" },
+  { id: "td4", icon: "🏅", name: "30 Days Strong", desc: "30 total days logged", started: "—", ended: "—", earned: false, color: "#a855f7" },
+  { id: "td5", icon: "🎖️", name: "Centurion", desc: "100 total days logged", started: "—", ended: "—", earned: false, color: "#eab308" },
 ];
 
 const BADGE_CATEGORIES = [
-  { title: "Combo Badges",  badges: COMBO_BADGES },
+  { title: "Combo Badges", badges: COMBO_BADGES },
   { title: "Mission Master", badges: MISSION_BADGES },
-  { title: "Notes",          badges: NOTES_BADGES },
-  { title: "Total Days",     badges: TOTAL_DAYS_BADGES },
+  { title: "Total Days", badges: TOTAL_DAYS_BADGES },
 ];
 
 const LEADERBOARD_DATA = [
-  { rank: 1, name: "Orion K.",  avatar: "OK",  score: 4850, streak: 31 },
-  { rank: 2, name: "You",       avatar: "YOU", score: 4210, streak: 24, isUser: true },
-  { rank: 3, name: "Nova S.",   avatar: "NS",  score: 3990, streak: 22 },
-  { rank: 4, name: "Lyra M.",   avatar: "LM",  score: 3540, streak: 18 },
-  { rank: 5, name: "Zeph A.",   avatar: "ZA",  score: 3100, streak: 15 },
+  { rank: 1, name: "Orion K.", avatar: "OK", score: 4850, streak: 31 },
+  { rank: 2, name: "You", avatar: "YOU", score: 4210, streak: 24, isUser: true },
+  { rank: 3, name: "Nova S.", avatar: "NS", score: 3990, streak: 22 },
+  { rank: 4, name: "Lyra M.", avatar: "LM", score: 3540, streak: 18 },
+  { rank: 5, name: "Zeph A.", avatar: "ZA", score: 3100, streak: 15 },
 ];
 
 // FUNCTIONS  
@@ -84,10 +77,10 @@ function BadgeModal({ badge, onClose }) {
           >
             {/* {badge.icon} */}
             {badge.image ? (
-  <img src={badge.image} alt={badge.name} className="modal-badge-img" />
-) : (
-  badge.icon
-)}
+              <img src={badge.image} alt={badge.name} className="modal-badge-img" />
+            ) : (
+              badge.icon
+            )}
 
           </div>
         </div>
@@ -136,9 +129,9 @@ function SectionHeader({ title, earnedCount, totalCount }) {
   );
 }
 // BadgeRow Component
-function BadgeRow({ badges, onSelect }) {
+function BadgeRow({ badges, onSelect, className = "" }) {
   return (
-    <div className="badge-row">
+    <div className={`badge-row ${className}`}>
       {badges.map(b => (
         <button
           key={b.id}
@@ -153,10 +146,10 @@ function BadgeRow({ badges, onSelect }) {
           >
             {/* {b.icon} */}
             {b.image ? (
-  <img src={b.image} alt={b.name} className="badge-img" />
-) : (
-  b.icon
-)}
+              <img src={b.image} alt={b.name} className="badge-img" />
+            ) : (
+              b.icon
+            )}
           </span>
           <span className="badge-item__name">{b.name}</span>
         </button>
@@ -168,16 +161,16 @@ function BadgeRow({ badges, onSelect }) {
 // MAIN COMPONENT
 
 const Member4 = () => {
-  const [level]        = useState(5);
-  const [xp]           = useState(350);
-  const [nextLevelXp]  = useState(500);
+  const [level] = useState(5);
+  const [xp] = useState(350);
+  const [nextLevelXp] = useState(500);
   const [showCalendar, setShowCalendar] = useState(false);
   const [selectedBadge, setSelectedBadge] = useState(null);
 
-  const currentMonth  = new Date(2025, 0); // January 2025
-  const daysInMonth   = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
+  const currentMonth = new Date(2025, 0); // January 2025
+  const daysInMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
   const firstDayOfWeek = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();
-  const monthName     = currentMonth.toLocaleString("default", { month: "long", year: "numeric" });
+  const monthName = currentMonth.toLocaleString("default", { month: "long", year: "numeric" });
 
   const maxScore = Math.max(...LEADERBOARD_DATA.map(d => d.score));
   const progressPercent = (xp / nextLevelXp) * 100;
@@ -218,15 +211,15 @@ const Member4 = () => {
         <button className={`combo-btn ${showCalendar ? 'combo-btn--active' : ''}`} onClick={() => setShowCalendar(!showCalendar)}>
           <div>
             <div className="combo-btn__fire">🔥</div>
-                          <span className="combo-btn__days">24 days</span>
+            <span className="combo-btn__days">24 days</span>
 
-          <div className="combo-btn__text">
-            {/* <span className="combo-btn__label">Combo</span>
+            <div className="combo-btn__text">
+              {/* <span className="combo-btn__label">Combo</span>
             <div>
               <span className={`combo-btn__arrow ${showCalendar ? 'combo-btn__arrow--open' : ''}`}>▼</span>
             </div> */}
 
-          </div>
+            </div>
           </div>
         </button>
       </header>
@@ -241,7 +234,7 @@ const Member4 = () => {
               <div className="calendar-month">{monthName}</div>
 
               <div className="calendar-weekdays">
-                {["Su","Mo","Tu","We","Th","Fr","Sa"].map(d => (
+                {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map(d => (
                   <span key={d} className="calendar-weekday">{d}</span>
                 ))}
               </div>
@@ -278,13 +271,22 @@ const Member4 = () => {
         {BADGE_CATEGORIES.map((category, idx) => {
           const earnedCount = category.badges.filter(b => b.earned).length;
           return (
-            <div key={idx} className="badge-category-card">
+             <div
+    key={idx}
+    className={`badge-category-card ${
+      category.title === "Total Days" ? "badge-category-card--full" : ""
+    }`}
+  >
               <SectionHeader
                 title={category.title}
                 earnedCount={earnedCount}
                 totalCount={category.badges.length}
               />
-              <BadgeRow badges={category.badges} onSelect={setSelectedBadge} />
+              <BadgeRow
+                badges={category.badges}
+                onSelect={setSelectedBadge}
+                className={category.title === "Total Days" ? "badge-row--center" : ""}
+              />
             </div>
           );
         })}
