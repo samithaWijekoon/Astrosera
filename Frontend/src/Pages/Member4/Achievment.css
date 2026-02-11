@@ -1,5 +1,11 @@
 /* PROFILE HEADER  */
 
+.member4-container {
+    padding: 40px 60px;
+}
+
+
+
 .gamification-header {
     display: flex;
     justify-content: space-between;
@@ -395,7 +401,9 @@
 }
 
 .badge-category-card--full {
-  grid-column: 1 / -1;
+    grid-column: 1 / -1;
+    width: calc(50% - 6px);
+    justify-self: center;
 }
 
 
@@ -967,5 +975,10 @@
 
     100% {
         transform: translateY(0px);
+    }
+}
+@media (max-width: 768px) {
+    .member4-container {
+        padding: 20px;
     }
 }
