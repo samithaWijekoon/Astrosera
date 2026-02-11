@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './member6.css';
 
-// Member 06: Professional Space News Feed & Media Library
+
 const Member6 = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [activeTab, setActiveTab] = useState("news");
@@ -14,6 +14,20 @@ const Member6 = () => {
     const [sortBy, setSortBy] = useState('date'); // 'date' or 'relevance'
     const [bookmarkedArticles, setBookmarkedArticles] = useState([]);
     const observerTarget = useRef(null);
+    const newsGridRef = useRef(null);
+
+     const handleSearch = (value) => {
+        
+        // Scroll to news grid when searching
+        if (value && newsGridRef.current) {
+            setTimeout(() => {
+                newsGridRef.current.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+            }, 100);
+        }
+    };
 
     // Categories
     const categories = [
@@ -449,7 +463,7 @@ const Member6 = () => {
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
-                    <button className="search-btn">🔍</button>
+                    <button className="search-btn" onClick={() => handleSearch(searchTerm)}>🔍</button>
                 </div>
             </header>
 
@@ -493,7 +507,7 @@ const Member6 = () => {
                 {activeTab === 'news' && (
                     <>
                         {/* Filters and Sorting */}
-                        <div className="news-controls">
+                        <div className="news-controls" ref={newsGridRef}>
                             <div className="category-filters">
                                 {categories.map(cat => (
                                     <button
@@ -515,6 +529,18 @@ const Member6 = () => {
                                 </select>
                             </div>
                         </div>
+
+                    {searchTerm && (
+                        <div style={{ 
+                            textAlign: 'center', 
+                            padding: '20px', 
+                            color: '#888',
+                            fontSize: '0.95rem'
+                        }}>
+                            Found {filteredNews.length} result{filteredNews.length !== 1 ? 's' : ''} for "<strong style={{ color: '#8b5cf6' }}>{searchTerm}</strong>"
+
+                        </div>
+                        )}
 
                         {/* Trending Section */}
                         {activeCategory === 'all' && !searchTerm && (
