@@ -1,6 +1,8 @@
 .member6-container {
-    max-width: 1200px;
-    margin: 0 auto;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
     background-color: #000;
     color: #fff;
     min-height: 100vh;
@@ -8,7 +10,7 @@
 }
 
 .media-header {
-    padding: 20px;
+    padding: 20px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -26,6 +28,7 @@
     border-radius: 30px;
     padding: 5px 15px;
     width: 40%;
+    max-width: 500px;
 }
 
 .search-bar input {
@@ -44,9 +47,6 @@
     font-size: 1.2rem;
 }
 
-/* ============================================
-   CLEAN MODERN APOD SECTION
-============================================ */
 .apod-section {
     height: 70vh;
     min-height: 500px;
@@ -56,8 +56,8 @@
     position: relative;
     display: flex;
     align-items: flex-end;
-    margin: 20px;
-    border-radius: 12px;
+    margin: 0;
+    border-radius: 0;
     overflow: hidden;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
 }
@@ -80,8 +80,10 @@
 .apod-content {
     position: relative;
     z-index: 2;
-    padding: 50px;
+    padding: 50px 80px;
     width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
 .apod-header-info {
@@ -180,6 +182,10 @@
 }
 
 @media (max-width: 1024px) {
+    .apod-content {
+        padding: 50px 60px;
+    }
+    
     .apod-content h2 {
         font-size: 3rem;
     }
@@ -189,11 +195,10 @@
     .apod-section {
         height: 60vh;
         min-height: 450px;
-        margin: 15px;
     }
     
     .apod-content {
-        padding: 35px;
+        padding: 35px 40px;
     }
     
     .apod-header-info {
@@ -214,16 +219,23 @@
         align-items: flex-start;
         gap: 15px;
     }
+
+    .media-header {
+        padding: 20px;
+    }
+    
+    .search-bar {
+        width: 50%;
+    }
 }
 
 @media (max-width: 480px) {
     .apod-section {
         height: 55vh;
-        margin: 10px;
-    }
+         }
     
     .apod-content {
-        padding: 25px;
+        padding: 25px 20px;
     }
     
     .apod-content h2 {
@@ -273,9 +285,9 @@
 }
 /* News Feed */
 .news-feed {
-    max-width: 800px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 20px 40px 60px 40px;
 }
 
 .news-card {
@@ -330,9 +342,11 @@
 /* Media Gallery */
 .media-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 15px;
-    padding: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 20px 40px 60px 40px;
+    max-width: 1600px;
+    margin: 0 auto;
 }
 
 .media-item {
@@ -534,4 +548,35 @@
 .video-wrapper iframe {
     border-radius: 12px;
     display: block;
+}
+
+/* RESPONSIVE ADJUSTMENTS */
+@media (max-width: 1024px) {
+    .news-feed,
+    .media-grid {
+        padding: 20px 30px 60px 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    .news-feed,
+    .media-grid {
+        padding: 20px 20px 60px 20px;
+    }
+    
+    .media-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .news-feed,
+    .media-grid {
+        padding: 15px 15px 60px 15px;
+    }
+    
+    .media-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
+    }
 }
