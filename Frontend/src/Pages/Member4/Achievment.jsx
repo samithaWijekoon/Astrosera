@@ -124,7 +124,9 @@ function SectionHeader({ title, earnedCount, totalCount }) {
   return (
     <div className="section-header">
       <span className="section-header__title">{title}</span>
-      <span className="section-header__count">{earnedCount}/{totalCount} badges</span>
+      {earnedCount !== undefined && (
+        <span className="section-header__count">{earnedCount}/{totalCount} badges</span>
+      )}
     </div>
   );
 }
@@ -178,156 +180,169 @@ const Member4 = () => {
   // RENDER 
 
   return (
-    <div className="member4-container">
+    <div className="achievement-page-wrapper">
+      {/* ─── BACKGROUND VIDEO ─── */}
+      <video
+        className="bg-video"
+        src="/videos/back.mp4"
+        autoPlay
+        loop
+        muted
+        playsInline
+      />
+      <div className="bg-video-overlay" />
+
+      <div className="member4-container">
 
 
-      {/* ─── PROFILE HEADER ─── */}
-      <header className="gamification-header">
-        <div className="profile-block">
+        {/* ─── PROFILE HEADER ─── */}
+        <header className="gamification-header">
+          <div className="profile-block">
 
-          {/* Name + rank + score */}
-          <div className="profile-info">
-            <h1 className="profile-name">Chang Chung</h1>
-            <div className="profile-meta">
-              <span className="profile-rank">🥈 Rank <strong>#2</strong></span>
-              <span className="profile-dot" />
-              <span className="profile-score">Score: <strong>100</strong></span>
+            {/* Name + rank + score */}
+            <div className="profile-info">
+              <h1 className="profile-name">Chang Chung</h1>
+              <div className="profile-meta">
+                <span className="profile-rank">🥈 Rank <strong>#2</strong></span>
+                <span className="profile-dot" />
+                <span className="profile-score">Score: <strong>100</strong></span>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Combo button */}
-        <button className={`combo-btn ${showCalendar ? 'combo-btn--active' : ''}`} onClick={() => setShowCalendar(!showCalendar)}>
-          <div>
-            <div className="combo-btn__fire">🔥</div>
-            <span className="combo-btn__days">24 days</span>
+          {/* Combo button */}
+          <button className={`combo-btn ${showCalendar ? 'combo-btn--active' : ''}`} onClick={() => setShowCalendar(!showCalendar)}>
+            <div>
+              <div className="combo-btn__fire">🔥</div>
+              <span className="combo-btn__days">24 days</span>
 
-            <div className="combo-btn__text">
-              {/* <span className="combo-btn__label">Combo</span>
+              <div className="combo-btn__text">
+                {/* <span className="combo-btn__label">Combo</span>
             <div>
               <span className={`combo-btn__arrow ${showCalendar ? 'combo-btn__arrow--open' : ''}`}>▼</span>
             </div> */}
 
+              </div>
+            </div>
+          </button>
+        </header>
+
+        {/* ─── CALENDAR (modal popup) ─── */}
+        {showCalendar && (
+          <div className="calendar-modal-overlay" onClick={() => setShowCalendar(false)}>
+            <div className="calendar-modal-card" onClick={e => e.stopPropagation()}>
+              <button className="modal-close" onClick={() => setShowCalendar(false)}>✕</button>
+
+              <div className="calendar-card calendar-card--modal" role="dialog" aria-modal="true" aria-label="Combo calendar">
+                <div className="calendar-month">{monthName}</div>
+
+                <div className="calendar-weekdays">
+                  {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map(d => (
+                    <span key={d} className="calendar-weekday">{d}</span>
+                  ))}
+                </div>
+
+                <div className="calendar-grid">
+                  {/* Empty cells for offset */}
+                  {Array.from({ length: firstDayOfWeek }, (_, i) => (
+                    <div key={"empty-" + i} />
+                  ))}
+                  {/* Day cells */}
+                  {Array.from({ length: daysInMonth }, (_, i) => {
+                    const day = i + 1;
+                    const isCombo = COMBO_DAYS.includes(day);
+                    return (
+                      <div key={day} className={`calendar-day ${isCombo ? 'calendar-day--combo' : ''}`}>
+                        {day}
+                        {isCombo && <span className="calendar-day__dot" />}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="calendar-legend">
+                  <span className="calendar-legend__combo" /> <span className="calendar-legend__label">Combo day</span>
+                  <span className="calendar-legend__inactive" /> <span className="calendar-legend__label calendar-legend__label--dim">Inactive</span>
+                </div>
+              </div>
             </div>
           </div>
-        </button>
-      </header>
+        )}
 
-      {/* ─── CALENDAR (modal popup) ─── */}
-      {showCalendar && (
-        <div className="calendar-modal-overlay" onClick={() => setShowCalendar(false)}>
-          <div className="calendar-modal-card" onClick={e => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setShowCalendar(false)}>✕</button>
-
-            <div className="calendar-card calendar-card--modal" role="dialog" aria-modal="true" aria-label="Combo calendar">
-              <div className="calendar-month">{monthName}</div>
-
-              <div className="calendar-weekdays">
-                {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map(d => (
-                  <span key={d} className="calendar-weekday">{d}</span>
-                ))}
-              </div>
-
-              <div className="calendar-grid">
-                {/* Empty cells for offset */}
-                {Array.from({ length: firstDayOfWeek }, (_, i) => (
-                  <div key={"empty-" + i} />
-                ))}
-                {/* Day cells */}
-                {Array.from({ length: daysInMonth }, (_, i) => {
-                  const day = i + 1;
-                  const isCombo = COMBO_DAYS.includes(day);
-                  return (
-                    <div key={day} className={`calendar-day ${isCombo ? 'calendar-day--combo' : ''}`}>
-                      {day}
-                      {isCombo && <span className="calendar-day__dot" />}
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="calendar-legend">
-                <span className="calendar-legend__combo" /> <span className="calendar-legend__label">Combo day</span>
-                <span className="calendar-legend__inactive" /> <span className="calendar-legend__label calendar-legend__label--dim">Inactive</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ─── BADGE CATEGORY CARDS (2x2 grid) ─── */}
-      <div className="badges-grid-categories">
-        {BADGE_CATEGORIES.map((category, idx) => {
-          const earnedCount = category.badges.filter(b => b.earned).length;
-          return (
-            <div
-              key={idx}
-              className={`badge-category-card ${category.title === "Total Days" ? "badge-category-card--full" : ""
-                }`}
-            >
-              <SectionHeader
-                title={category.title}
-                earnedCount={earnedCount}
-                totalCount={category.badges.length}
-              />
-              <BadgeRow
-                badges={category.badges}
-                onSelect={setSelectedBadge}
-                className={category.title === "Total Days" ? "badge-row--center" : ""}
-              />
-            </div>
-          );
-        })}
-      </div>
-
-      {/* ─── LEADERBOARD ─── */}
-      <section className="leaderboard-section">
-        <SectionHeader title="Leaderboard" earnedCount={undefined} totalCount={undefined} />
-        <div className="leaderboard-list">
-          {LEADERBOARD_DATA.map((entry, i) => {
-            const medals = ["🥇", "🥈", "🥉"];
-            const hasMedal = i < 3;
-            const barPercent = (entry.score / maxScore) * 100;
-
+        {/* ─── BADGE CATEGORY CARDS (2x2 grid) ─── */}
+        <div className="badges-grid-categories">
+          {BADGE_CATEGORIES.map((category, idx) => {
+            const earnedCount = category.badges.filter(b => b.earned).length;
             return (
-              <div key={i} className={`leaderboard-row ${entry.isUser ? 'leaderboard-row--user' : ''}`}>
-                {/* Rank / Medal */}
-                <div className="leaderboard-rank">
-                  {hasMedal
-                    ? <span className="leaderboard-medal">{medals[i]}</span>
-                    : <span className="leaderboard-rank-num">#{entry.rank}</span>
-                  }
-                </div>
-
-                {/* Avatar */}
-                <div className={`leaderboard-avatar ${entry.isUser ? 'leaderboard-avatar--user' : ''}`}>
-                  {entry.avatar}
-                </div>
-
-                {/* Name + streak */}
-                <div className="leaderboard-info">
-                  <span className={`leaderboard-name ${entry.isUser ? 'leaderboard-name--user' : ''}`}>{entry.name}</span>
-                  <span className="leaderboard-streak">🔥 {entry.streak} day streak</span>
-                </div>
-
-                {/* Score + bar */}
-                <div className="leaderboard-score-block">
-                  <span className={`leaderboard-score ${entry.isUser ? 'leaderboard-score--user' : ''}`}>{entry.score.toLocaleString()}</span>
-                  <div className="leaderboard-bar">
-                    <div
-                      className={`leaderboard-bar__fill ${entry.isUser ? 'leaderboard-bar__fill--user' : ''}`}
-                      style={{ width: `${barPercent}%` }}
-                    />
-                  </div>
-                </div>
+              <div
+                key={idx}
+                className={`badge-category-card ${category.title === "Total Days" ? "badge-category-card--full" : ""
+                  }`}
+              >
+                <SectionHeader
+                  title={category.title}
+                  earnedCount={earnedCount}
+                  totalCount={category.badges.length}
+                />
+                <BadgeRow
+                  badges={category.badges}
+                  onSelect={setSelectedBadge}
+                  className={category.title === "Total Days" ? "badge-row--center" : ""}
+                />
               </div>
             );
           })}
         </div>
-      </section>
 
-      {/* ─── BADGE MODAL ─── */}
-      <BadgeModal badge={selectedBadge} onClose={() => setSelectedBadge(null)} />
+        {/* ─── LEADERBOARD ─── */}
+        <section className="leaderboard-section">
+          <SectionHeader title="Leaderboard" earnedCount={undefined} totalCount={undefined} />
+          <div className="leaderboard-list">
+            {LEADERBOARD_DATA.map((entry, i) => {
+              const medals = ["🥇", "🥈", "🥉"];
+              const hasMedal = i < 3;
+              const barPercent = (entry.score / maxScore) * 100;
+
+              return (
+                <div key={i} className={`leaderboard-row ${entry.isUser ? 'leaderboard-row--user' : ''}`}>
+                  {/* Rank / Medal */}
+                  <div className="leaderboard-rank">
+                    {hasMedal
+                      ? <span className="leaderboard-medal">{medals[i]}</span>
+                      : <span className="leaderboard-rank-num">#{entry.rank}</span>
+                    }
+                  </div>
+
+                  {/* Avatar */}
+                  <div className={`leaderboard-avatar ${entry.isUser ? 'leaderboard-avatar--user' : ''}`}>
+                    {entry.avatar}
+                  </div>
+
+                  {/* Name + streak */}
+                  <div className="leaderboard-info">
+                    <span className={`leaderboard-name ${entry.isUser ? 'leaderboard-name--user' : ''}`}>{entry.name}</span>
+                    <span className="leaderboard-streak">🔥 {entry.streak} day streak</span>
+                  </div>
+
+                  {/* Score + bar */}
+                  <div className="leaderboard-score-block">
+                    <span className={`leaderboard-score ${entry.isUser ? 'leaderboard-score--user' : ''}`}>{entry.score.toLocaleString()}</span>
+                    <div className="leaderboard-bar">
+                      <div
+                        className={`leaderboard-bar__fill ${entry.isUser ? 'leaderboard-bar__fill--user' : ''}`}
+                        style={{ width: `${barPercent}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* ─── BADGE MODAL ─── */}
+        <BadgeModal badge={selectedBadge} onClose={() => setSelectedBadge(null)} />
+      </div>
     </div>
   );
 };
