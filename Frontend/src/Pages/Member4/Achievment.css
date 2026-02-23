@@ -561,6 +561,57 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+    max-height: 320px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE/Edge */
+}
+
+.leaderboard-list::-webkit-scrollbar {
+    display: none;
+    /* Chrome/Safari */
+}
+
+.leaderboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-bottom: 4px;
+}
+
+.leaderboard-scroll-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: absolute;
+    right: 0;
+}
+
+.leaderboard-scroll-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 6px;
+    color: #fff;
+    font-size: 10px;
+    width: 26px;
+    height: 22px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, transform 0.15s;
+}
+
+.leaderboard-scroll-btn:hover {
+    background: rgba(255, 255, 255, 0.18);
+    transform: scale(1.1);
+}
+
+.leaderboard-scroll-btn:active {
+    transform: scale(0.95);
 }
 
 .leaderboard-row {
@@ -671,24 +722,7 @@
     color: #a855f7;
 }
 
-.leaderboard-bar {
-    width: 60px;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 2px;
-    overflow: hidden;
-}
 
-.leaderboard-bar__fill {
-    height: 100%;
-    border-radius: 2px;
-    background: linear-gradient(90deg, #3a3558, #4a4570);
-    transition: width 1s ease;
-}
-
-.leaderboard-bar__fill--user {
-    background: linear-gradient(90deg, #7c3aed, #a855f7);
-}
 
 /* ─── BADGE MODAL ────────────────────────────────────────── */
 

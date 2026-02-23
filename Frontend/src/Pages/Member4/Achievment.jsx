@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import './Achievment.css';
 
 // DATA
@@ -56,6 +56,7 @@ const LEADERBOARD_DATA = [
   { rank: 3, name: "Nova S.", avatar: "NS", score: 3990, streak: 22 },
   { rank: 4, name: "Lyra M.", avatar: "LM", score: 3540, streak: 18 },
   { rank: 5, name: "Zeph A.", avatar: "ZA", score: 3100, streak: 15 },
+  { rank: 6, name: "Zeph A.", avatar: "ZA", score: 3800, streak: 25 },
 ];
 
 // FUNCTIONS  
@@ -168,6 +169,11 @@ const Member4 = () => {
   const [nextLevelXp] = useState(500);
   const [showCalendar, setShowCalendar] = useState(false);
   const [selectedBadge, setSelectedBadge] = useState(null);
+  const leaderboardRef = useRef(null);
+
+  const scrollLeaderboard = (dir) => {
+    leaderboardRef.current?.scrollBy({ top: dir * 80, behavior: 'smooth' });
+  };
 
   const currentMonth = new Date(2025, 0); // January 2025
   const daysInMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
@@ -296,8 +302,14 @@ const Member4 = () => {
 
         {/* ─── LEADERBOARD ─── */}
         <section className="leaderboard-section">
-          <SectionHeader title="Leaderboard" earnedCount={undefined} totalCount={undefined} />
-          <div className="leaderboard-list">
+          <div className="leaderboard-header">
+            <SectionHeader title="Leaderboard" earnedCount={undefined} totalCount={undefined} />
+            <div className="leaderboard-scroll-btns">
+              <button className="leaderboard-scroll-btn" onClick={() => scrollLeaderboard(-1)} aria-label="Scroll up">▲</button>
+              <button className="leaderboard-scroll-btn" onClick={() => scrollLeaderboard(1)} aria-label="Scroll down">▼</button>
+            </div>
+          </div>
+          <div className="leaderboard-list" ref={leaderboardRef}>
             {LEADERBOARD_DATA.map((entry, i) => {
               const medals = ["🥇", "🥈", "🥉"];
               const hasMedal = i < 3;
@@ -324,15 +336,9 @@ const Member4 = () => {
                     <span className="leaderboard-streak">🔥 {entry.streak} day streak</span>
                   </div>
 
-                  {/* Score + bar */}
+                  {/* Score */}
                   <div className="leaderboard-score-block">
                     <span className={`leaderboard-score ${entry.isUser ? 'leaderboard-score--user' : ''}`}>{entry.score.toLocaleString()}</span>
-                    <div className="leaderboard-bar">
-                      <div
-                        className={`leaderboard-bar__fill ${entry.isUser ? 'leaderboard-bar__fill--user' : ''}`}
-                        style={{ width: `${barPercent}%` }}
-                      />
-                    </div>
                   </div>
                 </div>
               );

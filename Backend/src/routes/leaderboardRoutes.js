@@ -1,12 +1,25 @@
-const express = require('express');
-const router = express.Router();
-const leaderboardData = require('../data/leaderboard.json');
+// const express = require('express');
+// const router = express.Router();
+// const leaderboardData = require('../data/leaderboard.json');
 
-router.get('/', (req, res) => {
-    res.json(leaderboardData);
-});
+// router.get('/', (req, res) => {
+//     res.json(leaderboardData);
+// });
 
-module.exports = router;
+// module.exports = router;
+
+
+
+
+
+
+
+
+// these are twoo different code divide by this line
+
+
+
+
 
 // const express = require('express');
 // const fs = require('fs');
