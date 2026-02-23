@@ -2,7 +2,7 @@ import { createContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
-const backendurl = "http://localhost:5001";
+const backendurl = "http://localhost:5000";
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
@@ -33,6 +33,7 @@ export const AuthProvider = ({ children }) => {
                 setUser(data);
                 sessionStorage.setItem('user', JSON.stringify(data));
                 sessionStorage.setItem('token', data.token);
+                sessionStorage.setItem('userId', data._id);
                 navigate('/');
                 return { success: true };
             } else {
@@ -60,6 +61,7 @@ export const AuthProvider = ({ children }) => {
                 setUser(data);
                 sessionStorage.setItem('user', JSON.stringify(data));
                 sessionStorage.setItem('token', data.token);
+                sessionStorage.setItem('userId', data._id);
                 navigate('/');
                 return { success: true };
             } else {
