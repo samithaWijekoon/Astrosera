@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './member6.css';
 
+const API_BASE = 'http://localhost:8001/api';
 
 const Member6 = () => {
     const [searchTerm, setSearchTerm] = useState("");
@@ -11,19 +12,22 @@ const Member6 = () => {
     const [selectedArticle, setSelectedArticle] = useState(null);
     const [newsData, setNewsData] = useState([]);
     const [activeCategory, setActiveCategory] = useState('all');
-    const [sortBy, setSortBy] = useState('date'); // 'date' or 'relevance'
+    const [sortBy, setSortBy] = useState('date');
     const [bookmarkedArticles, setBookmarkedArticles] = useState([]);
+    const [galleryItems, setGalleryItems] = useState([]);
+    const [galleryLoading, setGalleryLoading] = useState(false);
+    const [apod, setApod] = useState(null);
+    const [newsPage, setNewsPage] = useState(1);
+    const [hasMoreFromServer, setHasMoreFromServer] = useState(true);
     const observerTarget = useRef(null);
     const newsGridRef = useRef(null);
 
-     const handleSearch = (value) => {
-        
-        // Scroll to news grid when searching
+    const handleSearch = (value) => {
         if (value && newsGridRef.current) {
             setTimeout(() => {
-                newsGridRef.current.scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'start' 
+                newsGridRef.current.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
                 });
             }, 100);
         }
@@ -45,225 +49,121 @@ const Member6 = () => {
         return new Date().toLocaleDateString('en-US', options);
     };
 
-    // Calculate reading time
-    const calculateReadingTime = (text) => {
-        const wordsPerMinute = 200;
-        const words = text.split(' ').length;
-        const minutes = Math.ceil(words / wordsPerMinute);
-        return minutes;
-    };
-
     // Format date to relative time
     const formatRelativeTime = (dateString) => {
         const date = new Date(dateString);
         const now = new Date();
         const diffInSeconds = Math.floor((now - date) / 1000);
-        
+
         if (diffInSeconds < 60) return 'Just now';
         if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
         if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
         if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
-        
+
         return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     };
 
-    // Fetch NASA APOD
+    // ─── Fetch APOD from backend ───────────────────────────────────
     const fetchAPOD = async () => {
         try {
-            const response = await fetch('https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY');
+            const response = await fetch(`${API_BASE}/apod`);
+            if (!response.ok) throw new Error('APOD fetch failed');
             const data = await response.json();
-            return {
-                id: 'apod-' + Date.now(),
+            setApod({
                 title: data.title,
-                summary: data.explanation.substring(0, 200) + '...',
-                fullContent: data.explanation,
-                source: 'NASA APOD',
                 date: data.date,
-                category: 'discoveries',
-                image: data.url,
                 url: data.hdurl || data.url,
-                readingTime: calculateReadingTime(data.explanation),
-                trending: true
-            };
+                img: data.url,
+                explanation: data.explanation,
+                photographer: data.copyright || 'NASA'
+            });
         } catch (error) {
             console.error('Error fetching APOD:', error);
-            return null;
+            // Fallback APOD
+            setApod({
+                title: "Spiral Galaxy NGC 4565",
+                date: getTodayDate(),
+                url: "https://images.nasa.gov/details/PIA25656",
+                img: "https://images.unsplash.com/photo-1543722530-d2c3201371e7?w=1600&h=900&fit=crop",
+                explanation: "This stunning spiral galaxy, viewed edge-on, showcases billions of stars swirling in cosmic dance.",
+                photographer: "NASA/ESA/Hubble"
+            });
         }
     };
 
-    // Mock news data with realistic content (this would be replaced with real API calls)
-    const generateMockNews = () => {
-        const mockArticles = [
-            {
-                id: 1,
-                title: "NASA's Artemis II Crew Begins Training for Moon Mission",
-                summary: "The four astronauts selected for Artemis II have begun intensive training for humanity's first crewed mission to lunar orbit in over 50 years.",
-                fullContent: "NASA announced that the Artemis II crew has officially started their comprehensive training program at Johnson Space Center. The mission, scheduled for late 2025, will mark the first crewed voyage to the Moon since Apollo 17 in 1972. The crew includes Commander Reid Wiseman, Pilot Victor Glover, Mission Specialist Christina Koch, and Canadian Space Agency astronaut Jeremy Hansen. Their training encompasses spacecraft systems, emergency procedures, spacewalk preparation, and mission simulations. The 10-day mission will test all Orion spacecraft systems with crew aboard in the actual deep space environment of cislunar space.",
-                source: "NASA Blogs",
-                date: "2026-01-28",
-                category: "missions",
-                image: "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=800&h=400&fit=crop",
-                url: "https://www.nasa.gov/artemis-ii",
-                readingTime: 3,
-                trending: true
-            },
-            {
-                id: 2,
-                title: "James Webb Telescope Discovers Ancient Galaxies",
-                summary: "Webb reveals galaxies similar to our Milky Way in the young universe, challenging current theories of galaxy formation.",
-                fullContent: "The James Webb Space Telescope has made a groundbreaking discovery of disk galaxies similar to our Milky Way but existing when the universe was only 3 billion years old. These findings challenge our understanding of how galaxies form and evolve. The observations show that these early galaxies already possessed organized rotating disks with spiral arms, suggesting that the process of galaxy formation occurred much faster than previously thought. This discovery could revolutionize our models of cosmic evolution and help explain how the universe transitioned from its primordial state to the structured cosmos we see today.",
-                source: "Science Daily",
-                date: "2026-01-27",
-                category: "discoveries",
-                image: "https://images.unsplash.com/photo-1543722530-d2c3201371e7?w=800&h=400&fit=crop",
-                url: "https://www.nasa.gov/webb",
-                readingTime: 4,
-                trending: true
-            },
-            {
-                id: 3,
-                title: "SpaceX Starship Successfully Completes Orbital Test",
-                summary: "The massive Starship rocket completed its first full orbital mission, marking a major milestone in space exploration.",
-                fullContent: "SpaceX's Starship, the world's most powerful rocket, has successfully completed its first full orbital test flight. The 400-foot-tall vehicle launched from Starbase in Texas, achieved orbit, and successfully returned both the Super Heavy booster and Starship upper stage. This achievement represents a crucial step toward NASA's Artemis program and SpaceX's goal of making life multiplanetary. The successful test demonstrates the viability of fully reusable launch systems, which could dramatically reduce the cost of space access.",
-                source: "SpaceNews",
-                date: "2026-01-26",
-                category: "missions",
-                image: "https://images.unsplash.com/photo-1581822261290-991b38693d1b?w=800&h=400&fit=crop",
-                url: "https://www.spacex.com/starship",
-                readingTime: 3
-            },
-            {
-                id: 4,
-                title: "Mars Rover Discovers Organic Compounds in Ancient Lake Bed",
-                summary: "Perseverance rover finds compelling evidence of ancient water and organic molecules on Mars.",
-                fullContent: "NASA's Perseverance rover has discovered a treasure trove of organic compounds in rock samples from an ancient Martian lake bed in Jezero Crater. The findings include complex carbon-based molecules that could indicate past microbial life or provide insights into the organic chemistry of ancient Mars. Scientists are particularly excited about sedimentary rocks that show clear signs of having formed in water, strengthening the case that Mars once had conditions suitable for life. These samples are being carefully documented for potential return to Earth by future missions.",
-                source: "NASA JPL",
-                date: "2026-01-25",
-                category: "discoveries",
-                image: "https://images.unsplash.com/photo-1614313913007-2b4ae8ce32d6?w=800&h=400&fit=crop",
-                url: "https://mars.nasa.gov/mars2020",
-                readingTime: 5,
-                trending: true
-            },
-            {
-                id: 5,
-                title: "Potentially Habitable Exoplanet Found in Nearby Star System",
-                summary: "Astronomers discover a rocky exoplanet in the habitable zone just 40 light-years away.",
-                fullContent: "An international team of astronomers has discovered a potentially habitable exoplanet orbiting a red dwarf star just 40 light-years from Earth. The planet, designated as Proxima d, is roughly Earth-sized and orbits within the star's habitable zone where liquid water could exist on its surface. Early spectroscopic analysis suggests the presence of an atmosphere, making it one of the most promising candidates for hosting life beyond our solar system. Follow-up observations with the James Webb Space Telescope are already planned to search for biosignatures in the planet's atmosphere.",
-                source: "Science Daily",
-                date: "2026-01-24",
-                category: "discoveries",
-                image: "https://images.unsplash.com/photo-1614728423169-3f65fd722b7e?w=800&h=400&fit=crop",
-                url: "https://exoplanets.nasa.gov",
-                readingTime: 4
-            },
-            {
-                id: 6,
-                title: "ISS Celebrates 25 Years of Continuous Human Presence",
-                summary: "The International Space Station marks a quarter century of groundbreaking research and international cooperation.",
-                fullContent: "The International Space Station (ISS) has reached a remarkable milestone: 25 years of continuous human habitation. Since November 2000, the orbiting laboratory has hosted astronauts from 20 countries and conducted over 3,000 scientific investigations. The ISS has been instrumental in advancing our understanding of human spaceflight, testing technologies for deep space exploration, and fostering international collaboration. As plans for commercial space stations develop, the ISS continues to serve as a vital platform for research and a symbol of what humanity can achieve through cooperation.",
-                source: "NASA Blogs",
-                date: "2026-01-23",
-                category: "missions",
-                image: "https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=800&h=400&fit=crop",
-                url: "https://www.nasa.gov/station",
-                readingTime: 4
-            },
-            {
-                id: 7,
-                title: "China Unveils Detailed Plans for Lunar Research Station",
-                summary: "China announces ambitious timeline for International Lunar Research Station construction.",
-                fullContent: "The China National Space Administration (CNSA) has released comprehensive plans for the International Lunar Research Station (ILRS), a permanent base on the Moon's south pole. The facility will be constructed in phases beginning in 2028, with initial robotic missions establishing basic infrastructure. The ILRS will support long-duration crew missions, in-situ resource utilization, and serve as a testbed for deep space exploration technologies. Several international partners have expressed interest in joining the project, which aims to maintain a permanent human presence on the Moon by the mid-2030s.",
-                source: "SpaceNews",
-                date: "2026-01-22",
-                category: "missions",
-                image: "https://images.unsplash.com/photo-1532693322450-2cb5c511067d?w=800&h=400&fit=crop",
-                url: "https://www.spacenews.com",
-                readingTime: 5
-            },
-            {
-                id: 8,
-                title: "Hubble Observes Unexpected Dark Matter Distribution",
-                summary: "New observations challenge our understanding of dark matter in galaxy clusters.",
-                fullContent: "The Hubble Space Telescope has made puzzling observations that challenge current models of dark matter distribution in galaxy clusters. While dark matter is expected to follow predictable patterns based on gravitational interactions, Hubble's detailed mapping shows unexpected concentrations and voids that don't align with theoretical predictions. These findings could indicate unknown properties of dark matter or suggest the presence of previously undetected massive objects. The discovery has prompted calls for more observations with next-generation telescopes and may require revisions to our understanding of cosmic structure formation.",
-                source: "NASA Blogs",
-                date: "2026-01-21",
-                category: "discoveries",
-                image: "https://images.unsplash.com/photo-1502134249126-9f3755a50d78?w=800&h=400&fit=crop",
-                url: "https://www.nasa.gov/hubble",
-                readingTime: 4
-            },
-            {
-                id: 9,
-                title: "Private Companies Advance Commercial Space Station Plans",
-                summary: "Multiple companies move forward with designs for commercial orbital platforms.",
-                fullContent: "As the International Space Station approaches its planned retirement in 2030, several private companies are racing to develop commercial alternatives. Blue Origin's Orbital Reef, Axiom Space's station modules, and Northrop Grumman's design have all passed critical design reviews. These commercial stations will offer services including research facilities, manufacturing in microgravity, and space tourism. NASA has awarded contracts to support development, ensuring continued access to low Earth orbit for government and commercial customers. The transition represents a new era where space stations become commercial infrastructure rather than government-only facilities.",
-                source: "SpaceNews",
-                date: "2026-01-20",
-                category: "technology",
-                image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=400&fit=crop",
-                url: "https://www.spacenews.com",
-                readingTime: 5
-            },
-            {
-                id: 10,
-                title: "Powerful Solar Flare Causes Radio Blackouts on Earth",
-                summary: "Scientists observe strongest solar activity in a decade with potential impacts on communications.",
-                fullContent: "The Sun has unleashed its most powerful solar flare in over a decade, causing temporary radio blackouts across the Pacific Ocean region. The X-class flare, accompanied by a massive coronal mass ejection, highlights the Sun's increasing activity as it approaches solar maximum. While Earth's magnetic field protects us from most harmful radiation, such events can disrupt satellite communications, GPS systems, and power grids. Space weather forecasters are closely monitoring additional solar activity and have issued alerts for potential geomagnetic storms in the coming days. Auroras may be visible at lower latitudes than usual.",
-                source: "NASA Space Weather",
-                date: "2026-01-19",
-                category: "spaceweather",
-                image: "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=800&h=400&fit=crop",
-                url: "https://spaceweather.gov",
-                readingTime: 4
-            },
-            {
-                id: 11,
-                title: "Europa Clipper Enters Final Testing Phase",
-                summary: "NASA's mission to explore Jupiter's icy moon passes critical milestone.",
-                fullContent: "NASA's Europa Clipper spacecraft has entered its final testing phase at the Jet Propulsion Laboratory, marking a crucial step toward its 2024 launch. The mission will conduct detailed reconnaissance of Europa, an icy moon of Jupiter that may harbor a subsurface ocean with more than twice the water of Earth's oceans. The spacecraft carries nine science instruments designed to investigate Europa's ice shell thickness, surface composition, and potential plumes of water vapor. Scientists believe Europa is one of the most promising places in our solar system to search for current habitable conditions beyond Earth.",
-                source: "NASA JPL",
-                date: "2026-01-18",
-                category: "missions",
-                image: "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=800&h=400&fit=crop",
-                url: "https://europa.nasa.gov",
-                readingTime: 4
-            },
-            {
-                id: 12,
-                title: "AI-Powered System Dramatically Improves Asteroid Detection",
-                summary: "New machine learning algorithms can identify near-Earth asteroids 100x faster.",
-                fullContent: "A groundbreaking AI system developed by NASA and international partners can identify potentially hazardous asteroids 100 times faster than previous methods. The deep learning algorithm analyzes telescope data in real-time, distinguishing asteroids from background stars and cataloging their orbits with unprecedented accuracy. This technological leap could provide earlier warnings of potential Earth impacts and help scientists better understand the population of near-Earth objects. The system has already discovered several previously unknown asteroids and is being integrated into multiple observatory networks worldwide.",
-                source: "Science Daily",
-                date: "2026-01-17",
-                category: "technology",
-                image: "https://images.unsplash.com/photo-1464802686167-b939a6910659?w=800&h=400&fit=crop",
-                url: "https://cneos.jpl.nasa.gov",
-                readingTime: 3
-            }
-        ];
+    // ─── Fetch news from backend ───────────────────────────────────
+    const fetchNews = async (page = 1, append = false) => {
+        setLoading(true);
+        try {
+            const params = new URLSearchParams({
+                page: page.toString(),
+                limit: '6',
+                category: activeCategory,
+                sort: sortBy,
+                search: searchTerm,
+            });
+            const response = await fetch(`${API_BASE}/news?${params}`);
+            if (!response.ok) throw new Error('News fetch failed');
+            const data = await response.json();
 
-        return mockArticles;
+            const articles = data.articles.map(a => ({
+                id: a.id,
+                title: a.title,
+                summary: a.summary,
+                fullContent: a.fullContent,
+                source: a.source,
+                date: a.date,
+                category: a.category,
+                image: a.image,
+                url: a.url,
+                readingTime: a.readingTime,
+                trending: a.trending,
+            }));
+
+            if (append) {
+                setNewsData(prev => [...prev, ...articles]);
+            } else {
+                setNewsData(articles);
+            }
+            setHasMoreFromServer(data.hasMore);
+        } catch (error) {
+            console.error('Error fetching news:', error);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    // Initialize news data
-    useEffect(() => {
-        const loadNews = async () => {
-            setLoading(true);
-            const mockNews = generateMockNews();
-            
-            // Try to fetch real APOD
-            const apod = await fetchAPOD();
-            if (apod) {
-                setNewsData([apod, ...mockNews]);
-            } else {
-                setNewsData(mockNews);
-            }
-            
-            setLoading(false);
-        };
+    // ─── Fetch gallery from backend ────────────────────────────────
+    const fetchGallery = async (query = 'space') => {
+        setGalleryLoading(true);
+        try {
+            const params = new URLSearchParams({
+                q: query || 'space',
+                page: '1',
+            });
+            const response = await fetch(`${API_BASE}/media?${params}`);
+            if (!response.ok) throw new Error('Media fetch failed');
+            const data = await response.json();
 
-        loadNews();
+            const items = data.items.map(item => ({
+                id: item.id,
+                type: item.type,
+                title: item.title,
+                thumbnail: item.thumbnail,
+                videoUrl: item.videoUrl,
+            }));
+            setGalleryItems(items);
+        } catch (error) {
+            console.error('Error fetching gallery:', error);
+        } finally {
+            setGalleryLoading(false);
+        }
+    };
+
+    // ─── Initial load ──────────────────────────────────────────────
+    useEffect(() => {
+        fetchAPOD();
+        fetchGallery();
 
         // Load bookmarks from localStorage
         const savedBookmarks = localStorage.getItem('bookmarkedArticles');
@@ -272,126 +172,23 @@ const Member6 = () => {
         }
     }, []);
 
-    // APOD data
-    const apod = {
-        title: "Spiral Galaxy NGC 4565",
-        date: getTodayDate(),
-        url: "https://images.nasa.gov/details/PIA25656",
-        img: "https://images.unsplash.com/photo-1543722530-d2c3201371e7?w=1600&h=900&fit=crop",
-        explanation: "This stunning spiral galaxy, viewed edge-on, showcases billions of stars swirling in cosmic dance. Located approximately 40 million light-years away, its bright galactic core and sweeping spiral arms reveal the beautiful structure of our galactic neighbors.",
-        photographer: "NASA/ESA/Hubble"
-    };
+    // Fetch news when filters change
+    useEffect(() => {
+        setNewsPage(1);
+        fetchNews(1, false);
+    }, [activeCategory, sortBy, searchTerm]);
 
-    // Gallery items
-    const galleryItems = [
-        { 
-            id: 1, 
-            type: 'image', 
-            title: 'Nebula Colors',
-            thumbnail: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=400&h=400&fit=crop'
-        },
-        { 
-            id: 2, 
-            type: 'video', 
-            title: 'ISS Time-lapse',
-            thumbnail: 'https://images.unsplash.com/photo-1581822261290-991b38693d1b?w=400&h=400&fit=crop',
-            videoUrl: 'https://www.youtube.com/embed/4czjS9h4Fpg'
-        },
-        { 
-            id: 3, 
-            type: 'image', 
-            title: 'Spiral Galaxy',
-            thumbnail: 'https://images.unsplash.com/photo-1543722530-d2c3201371e7?w=400&h=400&fit=crop'
-        },
-        { 
-            id: 4, 
-            type: 'image', 
-            title: 'Saturn and Rings',
-            thumbnail: 'https://images.unsplash.com/photo-1614728423169-3f65fd722b7e?w=400&h=400&fit=crop'
-        },
-        { 
-            id: 5, 
-            type: 'image', 
-            title: 'Aurora Borealis',
-            thumbnail: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=400&h=400&fit=crop'
-        },
-        { 
-            id: 6, 
-            type: 'video', 
-            title: 'Solar System Journey',
-            thumbnail: 'https://images.unsplash.com/photo-1532693322450-2cb5c511067d?w=400&h=400&fit=crop',
-            videoUrl: 'https://www.youtube.com/embed/libKVRa01L8'
-        },
-        { 
-            id: 7, 
-            type: 'image', 
-            title: 'Horsehead Nebula',
-            thumbnail: 'https://images.unsplash.com/photo-1464802686167-b939a6910659?w=400&h=400&fit=crop'
-        },
-        { 
-            id: 8, 
-            type: 'image', 
-            title: 'Mars Rover Discovery',
-            thumbnail: 'https://images.unsplash.com/photo-1614313913007-2b4ae8ce32d6?w=400&h=400&fit=crop'
-        },
-        { 
-            id: 9, 
-            type: 'image', 
-            title: 'Milky Way Galaxy',
-            thumbnail: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=400&h=400&fit=crop'
-        },
-        { 
-            id: 10, 
-            type: 'video', 
-            title: 'Black Hole Visualization',
-            thumbnail: 'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=800&h=400&fit=crop',
-            videoUrl: 'https://www.youtube.com/embed/t9YLtDJZtPY'
-        },
-        { 
-            id: 11, 
-            type: 'image', 
-            title: 'Supernova Remnant',
-            thumbnail: 'https://images.unsplash.com/photo-1502134249126-9f3755a50d78?w=400&h=400&fit=crop'
-        },
-        { 
-            id: 12, 
-            type: 'image', 
-            title: 'Earth from Space',
-            thumbnail: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=400&h=400&fit=crop'
+    // Filter gallery when search changes and gallery tab is active
+    useEffect(() => {
+        if (activeTab === 'gallery') {
+            fetchGallery(searchTerm || 'space');
         }
-    ];
+    }, [searchTerm, activeTab]);
 
-    // Filter and sort news
-    const getFilteredAndSortedNews = () => {
-        let filtered = newsData;
+    const displayedNews = newsData;
+    const hasMoreNews = hasMoreFromServer;
 
-        // Filter by category
-        if (activeCategory !== 'all') {
-            filtered = filtered.filter(item => item.category === activeCategory);
-        }
-
-        // Filter by search term
-        if (searchTerm) {
-            filtered = filtered.filter(item =>
-                item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                item.summary.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                item.source.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-        }
-
-        // Sort
-        if (sortBy === 'date') {
-            filtered = [...filtered].sort((a, b) => new Date(b.date) - new Date(a.date));
-        }
-
-        return filtered;
-    };
-
-    const filteredNews = getFilteredAndSortedNews();
-    const displayedNews = filteredNews.slice(0, visibleNews);
-    const hasMoreNews = visibleNews < filteredNews.length;
-
-    // Filter gallery items
+    // Filter gallery items locally by search
     const filteredGallery = galleryItems.filter(item =>
         item.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -412,22 +209,20 @@ const Member6 = () => {
         return bookmarkedArticles.includes(articleId);
     };
 
-    // Infinite scroll
+    // Infinite scroll — load next page from server
     const loadMoreNews = useCallback(() => {
-        if (loading || !hasMoreNews) return;
-        
-        setLoading(true);
-        setTimeout(() => {
-            setVisibleNews(prev => Math.min(prev + 6, filteredNews.length));
-            setLoading(false);
-        }, 800);
-    }, [loading, hasMoreNews, filteredNews.length]);
+        if (loading || !hasMoreFromServer) return;
+
+        const nextPage = newsPage + 1;
+        setNewsPage(nextPage);
+        fetchNews(nextPage, true);
+    }, [loading, hasMoreFromServer, newsPage]);
 
     // Intersection Observer for infinite scroll
     useEffect(() => {
         const observer = new IntersectionObserver(
             entries => {
-                if (entries[0].isIntersecting && hasMoreNews && !loading) {
+                if (entries[0].isIntersecting && hasMoreFromServer && !loading) {
                     loadMoreNews();
                 }
             },
@@ -444,12 +239,17 @@ const Member6 = () => {
                 observer.unobserve(currentTarget);
             }
         };
-    }, [hasMoreNews, loading, loadMoreNews]);
+    }, [hasMoreFromServer, loading, loadMoreNews]);
 
-    // Reset visible news when filters change
-    useEffect(() => {
-        setVisibleNews(6);
-    }, [searchTerm, activeCategory, sortBy]);
+    // Fallback APOD while loading
+    const displayApod = apod || {
+        title: "Loading...",
+        date: getTodayDate(),
+        url: "#",
+        img: "https://images.unsplash.com/photo-1543722530-d2c3201371e7?w=1600&h=900&fit=crop",
+        explanation: "Fetching today's astronomy picture...",
+        photographer: "NASA"
+    };
 
     return (
         <div className="member6-container">
@@ -468,18 +268,18 @@ const Member6 = () => {
             </header>
 
             {/* Hero Section: APOD */}
-            <section className="apod-section" style={{ backgroundImage: `url(${apod.img})` }}>
+            <section className="apod-section" style={{ backgroundImage: `url(${displayApod.img})` }}>
                 <div className="apod-overlay"></div>
                 <div className="apod-content">
                     <div className="apod-header-info">
                         <span className="badge">🌟 Astronomy Picture of the Day</span>
-                        <span className="apod-date">{apod.date}</span>
+                        <span className="apod-date">{displayApod.date}</span>
                     </div>
-                    <h2>{apod.title}</h2>
-                    <p>{apod.explanation}</p>
+                    <h2>{displayApod.title}</h2>
+                    <p>{displayApod.explanation}</p>
                     <div className="apod-footer">
-                        <span className="apod-credit">📷 {apod.photographer}</span>
-                        <a href={apod.url} target="_blank" rel="noopener noreferrer" className="apod-link">
+                        <span className="apod-credit">📷 {displayApod.photographer}</span>
+                        <a href={displayApod.url} target="_blank" rel="noopener noreferrer" className="apod-link">
                             View Full Resolution →
                         </a>
                     </div>
@@ -520,7 +320,7 @@ const Member6 = () => {
                                     </button>
                                 ))}
                             </div>
-                            
+
                             <div className="sort-controls">
                                 <label>Sort by:</label>
                                 <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
@@ -531,14 +331,13 @@ const Member6 = () => {
                         </div>
 
                     {searchTerm && (
-                        <div style={{ 
-                            textAlign: 'center', 
-                            padding: '20px', 
+                        <div style={{
+                            textAlign: 'center',
+                            padding: '20px',
                             color: '#888',
                             fontSize: '0.95rem'
                         }}>
-                            Found {filteredNews.length} result{filteredNews.length !== 1 ? 's' : ''} for "<strong style={{ color: '#8b5cf6' }}>{searchTerm}</strong>"
-
+                            Showing results for "<strong style={{ color: '#8b5cf6' }}>{searchTerm}</strong>"
                         </div>
                         )}
 
@@ -548,8 +347,8 @@ const Member6 = () => {
                                 <h3>🔥 Trending Now</h3>
                                 <div className="trending-grid">
                                     {newsData.filter(item => item.trending).slice(0, 3).map(item => (
-                                        <div 
-                                            key={item.id} 
+                                        <div
+                                            key={item.id}
                                             className="trending-card"
                                             onClick={() => setSelectedArticle(item)}
                                         >
@@ -578,7 +377,7 @@ const Member6 = () => {
                                         {displayedNews.map(item => (
                                             <article key={item.id} className="news-card-pro">
                                                 {/* Article Image */}
-                                                <div 
+                                                <div
                                                     className="news-image"
                                                     style={{ backgroundImage: `url(${item.image})` }}
                                                     onClick={() => setSelectedArticle(item)}
@@ -596,7 +395,7 @@ const Member6 = () => {
                                                     </span>
 
                                                     {/* Title */}
-                                                    <h3 
+                                                    <h3
                                                         className="news-title"
                                                         onClick={() => setSelectedArticle(item)}
                                                     >
@@ -617,14 +416,14 @@ const Member6 = () => {
                                                         </div>
 
                                                         <div className="meta-actions">
-                                                            <button 
+                                                            <button
                                                                 className={`bookmark-btn ${isBookmarked(item.id) ? 'bookmarked' : ''}`}
                                                                 onClick={() => toggleBookmark(item.id)}
                                                                 title={isBookmarked(item.id) ? 'Remove bookmark' : 'Bookmark article'}
                                                             >
                                                                 {isBookmarked(item.id) ? '🔖' : '📑'}
                                                             </button>
-                                                            <button 
+                                                            <button
                                                                 className="share-btn"
                                                                 onClick={() => {
                                                                     if (navigator.share) {
@@ -679,15 +478,20 @@ const Member6 = () => {
 
                 {activeTab === 'gallery' && (
                     <div className="media-grid">
-                        {filteredGallery.length > 0 ? (
+                        {galleryLoading ? (
+                            <div className="loading-indicator" style={{ gridColumn: '1 / -1' }}>
+                                <div className="spinner"></div>
+                                <p>Loading cosmic media...</p>
+                            </div>
+                        ) : filteredGallery.length > 0 ? (
                             filteredGallery.map(item => (
-                                <div 
-                                    key={item.id} 
+                                <div
+                                    key={item.id}
                                     className={`media-item ${item.type === 'video' ? 'clickable' : ''}`}
                                     onClick={() => item.type === 'video' && setSelectedVideo(item)}
                                 >
-                                    <img 
-                                        src={item.thumbnail} 
+                                    <img
+                                        src={item.thumbnail}
                                         alt={item.title}
                                         className="media-thumbnail"
                                         loading="lazy"
@@ -717,8 +521,8 @@ const Member6 = () => {
             {selectedArticle && (
                 <div className="article-modal" onClick={() => setSelectedArticle(null)}>
                     <div className="article-modal-content" onClick={(e) => e.stopPropagation()}>
-                        <button 
-                            className="close-modal" 
+                        <button
+                            className="close-modal"
                             onClick={() => setSelectedArticle(null)}
                         >
                             ✕
@@ -743,15 +547,15 @@ const Member6 = () => {
 
                         <div className="article-body">
                             <p className="article-full-content">{selectedArticle.fullContent}</p>
-                            
+
                             <div className="article-actions">
-                                <button 
+                                <button
                                     className="action-btn"
                                     onClick={() => toggleBookmark(selectedArticle.id)}
                                 >
                                     {isBookmarked(selectedArticle.id) ? '🔖 Bookmarked' : '📑 Bookmark'}
                                 </button>
-                                <button 
+                                <button
                                     className="action-btn"
                                     onClick={() => {
                                         if (navigator.share) {
@@ -765,9 +569,9 @@ const Member6 = () => {
                                 >
                                     🔗 Share
                                 </button>
-                                <a 
-                                    href={selectedArticle.url} 
-                                    target="_blank" 
+                                <a
+                                    href={selectedArticle.url}
+                                    target="_blank"
                                     rel="noopener noreferrer"
                                     className="action-btn primary"
                                 >
@@ -783,8 +587,8 @@ const Member6 = () => {
             {selectedVideo && (
                 <div className="video-modal" onClick={() => setSelectedVideo(null)}>
                     <div className="video-modal-content" onClick={(e) => e.stopPropagation()}>
-                        <button 
-                            className="close-modal" 
+                        <button
+                            className="close-modal"
                             onClick={() => setSelectedVideo(null)}
                         >
                             ✕
