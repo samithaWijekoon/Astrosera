@@ -1,48 +1,129 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import ManageQuizzes from './ManageQuizzes';
 
 const AdminDashboard = () => {
-    const [stats, setStats] = useState({ totalUsers: 0, totalAdmins: 0 });
+    const [stats, setStats] = useState({ totalUsers: 0, totalAdmins: 0, totalAccounts: 0 });
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchStats = async () => {
+        const fetchAnalytics = async () => {
             try {
-                // We will call the backend route we just created
+                const token = localStorage.getItem('token');
                 const { data } = await axios.get('http://localhost:5001/api/analytics/stats', {
-                    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+                    headers: { Authorization: `Bearer ${token}` }
                 });
-                setStats(data.stats);
+                if (data.success) {
+                    setStats(data.stats);
+                }
+                setLoading(false);
             } catch (error) {
-                console.error("Error fetching analytics", error);
+                console.error("Error loading dashboard data:", error);
+                setLoading(false);
             }
         };
-        fetchStats();
+        fetchAnalytics();
     }, []);
 
-    return (
-        <div style={{ padding: '2rem', backgroundColor: '#0b0d17', color: 'white', minHeight: '100vh' }}>
-            <h1>🚀 AstroSera Admin Analytics</h1>
+    // Data format for the Chart
+    const chartData = [
+        { name: 'Students', count: stats.totalUsers },
+        { name: 'Admins', count: stats.totalAdmins },
+    ];
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginTop: '2rem' }}>
-                <div className="stat-card" style={cardStyle}>
-                    <h3>Total Students</h3>
-                    <p style={numberStyle}>{stats.totalUsers}</p>
+    if (loading) return <div style={containerStyle}>Loading Admin Panel...</div>;
+
+    return (
+        <div style={containerStyle}>
+            <header style={headerStyle}>
+                <h1>AstroSera Admin Control Panel</h1>
+                <p>Member 05: Analytics & Quiz Management</p>
+            </header>
+
+            {/* Section 1: Analytics Cards */}
+            <div style={gridStyle}>
+                <div style={cardStyle}>
+                    <h4>Total Users</h4>
+                    <h2 style={highlightStyle}>{stats.totalUsers}</h2>
                 </div>
-                <div className="stat-card" style={cardStyle}>
-                    <h3>Total Admins</h3>
-                    <p style={numberStyle}>{stats.totalAdmins}</p>
+                <div style={cardStyle}>
+                    <h4>Total Admins</h4>
+                    <h2 style={highlightStyle}>{stats.totalAdmins}</h2>
                 </div>
-                <div className="stat-card" style={cardStyle}>
-                    <h3>Active Sessions</h3>
-                    <p style={numberStyle}>Live Data...</p>
+                <div style={cardStyle}>
+                    <h4>System Status</h4>
+                    <h2 style={{ ...highlightStyle, color: '#238636' }}>Active</h2>
+                </div>
+            </div>
+
+            {/* Section 2: Visual Insights & Quiz Management */}
+            <div style={mainContentStyle}>
+                {/* Chart Column */}
+                <div style={{ ...cardStyle, flex: 1 }}>
+                    <h3>User Distribution</h3>
+                    <div style={{ width: '100%', height: 300 }}>
+                        <ResponsiveContainer>
+                            <BarChart data={chartData}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#30363d" />
+                                <XAxis dataKey="name" stroke="#8b949e" />
+                                <YAxis stroke="#8b949e" />
+                                <Tooltip contentStyle={{ backgroundColor: '#161b22', border: 'none' }} />
+                                <Bar dataKey="count" fill="#58a6ff" radius={[4, 4, 0, 0]} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+
+                {/* Quiz Management Column */}
+                <div style={{ flex: 1.5 }}>
+                    <ManageQuizzes />
                 </div>
             </div>
         </div>
     );
 };
 
-// Simple Styles
-const cardStyle = { backgroundColor: '#161b22', padding: '1.5rem', borderRadius: '12px', textAlign: 'center', border: '1px solid #30363d' };
-const numberStyle = { fontSize: '2.5rem', fontWeight: 'bold', color: '#58a6ff' };
+// --- STYLES ---
+const containerStyle = {
+    padding: '40px',
+    backgroundColor: '#0d1117',
+    minHeight: '100vh',
+    color: '#c9d1d9',
+    fontFamily: 'Arial, sans-serif'
+};
+
+const headerStyle = {
+    marginBottom: '30px',
+    borderBottom: '1px solid #30363d',
+    paddingBottom: '20px'
+};
+
+const gridStyle = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+    gap: '20px',
+    marginBottom: '40px'
+};
+
+const cardStyle = {
+    backgroundColor: '#161b22',
+    border: '1px solid #30363d',
+    borderRadius: '10px',
+    padding: '20px',
+};
+
+const mainContentStyle = {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: '30px',
+    flexWrap: 'wrap'
+};
+
+const highlightStyle = {
+    fontSize: '2.5rem',
+    margin: '10px 0',
+    color: '#58a6ff'
+};
 
 export default AdminDashboard;
