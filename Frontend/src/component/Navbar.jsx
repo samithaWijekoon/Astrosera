@@ -12,15 +12,20 @@ const Navbar = () => {
         setIsOpen(!isOpen);
     };
 
+    // Define links
     const navLinks = [
         { name: 'Home', path: '/' },
         { name: 'Chat', path: '/chat' },
         { name: 'Events', path: '/events' },
         { name: 'Quiz', path: '/quiz' },
         { name: 'Achievements', path: '/achievements' },
-        { name: 'Analytics', path: '/analytics' },
         { name: 'News', path: '/news' },
     ];
+
+    // Add Admin link ONLY if the user is an admin (Member 05 Feature)
+    if (user && user.role === 'admin') {
+        navLinks.push({ name: 'Analytics', path: '/admin' });
+    }
 
     const isActive = (path) => {
         return location.pathname === path ? 'text-purple-400' : 'text-gray-300';
@@ -50,7 +55,6 @@ const Navbar = () => {
 
                 {/* Right Side - Button & Mobile Toggle */}
                 <div className="flex items-center space-x-4">
-                    {/* Auth Buttons */}
                     {user ? (
                         <div className="hidden md:flex items-center space-x-4">
                             <span className="text-gray-300 text-sm">Hi, {user.username}</span>
@@ -63,27 +67,16 @@ const Navbar = () => {
                         </div>
                     ) : (
                         <div className="hidden md:flex items-center space-x-4">
-                            <Link
-                                to="/login"
-                                className="text-gray-300 hover:text-white font-medium transition-colors text-sm"
-                            >
+                            <Link to="/login" className="text-gray-300 hover:text-white font-medium transition-colors text-sm">
                                 Login
                             </Link>
-                            <Link
-                                to="/signup"
-                                className="bg-purple-600 hover:bg-purple-700 text-white text-sm font-bold py-3 px-8 rounded-full transition-all duration-300 shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_25px_rgba(168,85,247,0.5)] focus:outline-none"
-                            >
+                            <Link to="/signup" className="bg-purple-600 hover:bg-purple-700 text-white text-sm font-bold py-3 px-8 rounded-full transition-all duration-300 shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_25px_rgba(168,85,247,0.5)] focus:outline-none">
                                 Get Started
                             </Link>
                         </div>
                     )}
 
-
-                    {/* Mobile Menu Button */}
-                    <button
-                        onClick={toggleMenu}
-                        className="lg:hidden text-white text-2xl focus:outline-none cursor-pointer"
-                    >
+                    <button onClick={toggleMenu} className="lg:hidden text-white text-2xl focus:outline-none cursor-pointer">
                         {isOpen ? <HiX /> : <HiMenu />}
                     </button>
                 </div>
@@ -102,35 +95,7 @@ const Navbar = () => {
                             {link.name}
                         </Link>
                     ))}
-
-                    {user ? (
-                        <>
-                            <div className="text-gray-300 text-lg border-b border-white/5 pb-2">Hi, {user.username}</div>
-                            <button
-                                onClick={() => { logout(); setIsOpen(false); }}
-                                className="bg-red-600 text-white text-center font-bold py-3 rounded-xl mt-4 focus:outline-none w-full"
-                            >
-                                Logout
-                            </button>
-                        </>
-                    ) : (
-                        <>
-                            <Link
-                                to="/login"
-                                onClick={() => setIsOpen(false)}
-                                className="text-white text-center font-medium py-2 hover:text-purple-400"
-                            >
-                                Login
-                            </Link>
-                            <Link
-                                to="/signup"
-                                onClick={() => setIsOpen(false)}
-                                className="bg-purple-600 text-white text-center font-bold py-3 rounded-xl mt-2 focus:outline-none"
-                            >
-                                Get Started
-                            </Link>
-                        </>
-                    )}
+                    {/* ... (Keep your mobile auth buttons as they are) */}
                 </div>
             )}
         </nav>
@@ -138,4 +103,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-

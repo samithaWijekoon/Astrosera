@@ -2,12 +2,14 @@ const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
+const analyticsRoutes = require('./routes/analyticsRoutes'); // Added for Member 05
 require('dotenv').config();
 
 connectDB();
 
 const app = express();
 app.use(express.json());
+
 console.log("FRONTEND_URI:", process.env.FRONTEND_URI);
 
 app.use(cors({
@@ -28,7 +30,9 @@ app.use(cors({
     credentials: true
 }));
 
+// Route Middlewares
 app.use('/api/auth', authRoutes);
+app.use('/api/analytics', analyticsRoutes); // Added for Member 05
 
 app.get('/', (req, res) => {
     res.send('🚀 Express server is running');

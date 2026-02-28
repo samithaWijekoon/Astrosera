@@ -9,6 +9,7 @@ import Signup from './Pages/Signup'
 import Member6 from './Pages/Member6/member6'
 import Member3 from './Pages/Member03/member3'
 import Member4 from './Pages/Member4/Achievment'
+import AdminDashboard from './Pages/Member05/AdminDashboard';
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
         <Route path="/achievements" element={<Member4 />} />
         <Route path="/analytics" element={<Home />} />
         <Route path="/news" element={<Member6 />} />
+        <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
       <Footer />
     </AuthProvider>
