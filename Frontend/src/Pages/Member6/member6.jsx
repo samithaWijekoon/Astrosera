@@ -1,7 +1,6 @@
-﻿import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './member6.css';
 
-// Backend API base URL
 const API_BASE = 'http://localhost:8001/api';
 
 const Member6 = () => {
@@ -36,12 +35,12 @@ const Member6 = () => {
 
     // Categories
     const categories = [
-        { id: 'all', name: 'All News', icon: 'ðŸŒŒ' },
-        { id: 'missions', name: 'Missions', icon: 'ðŸš€' },
-        { id: 'discoveries', name: 'Discoveries', icon: 'ðŸ”­' },
-        { id: 'spaceweather', name: 'Space Weather', icon: 'â˜€ï¸' },
-        { id: 'technology', name: 'Technology', icon: 'ðŸ›°ï¸' },
-        { id: 'planets', name: 'Planets', icon: 'ðŸª' }
+        { id: 'all', name: 'All News', icon: '🌌' },
+        { id: 'missions', name: 'Missions', icon: '🚀' },
+        { id: 'discoveries', name: 'Discoveries', icon: '🔭' },
+        { id: 'spaceweather', name: 'Space Weather', icon: '☀️' },
+        { id: 'technology', name: 'Technology', icon: '🛰️' },
+        { id: 'planets', name: 'Planets', icon: '🪐' }
     ];
 
     // Dynamic date function
@@ -64,7 +63,7 @@ const Member6 = () => {
         return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     };
 
-    // â”€â”€â”€ Fetch APOD from backend â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─── Fetch APOD from backend ───────────────────────────────────
     const fetchAPOD = async () => {
         try {
             const response = await fetch(`${API_BASE}/apod`);
@@ -92,7 +91,7 @@ const Member6 = () => {
         }
     };
 
-    // â”€â”€â”€ Fetch news from backend â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─── Fetch news from backend ───────────────────────────────────
     const fetchNews = async (page = 1, append = false) => {
         setLoading(true);
         try {
@@ -134,7 +133,7 @@ const Member6 = () => {
         }
     };
 
-    // â”€â”€â”€ Fetch gallery from backend â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─── Fetch gallery from backend ────────────────────────────────
     const fetchGallery = async (query = 'space') => {
         setGalleryLoading(true);
         try {
@@ -161,7 +160,7 @@ const Member6 = () => {
         }
     };
 
-    // â”€â”€â”€ Initial load â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─── Initial load ──────────────────────────────────────────────
     useEffect(() => {
         fetchAPOD();
         fetchGallery();
@@ -210,7 +209,7 @@ const Member6 = () => {
         return bookmarkedArticles.includes(articleId);
     };
 
-    // Infinite scroll â€” load next page from server
+    // Infinite scroll — load next page from server
     const loadMoreNews = useCallback(() => {
         if (loading || !hasMoreFromServer) return;
 
@@ -256,7 +255,7 @@ const Member6 = () => {
         <div className="member6-container">
             {/* Header with Search */}
             <header className="media-header">
-                <h1>ðŸŒŒ Cosmic Library</h1>
+                <h1>🌌 Cosmic Library</h1>
                 <div className="search-bar">
                     <input
                         type="text"
@@ -264,7 +263,7 @@ const Member6 = () => {
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
-                    <button className="search-btn" onClick={() => handleSearch(searchTerm)}>ðŸ”</button>
+                    <button className="search-btn" onClick={() => handleSearch(searchTerm)}>🔍</button>
                 </div>
             </header>
 
@@ -273,15 +272,15 @@ const Member6 = () => {
                 <div className="apod-overlay"></div>
                 <div className="apod-content">
                     <div className="apod-header-info">
-                        <span className="badge">ðŸŒŸ Astronomy Picture of the Day</span>
+                        <span className="badge">🌟 Astronomy Picture of the Day</span>
                         <span className="apod-date">{displayApod.date}</span>
                     </div>
                     <h2>{displayApod.title}</h2>
                     <p>{displayApod.explanation}</p>
                     <div className="apod-footer">
-                        <span className="apod-credit">ðŸ“· {displayApod.photographer}</span>
+                        <span className="apod-credit">📷 {displayApod.photographer}</span>
                         <a href={displayApod.url} target="_blank" rel="noopener noreferrer" className="apod-link">
-                            View Full Resolution â†’
+                            View Full Resolution →
                         </a>
                     </div>
                 </div>
@@ -293,13 +292,13 @@ const Member6 = () => {
                     className={`tab-btn ${activeTab === 'news' ? 'active' : ''}`}
                     onClick={() => setActiveTab('news')}
                 >
-                    ðŸ“° News Feed
+                    📰 News Feed
                 </button>
                 <button
                     className={`tab-btn ${activeTab === 'gallery' ? 'active' : ''}`}
                     onClick={() => setActiveTab('gallery')}
                 >
-                    ðŸ–¼ Media Gallery
+                    🖼 Media Gallery
                 </button>
             </div>
 
@@ -345,7 +344,7 @@ const Member6 = () => {
                         {/* Trending Section */}
                         {activeCategory === 'all' && !searchTerm && (
                             <div className="trending-section">
-                                <h3>ðŸ”¥ Trending Now</h3>
+                                <h3>🔥 Trending Now</h3>
                                 <div className="trending-grid">
                                     {newsData.filter(item => item.trending).slice(0, 3).map(item => (
                                         <div
@@ -354,13 +353,13 @@ const Member6 = () => {
                                             onClick={() => setSelectedArticle(item)}
                                         >
                                             <div className="trending-image" style={{ backgroundImage: `url(${item.image})` }}>
-                                                <span className="trending-badge">ðŸ”¥ Trending</span>
+                                                <span className="trending-badge">🔥 Trending</span>
                                             </div>
                                             <div className="trending-content">
                                                 <h4>{item.title}</h4>
                                                 <div className="trending-meta">
                                                     <span>{item.source}</span>
-                                                    <span>â€¢</span>
+                                                    <span>•</span>
                                                     <span>{formatRelativeTime(item.date)}</span>
                                                 </div>
                                             </div>
@@ -410,10 +409,10 @@ const Member6 = () => {
                                                     <div className="news-meta">
                                                         <div className="meta-left">
                                                             <span className="news-source">{item.source}</span>
-                                                            <span className="meta-dot">â€¢</span>
+                                                            <span className="meta-dot">•</span>
                                                             <span className="news-time">{formatRelativeTime(item.date)}</span>
-                                                            <span className="meta-dot">â€¢</span>
-                                                            <span className="reading-time">â± {item.readingTime} min read</span>
+                                                            <span className="meta-dot">•</span>
+                                                            <span className="reading-time">⏱ {item.readingTime} min read</span>
                                                         </div>
 
                                                         <div className="meta-actions">
@@ -422,7 +421,7 @@ const Member6 = () => {
                                                                 onClick={() => toggleBookmark(item.id)}
                                                                 title={isBookmarked(item.id) ? 'Remove bookmark' : 'Bookmark article'}
                                                             >
-                                                                {isBookmarked(item.id) ? 'ðŸ”–' : 'ðŸ“‘'}
+                                                                {isBookmarked(item.id) ? '🔖' : '📑'}
                                                             </button>
                                                             <button
                                                                 className="share-btn"
@@ -437,7 +436,7 @@ const Member6 = () => {
                                                                 }}
                                                                 title="Share article"
                                                             >
-                                                                ðŸ”—
+                                                                🔗
                                                             </button>
                                                         </div>
                                                     </div>
@@ -460,7 +459,7 @@ const Member6 = () => {
                                     {/* End of feed message */}
                                     {!hasMoreNews && displayedNews.length > 6 && (
                                         <div className="end-of-feed">
-                                            <span className="end-icon">âœ¨</span>
+                                            <span className="end-icon">✨</span>
                                             <p>You've reached the end of cosmic news</p>
                                             <p className="end-subtitle">Check back later for more updates!</p>
                                         </div>
@@ -468,7 +467,7 @@ const Member6 = () => {
                                 </>
                             ) : (
                                 <div className="empty-state">
-                                    <span className="empty-icon">ðŸ”­</span>
+                                    <span className="empty-icon">🔭</span>
                                     <h3>No cosmic news found</h3>
                                     <p>Try adjusting your search or filters</p>
                                 </div>
@@ -499,7 +498,7 @@ const Member6 = () => {
                                     />
                                     {item.type === 'video' && (
                                         <div className="video-overlay">
-                                            <div className="play-button">â–¶ï¸</div>
+                                            <div className="play-button">▶️</div>
                                         </div>
                                     )}
                                     <div className="media-info">
@@ -509,7 +508,7 @@ const Member6 = () => {
                             ))
                         ) : (
                             <div className="empty-state" style={{ gridColumn: '1 / -1' }}>
-                                <span className="empty-icon">ðŸŽ¬</span>
+                                <span className="empty-icon">🎬</span>
                                 <h3>No media found</h3>
                                 <p>Try adjusting your search</p>
                             </div>
@@ -526,7 +525,7 @@ const Member6 = () => {
                             className="close-modal"
                             onClick={() => setSelectedArticle(null)}
                         >
-                            âœ•
+                            ✕
                         </button>
 
                         <div className="article-header">
@@ -538,9 +537,9 @@ const Member6 = () => {
                                 <h2>{selectedArticle.title}</h2>
                                 <div className="article-meta-info">
                                     <span>{selectedArticle.source}</span>
-                                    <span>â€¢</span>
+                                    <span>•</span>
                                     <span>{new Date(selectedArticle.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-                                    <span>â€¢</span>
+                                    <span>•</span>
                                     <span>{selectedArticle.readingTime} min read</span>
                                 </div>
                             </div>
@@ -554,7 +553,7 @@ const Member6 = () => {
                                     className="action-btn"
                                     onClick={() => toggleBookmark(selectedArticle.id)}
                                 >
-                                    {isBookmarked(selectedArticle.id) ? 'ðŸ”– Bookmarked' : 'ðŸ“‘ Bookmark'}
+                                    {isBookmarked(selectedArticle.id) ? '🔖 Bookmarked' : '📑 Bookmark'}
                                 </button>
                                 <button
                                     className="action-btn"
@@ -568,7 +567,7 @@ const Member6 = () => {
                                         }
                                     }}
                                 >
-                                    ðŸ”— Share
+                                    🔗 Share
                                 </button>
                                 <a
                                     href={selectedArticle.url}
@@ -576,7 +575,7 @@ const Member6 = () => {
                                     rel="noopener noreferrer"
                                     className="action-btn primary"
                                 >
-                                    Read on NASA â†’
+                                    Read on NASA →
                                 </a>
                             </div>
                         </div>
@@ -592,7 +591,7 @@ const Member6 = () => {
                             className="close-modal"
                             onClick={() => setSelectedVideo(null)}
                         >
-                            âœ•
+                            ✕
                         </button>
                         <h3>{selectedVideo.title}</h3>
                         <div className="video-wrapper">
