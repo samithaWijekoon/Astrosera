@@ -17,3 +17,12 @@ from .prompts import (
 )
 from .state import QAState
 from .tools import retrieval_tool
+
+
+
+def _extract_last_ai_content(messages: List[object]) -> str:
+    """Extract the content of the last AIMessage in a messages list."""
+    for msg in reversed(messages):
+        if isinstance(msg, AIMessage):
+            return str(msg.content)
+    return ""
