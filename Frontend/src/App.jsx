@@ -10,16 +10,18 @@ import Member6 from './Pages/Member6/member6'
 import Member3 from './Pages/Member03/member3'
 import Member4 from './Pages/Member4/Achievment'
 import AdminDashboard from './Pages/Member05/AdminDashboard';
+import Chat from './Pages/chat/chat' // Keep this import!
 
 const App = () => {
   return (
     <AuthProvider>
       <Navbar />
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home />} />  
+        <Route path="/chat" element={<Chat />} /> 
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/chat" element={<Home />} />
+        
         <Route path="/events" element={<Home />} />
         <Route path="/quiz" element={<Member3 />} />
         <Route path="/achievements" element={<Member4 />} />
