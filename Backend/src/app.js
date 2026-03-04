@@ -4,6 +4,9 @@ const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes'); // Added for Member 05
 require('dotenv').config();
+const fileUpload = require('express-fileupload');
+const quizRoutes = require('./routes/quizRoutes');
+
 
 connectDB();
 
@@ -31,6 +34,8 @@ app.use(cors({
 }));
 
 // Route Middlewares
+app.use('/api/quiz', quizRoutes);
+app.use(fileUpload());
 app.use('/api/auth', authRoutes);
 app.use('/api/analytics', analyticsRoutes); // Added for Member 05
 
