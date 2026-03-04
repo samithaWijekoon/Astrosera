@@ -1,12 +1,9 @@
 """
 NASA Data Ingestion Script
-==========================
+
 Chunks all PDF and .txt files in a folder and stores them into Pinecone.
 
-Usage:
-    python ingest.py                          # default: src/app/data/uploads/
-    python ingest.py --folder /path/to/data   # custom folder
-    python ingest.py --folder /path/to/data --chunk-size 800 --overlap 100
+
 """
 
 import argparse
