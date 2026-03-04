@@ -2,6 +2,7 @@ import { createContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
+// Ensure this matches your backend port exactly
 const backendurl = "http://localhost:5001";
 
 export const AuthProvider = ({ children }) => {
@@ -10,9 +11,15 @@ export const AuthProvider = ({ children }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const storedUser = sessionStorage.getItem('user');
+        // Changed to localStorage so login persists across tab refreshes
+        const storedUser = localStorage.getItem('user');
         if (storedUser) {
-            setUser(JSON.parse(storedUser));
+            try {
+                setUser(JSON.parse(storedUser));
+            } catch (error) {
+                console.error("Error parsing stored user", error);
+                localStorage.removeItem('user');
+            }
         }
         setLoading(false);
     }, []);
@@ -31,16 +38,17 @@ export const AuthProvider = ({ children }) => {
 
             if (response.ok) {
                 setUser(data);
-                sessionStorage.setItem('user', JSON.stringify(data));
-                sessionStorage.setItem('token', data.token);
+                // Store in localStorage for Member 05 persistence
+                localStorage.setItem('user', JSON.stringify(data));
+                localStorage.setItem('token', data.token);
                 navigate('/');
                 return { success: true };
             } else {
-                return { success: false, message: data.message };
+                return { success: false, message: data.message || "Invalid credentials" };
             }
         } catch (error) {
             console.error("Login error:", error);
-            return { success: false, message: "Server error" };
+            return { success: false, message: "Connection refused. Is the server running on port 5001?" };
         }
     };
 
@@ -58,8 +66,8 @@ export const AuthProvider = ({ children }) => {
 
             if (response.ok) {
                 setUser(data);
-                sessionStorage.setItem('user', JSON.stringify(data));
-                sessionStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data));
+                localStorage.setItem('token', data.token);
                 navigate('/');
                 return { success: true };
             } else {
@@ -73,8 +81,8 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         setUser(null);
-        sessionStorage.removeItem('user');
-        sessionStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
         navigate('/login');
     };
 
