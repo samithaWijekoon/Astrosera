@@ -3,31 +3,37 @@ const xlsx = require('xlsx');
 
 const uploadQuizExcel = async (req, res) => {
     try {
-        if (!req.files || !req.files.file) {
-            return res.status(400).json({ message: "No file uploaded" });
+        // 1. Check if the file actually reached the backend
+        if (!req.files || Object.keys(req.files).length === 0) {
+            console.log("No files object found in request");
+            return res.status(400).json({ success: false, message: "No file was received by the server" });
         }
 
-        const file = req.files.file;
-        const workbook = xlsx.read(file.data, { type: 'buffer' });
-        const sheetName = workbook.SheetNames[0];
-        const data = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
+        const quizFile = req.files.file; // This MUST match the name in your Frontend formData
 
-        // Mapping Excel columns to MongoDB fields
-        const formattedQuestions = data.map(item => ({
-            questionNo: item['question no'], // Matches your Excel column name
-            question: item['question'],
-            option1: item['answer 1'],
-            option2: item['answer 2'],
-            option3: item['answer 3'],
-            option4: item['answer 4'],
-            correctAnswer: item['correct answer'],
-            weekNumber: item['week'] || 1
+        // 2. Read the Excel data
+        const workbook = xlsx.read(quizFile.data, { type: 'buffer' });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const data = xlsx.utils.sheet_to_json(sheet);
+
+        // 3. Simple mapping
+        const formatted = data.map(item => ({
+            questionNo: item['Question No'] || item['question no'],
+            question: item['Question'] || item['question'],
+            option1: item['Answer 1'] || item['answer 1'],
+            option2: item['Answer 2'] || item['answer 2'],
+            option3: item['Answer 3'] || item['answer 3'],
+            option4: item['Answer 4'] || item['answer 4'],
+            correctAnswer: item['Correct Answer'] || item['correct answer'],
+            weekNumber: item['Week'] || 1
         }));
 
-        await Quiz.insertMany(formattedQuestions);
-        res.status(201).json({ message: "100 Questions uploaded successfully!" });
+        await Quiz.insertMany(formatted);
+        res.status(200).json({ success: true, message: "Success! 100 questions added." });
+
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error("Backend Error:", error);
+        res.status(500).json({ success: false, message: error.message });
     }
 };
 

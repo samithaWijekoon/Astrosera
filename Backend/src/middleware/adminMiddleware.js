@@ -1,9 +1,10 @@
 const admin = (req, res, next) => {
-    // req.user is populated by your protect middleware (which you'll use later)
+    // Check if user exists and if the role is 'admin'
     if (req.user && req.user.role === 'admin') {
-        next(); // User is admin, proceed to the dashboard data
+        next(); // You are an admin, proceed to upload
     } else {
-        res.status(403).json({ message: 'Not authorized as an admin' });
+        // This is the error you are seeing
+        res.status(401).json({ message: 'Not authorized as an admin' });
     }
 };
 
