@@ -1,11 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { uploadQuizExcel } = require('../controllers/quizController');
+const { protect } = require('../middleware/authMiddleware');
 const { admin } = require('../middleware/adminMiddleware');
-// You will need your protect middleware here as well to verify the token
-// const { protect } = require('../middleware/authMiddleware'); 
 
-// The route: POST /api/quiz/upload
-router.post('/upload', admin, uploadQuizExcel);
+// Ensure protect and admin are in this order
+router.post('/upload', protect, admin, uploadQuizExcel);
 
 module.exports = router;
