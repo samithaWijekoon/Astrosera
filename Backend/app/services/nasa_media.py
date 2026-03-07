@@ -91,22 +91,43 @@ async def search_nasa_media(
 from typing import Optional
 
 
+import urllib.parse
+
 async def resolve_video_url(nasa_id: str) -> Optional[str]:
-    """Resolve the actual mp4 URL for a video by its NASA ID."""
+    """Resolve the actual mp4 URL for a video by its NASA ID.
+    Prefers smaller/medium mp4s over massive ~orig files, encodes spaces, and enforces https.
+    """
     try:
         async with httpx.AsyncClient(timeout=15.0) as client:
             resp = await client.get(f"{NASA_IMAGES_API_URL}/asset/{nasa_id}")
             if resp.status_code == 200:
                 data = resp.json()
                 items = data.get("collection", {}).get("items", [])
-                for item in items:
-                    href = item.get("href", "")
-                    if href.endswith(".mp4") and "~orig" in href:
-                        return href
-                for item in items:
-                    href = item.get("href", "")
-                    if href.endswith(".mp4"):
-                        return href
+                
+                # Desired quality preferences
+                preferences = ["~large.mp4", "~medium.mp4", "~mobile.mp4", "~orig.mp4"]
+                
+                # Collect all mp4s
+                mp4s = [item.get("href", "") for item in items if item.get("href", "").endswith(".mp4")]
+                
+                best_url = None
+                for pref in preferences:
+                    for url in mp4s:
+                        if url.endswith(pref):
+                            best_url = url
+                            break
+                    if best_url:
+                        break
+                
+                # Fallback to any mp4 if preferences didn't match
+                if not best_url and mp4s:
+                    best_url = mp4s[0]
+                    
+                if best_url:
+                    # Upgrade http to https and properly url-encode spaces
+                    best_url = best_url.replace("http://", "https://")
+                    return urllib.parse.quote(best_url, safe=":/")
+                    
     except Exception:
         pass
     return None

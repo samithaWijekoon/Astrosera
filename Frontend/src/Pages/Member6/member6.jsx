@@ -151,6 +151,7 @@ const Member6 = () => {
                 title: item.title,
                 thumbnail: item.thumbnail,
                 videoUrl: item.videoUrl,
+                nasaId: item.nasaId,
             }));
             setGalleryItems(items);
         } catch (error) {
@@ -333,7 +334,11 @@ const Member6 = () => {
                                     <button
                                         key={cat.id}
                                         className={`category-btn ${activeCategory === cat.id ? 'active' : ''}`}
-                                        onClick={() => setActiveCategory(cat.id)}
+                                        onClick={() => {
+                                            setActiveCategory(cat.id);
+                                            setSearchInput('');
+                                            setSearchTerm('');
+                                        }}
                                     >
                                         <span className="cat-icon">{cat.icon}</span>
                                         <span className="cat-name">{cat.name}</span>
