@@ -6,27 +6,47 @@ const userSchema = new mongoose.Schema(
         username: { type: String, required: true, unique: true },
         email: { type: String, required: true, unique: true },
         password: { type: String, required: true },
-        // Leaderboard & profile
+        
+        // --- MEMBER 05 (Role & Permissions) ---
+        role: {
+            type: String,
+            enum: ['student', 'admin'],
+            default: 'student',
+        },
+
+        // --- GAMIFICATION & LEADERBOARD (Member 01/02) ---
         totalScore: { type: Number, default: 0 },
+        totalPoints: { type: Number, default: 0 }, // Synced both naming styles
         avatarInitials: { type: String, default: 'U' },
-        // Calendar – every unique day the user interacts
         activeDates: [{ type: Date }],
+        
+        // --- ANALYTICS (Member 05) ---
+        streakCount: { type: Number, default: 0 },
+        lastQuizDate: { type: Date },
     },
     { timestamps: true }
 );
 
-userSchema.methods.matchPassword = async function (entered) {
-    return await bcrypt.compare(entered, this.password);
+// Password verification method
+userSchema.methods.matchPassword = async function (enteredPassword) {
+    return await bcrypt.compare(enteredPassword, this.password);
 };
 
-userSchema.pre('save', async function () {
-    if (!this.isModified('password')) return;
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    // Auto-set avatar initials from username if not set
-    if (this.username && this.avatarInitials === 'U') {
+// Encryption and Avatar Logic before saving
+userSchema.pre('save', async function (next) {
+    // 1. Only hash the password if it's new or modified
+    if (this.isModified('password')) {
+        const salt = await bcrypt.genSalt(10);
+        this.password = await bcrypt.hash(this.password, salt);
+    }
+
+    // 2. Auto-set avatar initials from username if still default
+    if (this.username && (this.avatarInitials === 'U' || !this.avatarInitials)) {
         this.avatarInitials = this.username.slice(0, 2).toUpperCase();
     }
+    
+    next();
 });
 
-module.exports = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema);
+module.exports = User;
