@@ -2,7 +2,8 @@ import { createContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
-// Ensure this matches your backend port exactly
+
+// Port 5001 is required for your MacBook Air setup
 const backendurl = "http://localhost:5001";
 
 export const AuthProvider = ({ children }) => {
@@ -11,7 +12,7 @@ export const AuthProvider = ({ children }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Changed to localStorage so login persists across tab refreshes
+        // Persistent login check
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
             try {
@@ -38,9 +39,11 @@ export const AuthProvider = ({ children }) => {
 
             if (response.ok) {
                 setUser(data);
-                // Store in localStorage for Member 05 persistence
+                // Unified Storage: Using localStorage with her specific userId field included
                 localStorage.setItem('user', JSON.stringify(data));
                 localStorage.setItem('token', data.token);
+                localStorage.setItem('userId', data._id); 
+                
                 navigate('/');
                 return { success: true };
             } else {
@@ -68,6 +71,8 @@ export const AuthProvider = ({ children }) => {
                 setUser(data);
                 localStorage.setItem('user', JSON.stringify(data));
                 localStorage.setItem('token', data.token);
+                localStorage.setItem('userId', data._id);
+
                 navigate('/');
                 return { success: true };
             } else {
@@ -83,6 +88,7 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
         localStorage.removeItem('user');
         localStorage.removeItem('token');
+        localStorage.removeItem('userId');
         navigate('/login');
     };
 

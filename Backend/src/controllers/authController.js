@@ -30,6 +30,7 @@ const registerUser = async (req, res) => {
             username,
             email,
             password,
+            avatarInitials: username.slice(0, 2).toUpperCase(),
         });
 
         if (user) {
