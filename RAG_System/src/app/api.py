@@ -2,6 +2,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile, status
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 from .models import QuestionRequest, QAResponse
 from .services.qa_service import answer_question
@@ -16,6 +17,18 @@ app = FastAPI(
     ),
     version="0.1.0",
 )
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/api/health")
+async def health_check():
+    return {"status": "ok"}
 
 @app.exception_handler(Exception)
 async def unhandled_exception_handler(
