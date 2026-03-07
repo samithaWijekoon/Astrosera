@@ -1,129 +1,80 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import ManageQuizzes from './ManageQuizzes';
+import ManageQuizzes from './ManageQuizzes'; // Your upload component
 
 const AdminDashboard = () => {
-    const [stats, setStats] = useState({ totalUsers: 0, totalAdmins: 0, totalAccounts: 0 });
-    const [loading, setLoading] = useState(true);
+    const [quizzes, setQuizzes] = useState([]);
 
-    useEffect(() => {
-        const fetchAnalytics = async () => {
+    // Fetch questions from database
+    const fetchQuizzes = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const res = await axios.get('http://localhost:5001/api/quiz', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setQuizzes(res.data);
+        } catch (err) {
+            console.error("Error fetching quizzes", err);
+        }
+    };
+
+    // Wipe the database
+    const handleClearAll = async () => {
+        if (window.confirm("Are you sure? This will delete all 100 questions!")) {
             try {
                 const token = localStorage.getItem('token');
-                const { data } = await axios.get('http://localhost:5001/api/analytics/stats', {
+                await axios.delete('http://localhost:5001/api/quiz/clear', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                if (data.success) {
-                    setStats(data.stats);
-                }
-                setLoading(false);
-            } catch (error) {
-                console.error("Error loading dashboard data:", error);
-                setLoading(false);
+                alert("Database Cleared!");
+                fetchQuizzes(); // Refresh the list
+            } catch (err) {
+                alert("Delete failed");
             }
-        };
-        fetchAnalytics();
-    }, []);
+        }
+    };
 
-    // Data format for the Chart
-    const chartData = [
-        { name: 'Students', count: stats.totalUsers },
-        { name: 'Admins', count: stats.totalAdmins },
-    ];
-
-    if (loading) return <div style={containerStyle}>Loading Admin Panel...</div>;
+    useEffect(() => { fetchQuizzes(); }, []);
 
     return (
-        <div style={containerStyle}>
-            <header style={headerStyle}>
-                <h1>AstroSera Admin Control Panel</h1>
-                <p>Member 05: Analytics & Quiz Management</p>
-            </header>
+        <div style={{ padding: '30px', color: 'white', backgroundColor: '#0d1117', minHeight: '100vh' }}>
+            <h2>🚀 Astrosera Analytics & Quiz Management</h2>
 
-            {/* Section 1: Analytics Cards */}
-            <div style={gridStyle}>
-                <div style={cardStyle}>
-                    <h4>Total Users</h4>
-                    <h2 style={highlightStyle}>{stats.totalUsers}</h2>
-                </div>
-                <div style={cardStyle}>
-                    <h4>Total Admins</h4>
-                    <h2 style={highlightStyle}>{stats.totalAdmins}</h2>
-                </div>
-                <div style={cardStyle}>
-                    <h4>System Status</h4>
-                    <h2 style={{ ...highlightStyle, color: '#238636' }}>Active</h2>
-                </div>
+            <ManageQuizzes onUploadSuccess={fetchQuizzes} />
+
+            <div style={{ marginTop: '30px', display: 'flex', justifyContent: 'space-between' }}>
+                <h3>Current Quiz Pool ({quizzes.length} Questions)</h3>
+                <button onClick={handleClearAll} style={{ backgroundColor: '#da3633', color: 'white', border: 'none', padding: '10px', borderRadius: '5px', cursor: 'pointer' }}>
+                    Clear All Quizzes
+                </button>
             </div>
 
-            {/* Section 2: Visual Insights & Quiz Management */}
-            <div style={mainContentStyle}>
-                {/* Chart Column */}
-                <div style={{ ...cardStyle, flex: 1 }}>
-                    <h3>User Distribution</h3>
-                    <div style={{ width: '100%', height: 300 }}>
-                        <ResponsiveContainer>
-                            <BarChart data={chartData}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#30363d" />
-                                <XAxis dataKey="name" stroke="#8b949e" />
-                                <YAxis stroke="#8b949e" />
-                                <Tooltip contentStyle={{ backgroundColor: '#161b22', border: 'none' }} />
-                                <Bar dataKey="count" fill="#58a6ff" radius={[4, 4, 0, 0]} />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
-
-                {/* Quiz Management Column */}
-                <div style={{ flex: 1.5 }}>
-                    <ManageQuizzes />
-                </div>
+            <div style={{ marginTop: '20px', overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: '#161b22' }}>
+                    <thead>
+                        <tr style={{ textAlign: 'left', borderBottom: '1px solid #30363d' }}>
+                            <th style={padding}>No</th>
+                            <th style={padding}>Question</th>
+                            <th style={padding}>Correct Answer</th>
+                            <th style={padding}>Week</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {quizzes.map((q) => (
+                            <tr key={q._id} style={{ borderBottom: '1px solid #21262d' }}>
+                                <td style={padding}>{q.questionNo}</td>
+                                <td style={padding}>{q.question}</td>
+                                <td style={padding}><span style={{ color: '#3fb950' }}>{q.correctAnswer}</span></td>
+                                <td style={padding}>{q.weekNumber}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
         </div>
     );
 };
 
-// --- STYLES ---
-const containerStyle = {
-    padding: '40px',
-    backgroundColor: '#0d1117',
-    minHeight: '100vh',
-    color: '#c9d1d9',
-    fontFamily: 'Arial, sans-serif'
-};
-
-const headerStyle = {
-    marginBottom: '30px',
-    borderBottom: '1px solid #30363d',
-    paddingBottom: '20px'
-};
-
-const gridStyle = {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-    gap: '20px',
-    marginBottom: '40px'
-};
-
-const cardStyle = {
-    backgroundColor: '#161b22',
-    border: '1px solid #30363d',
-    borderRadius: '10px',
-    padding: '20px',
-};
-
-const mainContentStyle = {
-    display: 'flex',
-    flexDirection: 'row',
-    gap: '30px',
-    flexWrap: 'wrap'
-};
-
-const highlightStyle = {
-    fontSize: '2.5rem',
-    margin: '10px 0',
-    color: '#58a6ff'
-};
+const padding = { padding: '12px' };
 
 export default AdminDashboard;

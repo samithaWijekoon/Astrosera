@@ -27,6 +27,8 @@ const App = () => {
         <Route path="/achievements" element={<Member4 />} />
         <Route path="/analytics" element={<Home />} />
         <Route path="/news" element={<Member6 />} />
+        
+        {/* Member 05 - Admin & Analytics Dashboard */}
         <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
       <Footer />

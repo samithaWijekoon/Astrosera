@@ -1,0 +1,10 @@
+[
+  { "id": 1, "name": "Orion K.", "avatar": "OK", "score": 4850, "streak": 31 },
+  { "id": 2, "name": "Chang Chung", "avatar": "YOU", "score": 4210, "streak": 24, "isUser": true },
+  { "id": 3, "name": "Nova S.", "avatar": "NS", "score": 3990, "streak": 22 },
+  { "id": 4, "name": "Lyra M.", "avatar": "LM", "score": 3540, "streak": 18 },
+  { "id": 5, "name": "Zeph A.", "avatar": "ZA", "score": 3100, "streak": 15 }
+
+
+
+]

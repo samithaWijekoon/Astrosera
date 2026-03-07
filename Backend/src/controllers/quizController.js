@@ -1,40 +1,61 @@
 const Quiz = require('../models/Quiz');
 const xlsx = require('xlsx');
 
+// 1. Function to handle Excel Upload
 const uploadQuizExcel = async (req, res) => {
     try {
-        // 1. Check if the file actually reached the backend
-        if (!req.files || Object.keys(req.files).length === 0) {
-            console.log("No files object found in request");
-            return res.status(400).json({ success: false, message: "No file was received by the server" });
+        if (!req.files || !req.files.file) {
+            return res.status(400).json({ success: false, message: "No file uploaded" });
         }
 
-        const quizFile = req.files.file; // This MUST match the name in your Frontend formData
+        const workbook = xlsx.read(req.files.file.data, { type: 'buffer' });
+        const sheetName = workbook.SheetNames[0];
+        const rawData = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
 
-        // 2. Read the Excel data
-        const workbook = xlsx.read(quizFile.data, { type: 'buffer' });
-        const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        const data = xlsx.utils.sheet_to_json(sheet);
+        const formattedQuestions = rawData.map(item => {
+            const getVal = (target) => {
+                const key = Object.keys(item).find(k => k.toLowerCase().trim() === target.toLowerCase());
+                return item[key];
+            };
 
-        // 3. Simple mapping
-        const formatted = data.map(item => ({
-            questionNo: item['Question No'] || item['question no'],
-            question: item['Question'] || item['question'],
-            option1: item['Answer 1'] || item['answer 1'],
-            option2: item['Answer 2'] || item['answer 2'],
-            option3: item['Answer 3'] || item['answer 3'],
-            option4: item['Answer 4'] || item['answer 4'],
-            correctAnswer: item['Correct Answer'] || item['correct answer'],
-            weekNumber: item['Week'] || 1
-        }));
+            return {
+                questionNo: getVal('Question No') || getVal('No'),
+                question: getVal('Question'),
+                option1: getVal('Answer 1'),
+                option2: getVal('Answer 2'),
+                option3: getVal('Answer 3'),
+                option4: getVal('Answer 4'),
+                correctAnswer: getVal('Correct Answer'),
+                weekNumber: getVal('Week') || 1
+            };
+        });
 
-        await Quiz.insertMany(formatted);
-        res.status(200).json({ success: true, message: "Success! 100 questions added." });
-
+        await Quiz.insertMany(formattedQuestions);
+        res.status(201).json({ success: true, message: "Success! 100 questions added." });
     } catch (error) {
-        console.error("Backend Error:", error);
         res.status(500).json({ success: false, message: error.message });
     }
 };
 
-module.exports = { uploadQuizExcel };
+// 2. NEW: Function to get all quizzes for your Analytics View
+const getQuizzes = async (req, res) => {
+    try {
+        const quizzes = await Quiz.find().sort({ questionNo: 1 });
+        res.status(200).json(quizzes);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// 3. NEW: Function to clear the database
+const clearQuizzes = async (req, res) => {
+    try {
+        await Quiz.deleteMany({});
+        res.status(200).json({ message: "All questions deleted successfully!" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Now all three are defined and can be exported
+module.exports = { uploadQuizExcel, getQuizzes, clearQuizzes };
