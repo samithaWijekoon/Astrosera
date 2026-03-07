@@ -12,14 +12,23 @@ export const AuthProvider = ({ children }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Persistent login check
+        // 1. Check for stored user on page load/refresh
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
             try {
-                setUser(JSON.parse(storedUser));
+                const parsedUser = JSON.parse(storedUser);
+                setUser(parsedUser);
+
+                // 2. Safety Fix: Ensure userId is set for the Achievement page 
+                // in case it was cleared but the user object remains.
+                if (parsedUser._id && !localStorage.getItem('userId')) {
+                    localStorage.setItem('userId', parsedUser._id);
+                }
             } catch (error) {
                 console.error("Error parsing stored user", error);
                 localStorage.removeItem('user');
+                localStorage.removeItem('token');
+                localStorage.removeItem('userId');
             }
         }
         setLoading(false);
@@ -39,11 +48,13 @@ export const AuthProvider = ({ children }) => {
 
             if (response.ok) {
                 setUser(data);
-                // Unified Storage: Using localStorage with her specific userId field included
+
+                // Unified Storage: Using localStorage so session persists
+                // We save the ID in three places to ensure all team members' components work
                 localStorage.setItem('user', JSON.stringify(data));
                 localStorage.setItem('token', data.token);
-                localStorage.setItem('userId', data._id); 
-                
+                localStorage.setItem('userId', data._id);
+
                 navigate('/');
                 return { success: true };
             } else {
@@ -86,6 +97,7 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         setUser(null);
+        // Clear all storage keys to ensure a clean slate
         localStorage.removeItem('user');
         localStorage.removeItem('token');
         localStorage.removeItem('userId');

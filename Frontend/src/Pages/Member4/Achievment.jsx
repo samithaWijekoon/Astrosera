@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useContext } from 'react';
 import './Achievment.css';
 import AuthContext from '../../context/AuthContext';
 
-const API = 'http://localhost:5000/api';
+const API = 'http://localhost:5001/api';
 
 // ─── Format date helper ───────────────────────────────────────────────────────
 function fmt(d) {
@@ -113,7 +113,7 @@ const Member4 = () => {
   const leaderboardRef = useRef(null);
 
   useEffect(() => {
-    const userId = sessionStorage.getItem('userId');
+    const userId = localStorage.getItem('userId');
     if (!userId) {
       setError('Please log in to view your achievements.');
       setLoading(false);
