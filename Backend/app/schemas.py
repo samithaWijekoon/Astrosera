@@ -50,6 +50,7 @@ class MediaItemResponse(BaseModel):
     title: str
     thumbnail: str
     videoUrl: Optional[str] = None
+    nasaId: Optional[str] = None
 
     class Config:
         from_attributes = True

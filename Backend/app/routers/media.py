@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Query
 from app.schemas import MediaItemResponse, MediaGalleryResponse
-from app.services.nasa_media import search_nasa_media
+from app.services.nasa_media import search_nasa_media, resolve_video_url
 
 router = APIRouter(prefix="/api/media", tags=["media"])
 
@@ -31,6 +31,7 @@ async def get_media(
             title=item["title"],
             thumbnail=item["thumbnail"],
             videoUrl=item.get("video_url"),
+            nasaId=item.get("nasa_id"),
         )
         for idx, item in enumerate(result["items"])
     ]
@@ -40,3 +41,10 @@ async def get_media(
         total=result["total_hits"],
         page=page,
     )
+
+
+@router.get("/video/{nasa_id}")
+async def get_video_url(nasa_id: str):
+    """Resolve the actual mp4 URL for a NASA video on-demand."""
+    url = await resolve_video_url(nasa_id)
+    return {"videoUrl": url}

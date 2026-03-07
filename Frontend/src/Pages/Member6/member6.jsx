@@ -241,49 +241,69 @@ const Member6 = () => {
         };
     }, [hasMoreFromServer, loading, loadMoreNews]);
 
-    // Fallback APOD while loading
+    const apodLoading = !apod;
     const displayApod = apod || {
-        title: "Loading...",
-        date: getTodayDate(),
+        title: "",
+        date: "",
         url: "#",
-        img: "https://images.unsplash.com/photo-1543722530-d2c3201371e7?w=1600&h=900&fit=crop",
-        explanation: "Fetching today's astronomy picture...",
-        photographer: "NASA"
+        img: "",
+        explanation: "",
+        photographer: ""
     };
 
     return (
         <div className="member6-container">
             {/* Header with Search */}
             <header className="media-header">
-                <h1>🌌 Cosmic Library</h1>
                 <div className="search-bar">
+                    <span className="search-icon-left">🔭</span>
                     <input
                         type="text"
-                        placeholder="Search news, images, topics..."
+                        placeholder="Explore the cosmos — search news, galaxies, missions..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(searchTerm); }}
                     />
-                    <button className="search-btn" onClick={() => handleSearch(searchTerm)}>🔍</button>
+                    <button className="search-btn" onClick={() => handleSearch(searchTerm)}>
+                        <span className="search-btn-icon">✦</span>
+                    </button>
                 </div>
             </header>
 
             {/* Hero Section: APOD */}
-            <section className="apod-section" style={{ backgroundImage: `url(${displayApod.img})` }}>
-                <div className="apod-overlay"></div>
-                <div className="apod-content">
-                    <div className="apod-header-info">
-                        <span className="badge">🌟 Astronomy Picture of the Day</span>
-                        <span className="apod-date">{displayApod.date}</span>
+            <section className="apod-section">
+                {apodLoading ? (
+                    <div className="apod-loading-skeleton">
+                        <div className="skeleton-image"></div>
+                        <div className="skeleton-content">
+                            <div className="skeleton-line skeleton-title"></div>
+                            <div className="skeleton-line skeleton-text"></div>
+                            <div className="skeleton-line skeleton-text short"></div>
+                        </div>
                     </div>
-                    <h2>{displayApod.title}</h2>
-                    <p>{displayApod.explanation}</p>
-                    <div className="apod-footer">
-                        <span className="apod-credit">📷 {displayApod.photographer}</span>
-                        <a href={displayApod.url} target="_blank" rel="noopener noreferrer" className="apod-link">
-                            View Full Resolution →
-                        </a>
-                    </div>
-                </div>
+                ) : (
+                    <>
+                        <div className="apod-image-wrapper">
+                            <img src={displayApod.img} alt={displayApod.title} className="apod-image" />
+                            <div className="apod-image-overlay">
+                                <span className="badge">🌟 Astronomy Picture of the Day</span>
+                            </div>
+                        </div>
+                        <div className="apod-content">
+                            <div className="apod-header-info">
+                                <h2>{displayApod.title}</h2>
+                                <span className="apod-date">{new Date().toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</span>
+                            </div>
+                            <p>{displayApod.explanation}</p>
+                            <div className="apod-footer">
+                                <span className="apod-credit">📷 {displayApod.photographer}</span>
+                                <a href={displayApod.url} target="_blank" rel="noopener noreferrer" className="apod-link">
+                                    View Full Resolution →
+                                </a>
+                            </div>
+                        </div>
+                    </>
+                )}
             </section>
 
             {/* Tabs */}
@@ -330,15 +350,15 @@ const Member6 = () => {
                             </div>
                         </div>
 
-                    {searchTerm && (
-                        <div style={{
-                            textAlign: 'center',
-                            padding: '20px',
-                            color: '#888',
-                            fontSize: '0.95rem'
-                        }}>
-                            Showing results for "<strong style={{ color: '#8b5cf6' }}>{searchTerm}</strong>"
-                        </div>
+                        {searchTerm && (
+                            <div style={{
+                                textAlign: 'center',
+                                padding: '20px',
+                                color: '#888',
+                                fontSize: '0.95rem'
+                            }}>
+                                Showing results for "<strong style={{ color: '#8b5cf6' }}>{searchTerm}</strong>"
+                            </div>
                         )}
 
                         {/* Trending Section */}
@@ -352,7 +372,7 @@ const Member6 = () => {
                                             className="trending-card"
                                             onClick={() => setSelectedArticle(item)}
                                         >
-                                            <div className="trending-image" style={{ backgroundImage: `url(${item.image})` }}>
+                                            <div className="trending-image" style={{ backgroundImage: `url(${item.image || 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&h=400&fit=crop'})` }}>
                                                 <span className="trending-badge">🔥 Trending</span>
                                             </div>
                                             <div className="trending-content">
@@ -379,7 +399,7 @@ const Member6 = () => {
                                                 {/* Article Image */}
                                                 <div
                                                     className="news-image"
-                                                    style={{ backgroundImage: `url(${item.image})` }}
+                                                    style={{ backgroundImage: `url(${item.image || 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&h=400&fit=crop'})` }}
                                                     onClick={() => setSelectedArticle(item)}
                                                 >
                                                     <div className="news-image-overlay">
@@ -465,6 +485,11 @@ const Member6 = () => {
                                         </div>
                                     )}
                                 </>
+                            ) : loading ? (
+                                <div className="loading-indicator" style={{ gridColumn: '1 / -1', marginTop: '40px' }}>
+                                    <div className="spinner"></div>
+                                    <p>Searching the cosmos...</p>
+                                </div>
                             ) : (
                                 <div className="empty-state">
                                     <span className="empty-icon">🔭</span>
@@ -488,7 +513,17 @@ const Member6 = () => {
                                 <div
                                     key={item.id}
                                     className={`media-item ${item.type === 'video' ? 'clickable' : ''}`}
-                                    onClick={() => item.type === 'video' && setSelectedVideo(item)}
+                                    onClick={async () => {
+                                        if (item.type === 'video' && item.nasaId) {
+                                            try {
+                                                const resp = await fetch(`${API_BASE}/media/video/${item.nasaId}`);
+                                                const data = await resp.json();
+                                                setSelectedVideo({ ...item, videoUrl: data.videoUrl });
+                                            } catch {
+                                                setSelectedVideo(item);
+                                            }
+                                        }
+                                    }}
                                 >
                                     <img
                                         src={item.thumbnail}
@@ -595,15 +630,15 @@ const Member6 = () => {
                         </button>
                         <h3>{selectedVideo.title}</h3>
                         <div className="video-wrapper">
-                            <iframe
+                            <video
                                 width="100%"
                                 height="450"
+                                controls
+                                autoPlay
                                 src={selectedVideo.videoUrl}
-                                title={selectedVideo.title}
-                                frameBorder="0"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowFullScreen
-                            ></iframe>
+                            >
+                                Your browser does not support the video tag.
+                            </video>
                         </div>
                     </div>
                 </div>

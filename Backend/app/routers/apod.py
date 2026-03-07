@@ -1,6 +1,6 @@
 """APOD router — Astronomy Picture of the Day with caching."""
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -11,12 +11,15 @@ router = APIRouter(prefix="/api/apod", tags=["apod"])
 
 
 @router.get("", response_model=APODResponse)
-async def get_apod(db: Session = Depends(get_db)):
+async def get_apod(
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db)
+):
     """
     Get today's Astronomy Picture of the Day.
     Returns cached version if already fetched today.
     """
-    result = await get_or_fetch_apod(db)
+    result = await get_or_fetch_apod(db, background_tasks)
     if not result:
         raise HTTPException(
             status_code=503,

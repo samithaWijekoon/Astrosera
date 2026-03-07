@@ -14,6 +14,12 @@ NASA_IMAGES_API_URL = "https://images-api.nasa.gov"
 NASA_RSS_FEEDS = [
     "https://www.nasa.gov/news-release/feed/",
     "https://www.nasa.gov/technology/feed/",
+    "https://www.nasa.gov/earth/feed/",
+    "https://www.nasa.gov/solar-system/feed/",
+    "https://www.nasa.gov/universe/feed/",
+    "https://www.nasa.gov/aeronautics/feed/",
+    "https://www.nasa.gov/learning-resources/feed/",
+    "https://www.nasa.gov/general/feed/",
 ]
 
 # Cache durations in seconds

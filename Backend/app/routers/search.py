@@ -21,6 +21,14 @@ async def global_search(
     Returns combined results tagged by type.
     """
     results = []
+    
+    q = q.strip()
+    if len(q) < 3:
+        return SearchResponse(
+            query=q,
+            results=[],
+            total=0,
+        )
 
     # 1. Search local articles
     if q:

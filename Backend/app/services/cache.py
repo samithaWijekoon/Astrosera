@@ -3,6 +3,9 @@
 from datetime import datetime, timedelta
 
 from sqlalchemy.orm import Session
+from fastapi import BackgroundTasks
+
+from app.database import SessionLocal
 
 from app.config import APOD_CACHE_DURATION, NEWS_CACHE_DURATION
 from app.models import APODCache, ScrapeMeta
@@ -10,9 +13,10 @@ from app.services.nasa_apod import fetch_apod_from_nasa
 from app.services.scraper import scrape_nasa_feeds
 
 
-async def get_or_fetch_apod(db: Session) -> dict | None:
+async def get_or_fetch_apod(db: Session, background_tasks: BackgroundTasks) -> dict | None:
     """
-    Return today's APOD from cache if available, otherwise fetch and cache.
+    Return today's APOD from cache if available. If not, return latest cached
+    and fetch today's APOD in the background.
     """
     today = datetime.utcnow().strftime("%Y-%m-%d")
 
@@ -28,23 +32,49 @@ async def get_or_fetch_apod(db: Session) -> dict | None:
             "copyright": cached.copyright,
         }
 
-    # Fetch from NASA
+    # Fetch latest as fallback
+    fallback = (
+        db.query(APODCache).order_by(APODCache.date.desc()).first()
+    )
+
+    async def background_fetch_apod():
+        bg_db = SessionLocal()
+        try:
+            existing = bg_db.query(APODCache).filter(APODCache.date == today).first()
+            if existing: return
+
+            data = await fetch_apod_from_nasa()
+            if data:
+                entry = APODCache(
+                    title=data.get("title", "Untitled"),
+                    explanation=data.get("explanation", ""),
+                    url=data.get("url", ""),
+                    hdurl=data.get("hdurl"),
+                    date=data.get("date", today),
+                    media_type=data.get("media_type", "image"),
+                    copyright=data.get("copyright"),
+                )
+                bg_db.add(entry)
+                bg_db.commit()
+        finally:
+            bg_db.close()
+
+    if fallback:
+        # We have a fallback, trigger background fetch and return fallback immediately
+        background_tasks.add_task(background_fetch_apod)
+        return {
+            "title": fallback.title,
+            "date": fallback.date,
+            "url": fallback.url,
+            "hdurl": fallback.hdurl,
+            "explanation": fallback.explanation,
+            "media_type": fallback.media_type,
+            "copyright": fallback.copyright,
+        }
+
+    # If no fallback at all, we MUST fetch synchronously and wait
     data = await fetch_apod_from_nasa()
     if not data:
-        # Return latest cached entry as fallback
-        fallback = (
-            db.query(APODCache).order_by(APODCache.date.desc()).first()
-        )
-        if fallback:
-            return {
-                "title": fallback.title,
-                "date": fallback.date,
-                "url": fallback.url,
-                "hdurl": fallback.hdurl,
-                "explanation": fallback.explanation,
-                "media_type": fallback.media_type,
-                "copyright": fallback.copyright,
-            }
         return None
 
     # Store in cache

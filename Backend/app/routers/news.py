@@ -1,10 +1,10 @@
 """News feed router — paginated, filterable, sortable articles."""
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, BackgroundTasks
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, asc
 
-from app.database import get_db
+from app.database import get_db, SessionLocal
 from app.models import Article
 from app.schemas import ArticleResponse, NewsFeedResponse
 from app.services.cache import refresh_news_if_stale
@@ -14,6 +14,7 @@ router = APIRouter(prefix="/api/news", tags=["news"])
 
 @router.get("", response_model=NewsFeedResponse)
 async def get_news(
+    background_tasks: BackgroundTasks,
     page: int = Query(1, ge=1),
     limit: int = Query(6, ge=1, le=50),
     category: str = Query("all"),
@@ -25,8 +26,15 @@ async def get_news(
     Paginated news feed with category filtering, sorting and search.
     Automatically refreshes content from NASA RSS if cache is stale.
     """
-    # Refresh cache if needed
-    await refresh_news_if_stale(db)
+    async def background_refresh_news():
+        bg_db = SessionLocal()
+        try:
+            await refresh_news_if_stale(bg_db)
+        finally:
+            bg_db.close()
+
+    # Refresh cache if needed in the background
+    background_tasks.add_task(background_refresh_news)
 
     query = db.query(Article)
 
@@ -36,6 +44,16 @@ async def get_news(
 
     # Search filter
     if search:
+        search = search.strip()
+        if len(search) < 3:
+            return NewsFeedResponse(
+                articles=[],
+                total=0,
+                page=page,
+                limit=limit,
+                hasMore=False,
+            )
+            
         pattern = f"%{search}%"
         query = query.filter(
             (Article.title.ilike(pattern))
