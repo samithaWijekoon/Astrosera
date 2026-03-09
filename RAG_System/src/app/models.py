@@ -33,3 +33,15 @@ class APODResponse(BaseModel):
     date: str
     media_type: str
     copyright: str | None = None
+
+
+class EPICResponse(BaseModel):
+    """Response body for the `/epic` endpoint.
+
+    Contains the most recent Earth image from the EPIC camera.
+    """
+    title: str = "NASA EPIC Earth Imagery"
+    caption: str
+    url: str
+    date: str
+    identifier: str
