@@ -19,6 +19,9 @@ class Settings(BaseSettings):
     pinecone_api_key: str
     pinecone_index_name: str
 
+    # NASA APOD Configuration
+    nasa_api_key: str = "DEMO_KEY"
+
     # Retrieval Configuration
     retrieval_k: int = 4
 

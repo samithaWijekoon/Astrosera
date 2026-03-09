@@ -18,3 +18,18 @@ class QAResponse(BaseModel):
     answer: str
     context: str
     citations: dict[str, dict] | None = None
+
+
+class APODResponse(BaseModel):
+    """Response body for the `/apod` endpoint.
+
+    Mirrors the NASA APOD API response structure with only the
+    fields we need for the chat interface card.
+    """
+    title: str
+    explanation: str
+    url: str
+    hdurl: str | None = None
+    date: str
+    media_type: str
+    copyright: str | None = None
