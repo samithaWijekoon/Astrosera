@@ -7,7 +7,8 @@ const SUGGESTIONS = [
   'What is a black hole and how does it form?',
   'Explain the life cycle of a star',
   'What is the cosmic microwave background?',
-  'How far is the nearest galaxy to the Milky Way?',
+  'Astronomy Picture of the Day',
+  'Latest Earth Image (EPIC)',
 ];
 
 
@@ -104,6 +105,98 @@ const Chat = () => {
     if (!question) return;
 
     if (!showChat) setShowChat(true);
+
+    const isApodReq = question.toLowerCase().includes('astronomy picture of the day') || question.toLowerCase() === 'apod';
+
+    if (isApodReq) {
+      const userMsg = {
+        id: Date.now(),
+        text: question,
+        sender: 'user',
+        timestamp: new Date().toISOString(),
+      };
+      setMessages(prev => [...prev, userMsg]);
+      setInput('');
+      setIsTyping(true);
+
+      try {
+        const res = await fetch(`${RAG_API_URL}/apod`);
+        if (!res.ok) throw new Error(`API Error: ${res.status}`);
+        const data = await res.json();
+
+        setMessages(prev => [
+          ...prev,
+          {
+            id: Date.now() + 1,
+            type: 'apod',
+            data: data,
+            sender: 'bot',
+            timestamp: new Date().toISOString(),
+          },
+        ]);
+      } catch {
+        setMessages(prev => [
+          ...prev,
+          {
+            id: Date.now() + 1,
+            text: "I couldn't fetch the Astronomy Picture of the Day from NASA right now. Please try again later.",
+            sender: 'bot',
+            isError: true,
+            timestamp: new Date().toISOString(),
+          },
+        ]);
+      } finally {
+        setIsTyping(false);
+      }
+      return;
+    }
+
+    const isEpicReq = question.toLowerCase().includes('epic') ||
+      question.toLowerCase().includes('earth picture') ||
+      question.toLowerCase().includes('earth image');
+
+    if (isEpicReq) {
+      const userMsg = {
+        id: Date.now(),
+        text: question,
+        sender: 'user',
+        timestamp: new Date().toISOString(),
+      };
+      setMessages(prev => [...prev, userMsg]);
+      setInput('');
+      setIsTyping(true);
+
+      try {
+        const res = await fetch(`${RAG_API_URL}/epic`);
+        if (!res.ok) throw new Error(`API Error: ${res.status}`);
+        const data = await res.json();
+
+        setMessages(prev => [
+          ...prev,
+          {
+            id: Date.now() + 1,
+            type: 'epic',
+            data: data,
+            sender: 'bot',
+            timestamp: new Date().toISOString(),
+          },
+        ]);
+      } catch {
+        setMessages(prev => [
+          ...prev,
+          {
+            id: Date.now() + 1,
+            text: "I couldn't fetch the latest EPIC image of Earth from NASA right now. Please try again later.",
+            sender: 'bot',
+            isError: true,
+            timestamp: new Date().toISOString(),
+          },
+        ]);
+      } finally {
+        setIsTyping(false);
+      }
+      return;
+    }
 
     const userMsg = {
       id: Date.now(),
@@ -216,12 +309,48 @@ const Chat = () => {
             {messages.map(msg => (
               <div
                 key={msg.id}
-                className={`bubble ${msg.sender} ${msg.isError ? 'error' : ''}`}
+                className={`bubble ${msg.sender} ${msg.isError ? 'error' : ''} ${(msg.type === 'apod' || msg.type === 'epic') ? 'apod-bubble' : ''}`}
               >
                 {msg.sender === 'bot' && <div className="bot-avatar">🔭</div>}
 
                 <div className="bubble-inner">
-                  <p className="bubble-text">{msg.text}</p>
+                  {msg.type === 'apod' ? (
+                    <div className="apod-card">
+                      {msg.data.media_type === 'video' ? (
+                        <iframe
+                          src={msg.data.url}
+                          title={msg.data.title}
+                          frameBorder="0"
+                          allow="encrypted-media"
+                          allowFullScreen
+                          className="apod-video"
+                        />
+                      ) : (
+                        <img src={msg.data.url} alt={msg.data.title} className="apod-img" />
+                      )}
+                      <div className="apod-details">
+                        <h3 className="apod-title">{msg.data.title}</h3>
+                        <div className="apod-meta">
+                          {msg.data.date} • {msg.data.copyright || 'Public Domain'}
+                        </div>
+                        <p className="apod-desc">{msg.data.explanation}</p>
+                      </div>
+                    </div>
+                  ) : msg.type === 'epic' ? (
+                    <div className="apod-card">
+                      <img src={msg.data.url} alt={msg.data.title} className="apod-img" />
+                      <div className="apod-details">
+                        <h3 className="apod-title">{msg.data.title}</h3>
+                        <div className="apod-meta">
+                          {msg.data.date} • NASA EPIC
+                        </div>
+                        <p className="apod-desc">{msg.data.caption}</p>
+                        <p className="apod-meta" style={{ marginTop: '0.5rem' }}>ID: {msg.data.identifier}</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="bubble-text">{msg.text}</p>
+                  )}
 
                   {msg.searchQuery && msg.searchQuery !== msg.text && (
                     <div className="search-info">
