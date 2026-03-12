@@ -57,7 +57,14 @@ const Navbar = () => {
                 <div className="flex items-center space-x-4">
                     {user ? (
                         <div className="hidden md:flex items-center space-x-4">
-                            <span className="text-gray-300 text-sm">Hi, {user.username}</span>
+                            <Link to="/profile" className="text-gray-300 hover:text-white transition-colors text-sm font-medium flex items-center space-x-2">
+                                {user.avatarInitials && (
+                                    <span className="w-8 h-8 rounded-full bg-purple-600/50 flex items-center justify-center text-xs border border-purple-500/30">
+                                        {user.avatarInitials}
+                                    </span>
+                                )}
+                                <span>Hi, {user.username}</span>
+                            </Link>
                             <button
                                 onClick={logout}
                                 className="bg-red-600/80 hover:bg-red-600 text-white text-sm font-bold py-2 px-6 rounded-full transition-all duration-300 shadow-[0_0_15px_rgba(220,38,38,0.3)] hover:shadow-[0_0_25px_rgba(220,38,38,0.5)] focus:outline-none"

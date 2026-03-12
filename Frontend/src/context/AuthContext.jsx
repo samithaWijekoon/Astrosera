@@ -126,6 +126,17 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const updateUser = (userData) => {
+        setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData));
+        if (userData.token) {
+            localStorage.setItem('token', userData.token);
+        }
+        if (userData._id) {
+            localStorage.setItem('userId', userData._id);
+        }
+    };
+
     const logout = () => {
         setUser(null);
         // Clear all storage keys to ensure a clean slate
@@ -136,7 +147,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, signup, logout, googleLogin, loading }}>
+        <AuthContext.Provider value={{ user, login, signup, logout, googleLogin, updateUser, loading }}>
             {children}
         </AuthContext.Provider>
     );

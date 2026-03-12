@@ -90,6 +90,48 @@ const getMe = async (req, res) => {
     res.status(200).json(req.user);
 };
 
+// @desc    Update user profile
+// @route   PUT /api/auth/profile
+const updateProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+
+        if (user) {
+            user.username = req.body.username || user.username;
+            user.email = req.body.email || user.email;
+            if (req.body.avatarInitials) {
+                user.avatarInitials = req.body.avatarInitials;
+            }
+
+            if (req.body.password) {
+                const isValidPassword = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(req.body.password);
+                if (!isValidPassword) {
+                    return res.status(400).json({ message: 'Password must be at least 8 characters long, contain at least one uppercase letter, one number, and one special character.' });
+                }
+                user.password = req.body.password;
+            }
+
+            const updatedUser = await user.save();
+
+            res.json({
+                _id: updatedUser._id,
+                username: updatedUser.username,
+                email: updatedUser.email,
+                role: updatedUser.role,
+                avatarInitials: updatedUser.avatarInitials,
+                totalScore: updatedUser.totalScore,
+                streakCount: updatedUser.streakCount,
+                token: generateToken(updatedUser._id, updatedUser.username, updatedUser.email),
+            });
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error) {
+        console.error("Profile Update Error:", error.message);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
 // @desc    Get all users (Used for Admin Analytics)
 const getAllUsers = async (req, res) => {
     try {
@@ -161,5 +203,6 @@ module.exports = {
     loginUser,
     googleAuth,
     getMe,
+    updateProfile,
     getAllUsers,
 };
