@@ -66,6 +66,37 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const googleLogin = async (credential) => {
+        try {
+            const response = await fetch(`${backendurl}/api/auth/google`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ token: credential }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setUser(data);
+                
+                // Store identically to standard login
+                localStorage.setItem('user', JSON.stringify(data));
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('userId', data._id);
+
+                navigate('/');
+                return { success: true };
+            } else {
+                return { success: false, message: data.message || 'Google Sign-In failed' };
+            }
+        } catch (error) {
+            console.error('Google Login Error:', error);
+            return { success: false, message: 'Server error during Google Sign-In' };
+        }
+    };
+
     const signup = async (username, email, password) => {
         try {
             const response = await fetch(`${backendurl}/api/auth/signup`, {
@@ -105,7 +136,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, signup, logout, loading }}>
+        <AuthContext.Provider value={{ user, login, signup, logout, googleLogin, loading }}>
             {children}
         </AuthContext.Provider>
     );

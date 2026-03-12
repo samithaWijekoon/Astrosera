@@ -1,17 +1,26 @@
 import React, { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
+import { GoogleLogin } from '@react-oauth/google';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const { login } = useContext(AuthContext);
+    const { login, googleLogin } = useContext(AuthContext);
     const [error, setError] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         const result = await login(email, password);
+        if (!result.success) {
+            setError(result.message);
+        }
+    };
+
+    const handleGoogleSuccess = async (credentialResponse) => {
+        setError('');
+        const result = await googleLogin(credentialResponse.credential);
         if (!result.success) {
             setError(result.message);
         }
@@ -61,6 +70,22 @@ const Login = () => {
                     >
                         Sign In
                     </button>
+                    
+                    <div className="flex items-center my-6">
+                        <div className="flex-grow border-t border-gray-600"></div>
+                        <span className="flex-shrink-0 mx-4 text-gray-500 text-sm">Or sign in with</span>
+                        <div className="flex-grow border-t border-gray-600"></div>
+                    </div>
+
+                    <div className="flex justify-center">
+                        <GoogleLogin
+                            onSuccess={handleGoogleSuccess}
+                            onError={() => setError('Google Sign-In failed to initialize.')}
+                            theme="filled_black"
+                            width="100%"
+                            size="large"
+                        />
+                    </div>
                 </form>
 
                 <div className="mt-8 text-center text-gray-400 text-sm">
