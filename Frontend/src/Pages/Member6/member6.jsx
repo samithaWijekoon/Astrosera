@@ -91,74 +91,100 @@ const Member6 = () => {
         }
     };
 
-    // ─── Fetch news from backend ───────────────────────────────────
+    // ─── Fetch news from backend (MOCKED) ──────────────────────────
     const fetchNews = async (page = 1, append = false) => {
         setLoading(true);
-        try {
-            const params = new URLSearchParams({
-                page: page.toString(),
-                limit: '6',
-                category: activeCategory,
-                sort: sortBy,
-                search: searchTerm,
-            });
-            const response = await fetch(`${API_BASE}/news?${params}`);
-            if (!response.ok) throw new Error('News fetch failed');
-            const data = await response.json();
+        setTimeout(() => {
+            const articles = [
+                {
+                    id: 'n1',
+                    title: 'NASA Discovers Potentially Habitable Exoplanet',
+                    summary: 'The James Webb Space Telescope has detected water vapor signatures on a newly found super-Earth located 45 light-years away.',
+                    fullContent: 'Astronomers using NASA’s James Webb Space Telescope have discovered compelling evidence for water vapor in the atmosphere of an exoplanet roughly 2.5 times the size of Earth. Designated as Kepler-452c, this exoplanet orbits in the habitable zone of its host star. This marks a significant milestone in our search for habitable worlds beyond our solar system, offering tantalizing clues about planetary evolution.',
+                    source: 'NASA/JPL',
+                    date: new Date().toISOString(),
+                    category: 'discoveries',
+                    image: 'https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=800&h=400&fit=crop',
+                    url: 'https://www.nasa.gov',
+                    readingTime: 4,
+                    trending: true,
+                },
+                {
+                    id: 'n2',
+                    title: 'SpaceX Starship Completes Historic Orbital Flight',
+                    summary: 'The massive Starship rocket successfully reached orbit and safely re-entered Earth’s atmosphere, splashing down in the Indian Ocean.',
+                    fullContent: 'SpaceX has hit another monumental milestone with its giant Starship rocket, successfully completing a full orbital test flight. The spacecraft, designed to carry humans to Mars, performed nominally through staging and reached its target trajectory. After re-entering the atmosphere, it executed a soft splashdown. This brings humanity one step closer to becoming a multi-planetary species.',
+                    source: 'SpaceX',
+                    date: new Date(Date.now() - 86400000).toISOString(),
+                    category: 'missions',
+                    image: 'https://images.unsplash.com/photo-1541185933-ef5d8ed016c2?w=800&h=400&fit=crop',
+                    url: 'https://www.spacex.com',
+                    readingTime: 3,
+                    trending: true,
+                },
+                {
+                    id: 'n3',
+                    title: 'Major Solar Flare Could Cause Auroras Tonight',
+                    summary: 'An X-class solar flare erupted from sunspot AR3354, throwing a significant CME towards Earth that will cause intense auroras.',
+                    fullContent: 'Space weather forecasters have issued a geometric storm watch following a powerful X-class solar flare. A coronal mass ejection (CME) associated with the flare is expected to impact Earth’s magnetic field late tonight. Skywatchers at mid-to-high latitudes may be treated to stunning auroral displays as incoming solar particles excite gases in the upper atmosphere.',
+                    source: 'NOAA Space Weather',
+                    date: new Date(Date.now() - 172800000).toISOString(),
+                    category: 'spaceweather',
+                    image: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=800&h=400&fit=crop',
+                    url: 'https://www.spaceweather.gov',
+                    readingTime: 2,
+                    trending: false,
+                }
+            ];
 
-            const articles = data.articles.map(a => ({
-                id: a.id,
-                title: a.title,
-                summary: a.summary,
-                fullContent: a.fullContent,
-                source: a.source,
-                date: a.date,
-                category: a.category,
-                image: a.image,
-                url: a.url,
-                readingTime: a.readingTime,
-                trending: a.trending,
-            }));
+            let filtered = articles;
+            if (activeCategory !== 'all') {
+                filtered = filtered.filter(a => a.category === activeCategory);
+            }
+            if (searchTerm) {
+                filtered = filtered.filter(a => a.title.toLowerCase().includes(searchTerm.toLowerCase()));
+            }
 
             if (append) {
-                setNewsData(prev => [...prev, ...articles]);
+                setNewsData(prev => [...prev, ...filtered]);
             } else {
-                setNewsData(articles);
+                setNewsData(filtered);
             }
-            setHasMoreFromServer(data.hasMore);
-        } catch (error) {
-            console.error('Error fetching news:', error);
-        } finally {
+            setHasMoreFromServer(false);
             setLoading(false);
-        }
+        }, 500);
     };
 
-    // ─── Fetch gallery from backend ────────────────────────────────
+    // ─── Fetch gallery from backend (MOCKED) ───────────────────────
     const fetchGallery = async (query = 'space') => {
         setGalleryLoading(true);
-        try {
-            const params = new URLSearchParams({
-                q: query || 'space',
-                page: '1',
-            });
-            const response = await fetch(`${API_BASE}/media?${params}`);
-            if (!response.ok) throw new Error('Media fetch failed');
-            const data = await response.json();
-
-            const items = data.items.map(item => ({
-                id: item.id,
-                type: item.type,
-                title: item.title,
-                thumbnail: item.thumbnail,
-                videoUrl: item.videoUrl,
-                nasaId: item.nasaId,
-            }));
-            setGalleryItems(items);
-        } catch (error) {
-            console.error('Error fetching gallery:', error);
-        } finally {
+        setTimeout(() => {
+            const items = [
+                {
+                    id: 'g1', type: 'image', title: 'Carina Nebula',
+                    thumbnail: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=500&h=500&fit=crop',
+                    nasaId: ''
+                },
+                {
+                    id: 'g2', type: 'image', title: 'Milky Way Core',
+                    thumbnail: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=500&h=500&fit=crop',
+                    nasaId: ''
+                },
+                {
+                    id: 'g3', type: 'image', title: 'Jupiter Great Red Spot',
+                    thumbnail: 'https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=500&h=500&fit=crop',
+                    nasaId: ''
+                }
+            ];
+            
+            let filtered = items;
+            if (query && query !== 'space') {
+                filtered = items.filter(i => i.title.toLowerCase().includes(query.toLowerCase()));
+            }
+            
+            setGalleryItems(filtered);
             setGalleryLoading(false);
-        }
+        }, 500);
     };
 
     // ─── Initial load ──────────────────────────────────────────────
