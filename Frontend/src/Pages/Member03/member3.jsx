@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './member3.css';
 
-const API = 'http://localhost:5000/api';
+const API = 'http://localhost:5001/api';
 const QUIZ_TIME_LIMIT_MS = 120_000; // 2 minutes
 
 const Member3 = () => {
@@ -236,8 +236,8 @@ const Member3 = () => {
                             key={idx}
                             onClick={() => !selectedOption && handlePick(option)}
                             className={`option-btn ${selectedOption === option
-                                    ? (option === q.answer ? 'correct' : 'incorrect')
-                                    : ''
+                                ? (option === q.answer ? 'correct' : 'incorrect')
+                                : ''
                                 }`}
                             disabled={!!selectedOption}
                         >

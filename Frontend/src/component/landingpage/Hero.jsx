@@ -1,8 +1,18 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom'; // Make sure react-router-dom is installed
 import { IoIosRocket, IoMdCheckmarkCircleOutline } from "react-icons/io"; // Install react-icons
+import AuthContext from '../../context/AuthContext'; // Import the AuthContext
 
 const Hero = () => {
+    const { user } = useContext(AuthContext);
+
+    const scrollToChat = () => {
+        const chatSection = document.getElementById('chat');
+        if (chatSection) {
+            chatSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
     return (
         <div className="relative min-h-screen w-full overflow-hidden">
             {/* Background Video */}
@@ -29,12 +39,27 @@ const Hero = () => {
                     Get accurate astronomy answers, track celestial events, and learn through gamified quizzes—all powered by NASA-verified data with RAG technology.
                 </p>
                 <div className="flex space-x-4 mb-12 animate-fade-in-up delay-300">
-                    <button className="bg-purple-600/30 backdrop-blur-xl border border-white/10 hover:bg-purple-600/50 text-white font-bold py-3 px-8 rounded-full transition duration-300 shadow-lg shadow-purple-900/20 transform hover:scale-105">
-                        Get Started Free
-                    </button>
-                    <button className="bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 text-white font-bold py-3 px-8 rounded-full transition duration-300 transform hover:scale-105">
-                        Login
-                    </button>
+                    {user ? (
+                        <button 
+                            onClick={scrollToChat}
+                            className="bg-purple-600/30 backdrop-blur-xl border border-white/10 hover:bg-purple-600/50 text-white font-bold py-3 px-8 rounded-full transition duration-300 shadow-lg shadow-purple-900/20 transform hover:scale-105"
+                        >
+                            Chat Now
+                        </button>
+                    ) : (
+                        <>
+                            <Link to="/signup">
+                                <button className="bg-purple-600/30 backdrop-blur-xl border border-white/10 hover:bg-purple-600/50 text-white font-bold py-3 px-8 rounded-full transition duration-300 shadow-lg shadow-purple-900/20 transform hover:scale-105">
+                                    Get Started Free
+                                </button>
+                            </Link>
+                            <Link to="/login">
+                                <button className="bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 text-white font-bold py-3 px-8 rounded-full transition duration-300 transform hover:scale-105">
+                                    Login
+                                </button>
+                            </Link>
+                        </>
+                    )}
                 </div>
                 <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8 text-sm md:text-base animate-fade-in-up delay-300">
                     <div className="flex items-center">

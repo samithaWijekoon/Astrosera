@@ -5,8 +5,13 @@ require('dotenv').config();
 
 // Generate JWT Token
 const generateToken = (id, username, email) => {
+    // Safety check for Member 05: Ensure JWT_SECRET exists in .env
+    if (!process.env.JWT_SECRET) {
+        console.error("FATAL ERROR: JWT_SECRET is not defined in .env file");
+        return null;
+    }
     return jwt.sign({ id, username, email }, process.env.JWT_SECRET, {
-        expiresIn: '30d', // Recommended to add an expiry for security
+        expiresIn: '30d',
     });
 };
 
@@ -21,32 +26,35 @@ const registerUser = async (req, res) => {
         }
 
         const userExists = await User.findOne({ email });
-
         if (userExists) {
             return res.status(400).json({ message: 'User already exists' });
         }
 
+        // Create User - role defaults to 'student' in Model
         const user = await User.create({
             username,
             email,
             password,
+            // Ensure initials are set for Member 04 Leaderboard
             avatarInitials: username.slice(0, 2).toUpperCase(),
         });
 
         if (user) {
+            const token = generateToken(user._id, user.username, user.email);
             res.status(201).json({
-                _id: user._id, // Fixed: Using actual MongoDB _id
+                _id: user._id,
                 username: user.username,
                 email: user.email,
                 role: user.role,
-                token: generateToken(user._id, user.username, user.email),
+                token: token,
             });
         } else {
             res.status(400).json({ message: 'Invalid user data' });
         }
     } catch (error) {
-        console.error("Register Error:", error);
-        res.status(500).json({ message: 'Server Error' });
+        // Detailed log for your MacBook terminal to debug "Server Error"
+        console.error("Signup Controller Error:", error.message);
+        res.status(500).json({ message: 'Server Error: ' + error.message });
     }
 };
 
@@ -58,33 +66,34 @@ const loginUser = async (req, res) => {
 
         const user = await User.findOne({ email });
 
+        // Using the matchPassword method defined in User.js model
         if (user && (await user.matchPassword(password))) {
+            const token = generateToken(user._id, user.username, user.email);
             res.json({
-                _id: user._id, // Fixed: Achievement page specifically needs _id
+                _id: user._id,
                 username: user.username,
                 email: user.email,
-                role: user.role, // Member 05 needs this for Admin Dashboard
-                token: generateToken(user._id, user.username, user.email),
+                role: user.role,
+                token: token,
             });
         } else {
             res.status(401).json({ message: 'Invalid credentials' });
         }
     } catch (error) {
-        console.error("Login Error:", error);
+        console.error("Login Controller Error:", error.message);
         res.status(500).json({ message: 'Server Error' });
     }
 };
 
 // @desc    Get logged in user data
-// @route   GET /api/auth/me
 const getMe = async (req, res) => {
     res.status(200).json(req.user);
 };
 
-// @desc    Get all users (Admin/Debug only)
+// @desc    Get all users (Used for Admin Analytics)
 const getAllUsers = async (req, res) => {
     try {
-        const users = await User.find();
+        const users = await User.find().select('-password');
         res.status(200).json(users);
     } catch (error) {
         console.error("Fetch Users Error:", error);
