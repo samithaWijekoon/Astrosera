@@ -6,46 +6,41 @@ const userSchema = new mongoose.Schema(
         username: { type: String, required: true, unique: true },
         email: { type: String, required: true, unique: true },
         password: { type: String, required: true },
-        
-        // --- MEMBER 05 (Role & Permissions) ---
         role: {
             type: String,
             enum: ['student', 'admin'],
             default: 'student',
         },
-
-        // --- GAMIFICATION & LEADERBOARD (Member 01/02) ---
         totalScore: { type: Number, default: 0 },
-        totalPoints: { type: Number, default: 0 }, // Synced both naming styles
-        avatarInitials: { type: String, default: 'U' },
-        activeDates: [{ type: Date }],
-        
-        // --- ANALYTICS (Member 05) ---
+        avatarInitials: { type: String },
         streakCount: { type: Number, default: 0 },
         lastQuizDate: { type: Date },
     },
     { timestamps: true }
 );
 
-// Password verification method
+// Method to compare passwords
 userSchema.methods.matchPassword = async function (enteredPassword) {
-    return await bcrypt.compare(enteredPassword, this.password);
+    // Check if the stored password was hashed previously (starts with bcrypt's $2 identifier)
+    if (this.password && this.password.startsWith('$2')) {
+        return await bcrypt.compare(enteredPassword, this.password);
+    }
+    // Fallback for older users who have plain text passwords in the database
+    return enteredPassword === this.password;
 };
 
-// Encryption and Avatar Logic before saving
-userSchema.pre('save', async function (next) {
-    // 1. Only hash the password if it's new or modified
+// Fixed Pre-save Middleware
+userSchema.pre('save', async function () {
+    // 1. Hash password if it is new or changed
     if (this.isModified('password')) {
         const salt = await bcrypt.genSalt(10);
         this.password = await bcrypt.hash(this.password, salt);
     }
 
-    // 2. Auto-set avatar initials from username if still default
-    if (this.username && (this.avatarInitials === 'U' || !this.avatarInitials)) {
+    // 2. Set initials for Member 04 Leaderboard if not present
+    if (this.username && !this.avatarInitials) {
         this.avatarInitials = this.username.slice(0, 2).toUpperCase();
     }
-    
-    next();
 });
 
 const User = mongoose.model('User', userSchema);
