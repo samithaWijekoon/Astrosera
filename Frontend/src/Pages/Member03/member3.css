@@ -1,48 +1,131 @@
-/* Tailwind base is injected, these are custom complex animations supplementing Tailwind v4 */
+/* ──────────────────────────────────────────────────────────────────────────
+   ASTROSERA QUIZ — SPACE THEME CSS
+   Minimalistic deep-space aesthetic with cinematic animations
+────────────────────────────────────────────────────────────────────────── */
 
-/* Screen shake for wrong answers */
-@keyframes shake {
-    0%, 100% { transform: translate(0, 0); }
-    10% { transform: translate(-10px, -10px) rotate(-1deg); }
-    20% { transform: translate(10px, 10px) rotate(1deg); }
-    30% { transform: translate(-10px, 10px) rotate(-1deg); }
-    40% { transform: translate(10px, -10px) rotate(1deg); }
-    50% { transform: translate(-5px, -5px) rotate(-0.5deg); }
-    60% { transform: translate(5px, 5px) rotate(0.5deg); }
-    70% { transform: translate(-5px, 5px) rotate(-0.5deg); }
-    80% { transform: translate(5px, -5px) rotate(0.5deg); }
-    90% { transform: translate(-2px, 0px) rotate(0deg); }
+/* ─── Starfield ───────────────────────────────────────────────────────────── */
+@keyframes twinkle {
+    0%, 100% { opacity: 0.2; transform: scale(1); }
+    50%       { opacity: 1;   transform: scale(1.5); }
 }
 
-.animate-screen-shake {
-    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+@keyframes drift {
+    from { transform: translateY(0px) translateX(0px); }
+    to   { transform: translateY(-12px) translateX(6px); }
 }
 
-@keyframes pulse-fast {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.8; transform: scale(0.98); }
+@keyframes nebula-pulse {
+    0%, 100% { opacity: 0.12; transform: scale(1); }
+    50%       { opacity: 0.22; transform: scale(1.08); }
 }
 
-.animate-pulse-fast {
-    animation: pulse-fast 0.3s ease-in-out infinite;
+/* ─── Planet Orbit ────────────────────────────────────────────────────────── */
+@keyframes orbit-slow {
+    from { transform: rotate(0deg) translateX(120px) rotate(0deg); }
+    to   { transform: rotate(360deg) translateX(120px) rotate(-360deg); }
 }
 
+@keyframes orbit-medium {
+    from { transform: rotate(220deg) translateX(80px) rotate(-220deg); }
+    to   { transform: rotate(580deg) translateX(80px) rotate(-580deg); }
+}
+
+@keyframes planet-spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+/* ─── Intro Animations ────────────────────────────────────────────────────── */
 @keyframes fade-in-up {
-    0% {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    0%   { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
 
-.animate-fade-in-up {
-    animation: fade-in-up 0.6s ease-out forwards;
+@keyframes fade-in-scale {
+    0%   { opacity: 0; transform: scale(0.85); }
+    100% { opacity: 1; transform: scale(1); }
 }
 
-/* Removes tailwind's default focus ring on click, relying on custom focus if needed */
-button {
-    -webkit-tap-highlight-color: transparent;
+@keyframes beam-scan {
+    0%   { transform: translateY(-100%); opacity: 0; }
+    10%  { opacity: 0.6; }
+    90%  { opacity: 0.6; }
+    100% { transform: translateY(100%); opacity: 0; }
 }
+
+/* ─── Feedback ────────────────────────────────────────────────────────────── */
+@keyframes shake {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    15%  { transform: translate(-8px, -6px) rotate(-1deg); }
+    30%  { transform: translate(8px, 6px) rotate(1deg); }
+    45%  { transform: translate(-6px, 6px) rotate(-0.8deg); }
+    60%  { transform: translate(6px, -6px) rotate(0.8deg); }
+    75%  { transform: translate(-3px, 3px) rotate(-0.4deg); }
+    90%  { transform: translate(3px, -3px) rotate(0.4deg); }
+}
+
+@keyframes correct-flash {
+    0%   { box-shadow: 0 0 0 rgba(74, 222, 128, 0); }
+    40%  { box-shadow: 0 0 40px rgba(74, 222, 128, 0.6); }
+    100% { box-shadow: 0 0 0 rgba(74, 222, 128, 0); }
+}
+
+@keyframes wrong-pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.6; }
+}
+
+@keyframes answer-appear {
+    0%   { opacity: 0; transform: translateX(-12px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+/* ─── Fuel bar flicker ────────────────────────────────────────────────────── */
+@keyframes flicker {
+    0%, 100% { opacity: 1; }
+    48%       { opacity: 1; }
+    50%       { opacity: 0.6; }
+    52%       { opacity: 1; }
+    80%       { opacity: 1; }
+    82%       { opacity: 0.7; }
+    84%       { opacity: 1; }
+}
+
+/* ─── Utility classes ─────────────────────────────────────────────────────── */
+.animate-screen-shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+.animate-fade-in-up   { animation: fade-in-up 0.7s ease-out forwards; }
+.animate-fade-in-scale { animation: fade-in-scale 0.6s ease-out forwards; }
+.animate-pulse-fast   { animation: wrong-pulse 0.35s ease-in-out infinite; }
+.animate-correct      { animation: correct-flash 0.6s ease-out; }
+
+.star {
+    position: absolute;
+    border-radius: 50%;
+    background: white;
+    animation: twinkle var(--dur, 3s) ease-in-out infinite var(--delay, 0s);
+}
+
+.nebula-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    animation: nebula-pulse 8s ease-in-out infinite;
+}
+
+.answer-btn-appear {
+    animation: answer-appear 0.35s ease-out both;
+}
+
+/* ─── Beam scan effect ────────────────────────────────────────────────────── */
+.scan-beam {
+    position: absolute;
+    inset-inline: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(139,92,246,0.6), transparent);
+    animation: beam-scan 4s ease-in-out infinite;
+    pointer-events: none;
+}
+
+/* Removes default tap highlight on mobile */
+button { -webkit-tap-highlight-color: transparent; }
