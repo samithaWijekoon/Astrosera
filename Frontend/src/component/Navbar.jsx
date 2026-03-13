@@ -39,16 +39,14 @@ const Navbar = () => {
                 className="sticky top-0 left-0 w-full z-50 transition-all duration-500"
                 style={{
                     background: scrolled
-                        ? 'rgba(8, 8, 18, 0.82)'
-                        : 'rgba(8, 8, 18, 0.55)',
-                    backdropFilter:         'saturate(180%) blur(24px)',
-                    WebkitBackdropFilter:   'saturate(180%) blur(24px)',
-                    borderBottom: scrolled
-                        ? '1px solid rgba(255,255,255,0.08)'
-                        : '1px solid rgba(255,255,255,0.06)',
+                        ? 'rgba(5, 5, 15, 0.78)'
+                        : 'rgba(5, 5, 15, 0.60)',
+                    backdropFilter:         'saturate(180%) blur(28px)',
+                    WebkitBackdropFilter:   'saturate(180%) blur(28px)',
+                    borderBottom: '1px solid rgba(255,255,255,0.09)',
                     boxShadow: scrolled
-                        ? '0 8px 32px rgba(0,0,0,0.45)'
-                        : 'none',
+                        ? '0 1px 0 rgba(255,255,255,0.05) inset, 0 8px 32px rgba(0,0,0,0.4)'
+                        : '0 1px 0 rgba(255,255,255,0.04) inset',
                 }}
             >
                 <div className="max-w-7xl mx-auto px-5 md:px-10 flex items-center justify-between h-14">
@@ -175,13 +173,13 @@ const Navbar = () => {
                     ref={mobileRef}
                     className="absolute left-0 right-0 transition-all duration-300 overflow-hidden"
                     style={{
-                        background: 'rgba(10,10,22,0.92)',
-                        backdropFilter: 'saturate(180%) blur(28px)',
-                        WebkitBackdropFilter: 'saturate(180%) blur(28px)',
-                        borderBottom: '1px solid rgba(255,255,255,0.08)',
+                        background: 'rgba(10,10,22,0.65)',
+                        backdropFilter: 'saturate(200%) blur(32px)',
+                        WebkitBackdropFilter: 'saturate(200%) blur(32px)',
+                        borderBottom: '1px solid rgba(255,255,255,0.1)',
+                        boxShadow: '0 1px 0 rgba(255,255,255,0.06) inset, 0 12px 40px rgba(0,0,0,0.4)',
                         maxHeight: isOpen ? '500px' : '0px',
                         pointerEvents: isOpen ? 'auto' : 'none',
-                        boxShadow: '0 12px 40px rgba(0,0,0,0.5)',
                     }}
                 >
                     <div className="px-5 py-4 flex flex-col gap-1">
