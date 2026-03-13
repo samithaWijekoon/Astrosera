@@ -142,6 +142,7 @@ const Member3 = () => {
     const [savedState,     setSavedState]     = useState(null);
     const [scoreInfo,      setScoreInfo]      = useState({ score: 0, correctCount: 0, timeTakenMs: 0, fullMarks: false });
     const [elapsed,        setElapsed]        = useState(0);
+    const [canPlayToday,   setCanPlayToday]   = useState(true);
 
     const timerRef      = useRef(null);
     const startTimeRef  = useRef(null);
@@ -164,11 +165,21 @@ const Member3 = () => {
         }
     }, []);
 
-    /* ── 1. Fetch questions ────────────────────────────────────────── */
+    /* ── 1. Fetch questions & Daily Status ────────────────────────── */
     useEffect(() => {
         const load = async () => {
             try {
                 const headers = token ? { Authorization: `Bearer ${token}` } : {};
+                
+                // Fetch daily status if logged in
+                if (userId && token) {
+                    const statusRes = await fetch(`${API}/quiz/status/${userId}`, { headers });
+                    if (statusRes.ok) {
+                        const statusData = await statusRes.json();
+                        setCanPlayToday(statusData.canPlay);
+                    }
+                }
+
                 const res = await fetch(`${API}/quiz`, { headers });
                 if (!res.ok) throw new Error(`Status ${res.status}`);
                 const data = await res.json();
@@ -182,7 +193,7 @@ const Member3 = () => {
         };
         load();
         return () => { if (timerRef.current) clearInterval(timerRef.current); };
-    }, [token]);
+    }, [token, userId]);
 
     /* ── Helpers: timer start / stop ──────────────────────────────── */
     const startTimer = (fromElapsed = 0) => {
@@ -193,9 +204,12 @@ const Member3 = () => {
 
     /* ── 2. Start fresh mission ───────────────────────────────────── */
     const startMission = () => {
+        if (!canPlayToday) return;
+
         localStorage.removeItem('astrosera_quiz_state');
         setSavedState(null);
-        const mapped = shuffle(allQuestions).map(q => ({
+        // Take only 10 questions for a daily session
+        const mapped = shuffle(allQuestions).slice(0, 10).map(q => ({
             id:            q._id || q.questionNo,
             questionText:  q.question,
             options:       [q.option1, q.option2, q.option3, q.option4].filter(Boolean),
@@ -393,14 +407,22 @@ const Member3 = () => {
                                 ▶ Continue Mission
                             </button>
                         )}
-                        <button onClick={startMission}
-                            className={`flex-1 py-3 rounded-2xl font-bold tracking-widest text-sm uppercase transition-all hover:scale-[1.02] ${
-                                savedState
-                                    ? 'bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10'
-                                    : 'bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white shadow-[0_0_30px_rgba(124,58,237,0.35)] hover:shadow-[0_0_45px_rgba(124,58,237,0.55)]'
-                            }`}>
-                            {savedState ? '↺ Restart' : '🚀 Launch Mission'}
-                        </button>
+                        {!canPlayToday ? (
+                            <div className="flex-1 py-6 bg-red-500/10 border border-red-500/30 rounded-2xl flex flex-col items-center gap-2">
+                                <span className="text-2xl">⏳</span>
+                                <p className="text-red-400 font-bold uppercase tracking-widest text-xs">Mission Limit Reached</p>
+                                <p className="text-gray-400 text-[10px] lowercase">New questions available at midnight UTC</p>
+                            </div>
+                        ) : (
+                            <button onClick={startMission}
+                                className={`flex-1 py-3 rounded-2xl font-bold tracking-widest text-sm uppercase transition-all hover:scale-[1.02] ${
+                                    savedState
+                                        ? 'bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10'
+                                        : 'bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white shadow-[0_0_30px_rgba(124,58,237,0.35)] hover:shadow-[0_0_45px_rgba(124,58,237,0.55)]'
+                                }`}>
+                                {savedState ? '↺ Restart' : '🚀 Launch Mission'}
+                            </button>
+                        )}
                     </div>
 
                     {!userId && (

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 // Import the logic from the controller
-const { uploadQuizExcel, getQuizzes, clearQuizzes } = require('../controllers/quizController');
+const { uploadQuizExcel, getQuizzes, clearQuizzes, getQuizStatus } = require('../controllers/quizController');
 // Import security middlewares
 const { protect } = require('../middleware/authMiddleware');
 const { admin } = require('../middleware/adminMiddleware');
@@ -9,6 +9,10 @@ const { admin } = require('../middleware/adminMiddleware');
 // Path: POST /api/quiz/upload
 // Used by Member 05 to upload the test 01 Astrosera.xlsx file
 router.post('/upload', protect, admin, uploadQuizExcel);
+
+// Path: GET /api/quiz/status/:userId
+// Check if user has already played today
+router.get('/status/:userId', protect, getQuizStatus);
 
 // Path: GET /api/quiz
 // Used to fetch all 100 questions for the Analytics Dashboard

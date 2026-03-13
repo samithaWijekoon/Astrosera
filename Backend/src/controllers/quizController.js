@@ -1,4 +1,5 @@
 const Quiz = require('../models/Quiz');
+const User = require('../models/User');
 const xlsx = require('xlsx');
 
 // 1. Function to handle Excel Upload
@@ -47,7 +48,7 @@ const getQuizzes = async (req, res) => {
     }
 };
 
-// 3. NEW: Function to clear the database
+// 3. Function to clear the database
 const clearQuizzes = async (req, res) => {
     try {
         await Quiz.deleteMany({});
@@ -57,5 +58,30 @@ const clearQuizzes = async (req, res) => {
     }
 };
 
-// Now all three are defined and can be exported
-module.exports = { uploadQuizExcel, getQuizzes, clearQuizzes };
+// 4. Check if user can play today
+const getQuizStatus = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        if (!user.lastQuizDate) {
+            return res.status(200).json({ canPlay: true });
+        }
+
+        const today = new Date();
+        const lastDate = new Date(user.lastQuizDate);
+
+        const isSameDay = 
+            today.getFullYear() === lastDate.getFullYear() &&
+            today.getMonth() === lastDate.getMonth() &&
+            today.getDate() === lastDate.getDate();
+
+        res.status(200).json({ canPlay: !isSameDay });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// All functions exported
+module.exports = { uploadQuizExcel, getQuizzes, clearQuizzes, getQuizStatus };
