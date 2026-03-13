@@ -1,131 +1,163 @@
-/* ──────────────────────────────────────────────────────────────────────────
-   ASTROSERA QUIZ — SPACE THEME CSS
-   Minimalistic deep-space aesthetic with cinematic animations
-────────────────────────────────────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────────────────────
+   ASTROSERA QUIZ — PREMIUM SPACE THEME
+   Deep-space, cinematic, polished
+───────────────────────────────────────────────────────────────────────── */
 
-/* ─── Starfield ───────────────────────────────────────────────────────────── */
+/* ── Google Font ──────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+/* ── Star twinkling ───────────────────────────────────────────────────── */
 @keyframes twinkle {
-    0%, 100% { opacity: 0.2; transform: scale(1); }
-    50%       { opacity: 1;   transform: scale(1.5); }
+  0%, 100% { opacity: var(--base-op, 0.3); transform: scale(1); }
+  50%       { opacity: 1; transform: scale(1.6); }
 }
 
-@keyframes drift {
-    from { transform: translateY(0px) translateX(0px); }
-    to   { transform: translateY(-12px) translateX(6px); }
+/* ── Nebula breathing ─────────────────────────────────────────────────── */
+@keyframes nebula-breathe {
+  0%, 100% { opacity: 0.15; transform: scale(1) rotate(0deg); }
+  50%       { opacity: 0.28; transform: scale(1.06) rotate(3deg); }
 }
 
-@keyframes nebula-pulse {
-    0%, 100% { opacity: 0.12; transform: scale(1); }
-    50%       { opacity: 0.22; transform: scale(1.08); }
+/* ── Float drift for planets ──────────────────────────────────────────── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) translateX(0px); }
+  33%       { transform: translateY(-14px) translateX(6px); }
+  66%       { transform: translateY(6px) translateX(-8px); }
 }
 
-/* ─── Planet Orbit ────────────────────────────────────────────────────────── */
-@keyframes orbit-slow {
-    from { transform: rotate(0deg) translateX(120px) rotate(0deg); }
-    to   { transform: rotate(360deg) translateX(120px) rotate(-360deg); }
+/* ── Slide-up card entrance ───────────────────────────────────────────── */
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(28px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-@keyframes orbit-medium {
-    from { transform: rotate(220deg) translateX(80px) rotate(-220deg); }
-    to   { transform: rotate(580deg) translateX(80px) rotate(-580deg); }
+/* ── Answer option slide-in ───────────────────────────────────────────── */
+@keyframes option-in {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 
-@keyframes planet-spin {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
+/* ── Success pulse ────────────────────────────────────────────────────── */
+@keyframes success-glow {
+  0%   { box-shadow: 0 0 0 rgba(74,222,128,0); }
+  40%  { box-shadow: 0 0 0 4px rgba(74,222,128,0.2), 0 0 24px rgba(74,222,128,0.4); }
+  100% { box-shadow: 0 0 0 rgba(74,222,128,0); }
 }
 
-/* ─── Intro Animations ────────────────────────────────────────────────────── */
-@keyframes fade-in-up {
-    0%   { opacity: 0; transform: translateY(30px); }
-    100% { opacity: 1; transform: translateY(0); }
+/* ── Wrong pulse ──────────────────────────────────────────────────────── */
+@keyframes wrong-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.55; }
 }
 
-@keyframes fade-in-scale {
-    0%   { opacity: 0; transform: scale(0.85); }
-    100% { opacity: 1; transform: scale(1); }
-}
-
-@keyframes beam-scan {
-    0%   { transform: translateY(-100%); opacity: 0; }
-    10%  { opacity: 0.6; }
-    90%  { opacity: 0.6; }
-    100% { transform: translateY(100%); opacity: 0; }
-}
-
-/* ─── Feedback ────────────────────────────────────────────────────────────── */
+/* ── Screen shake ─────────────────────────────────────────────────────── */
 @keyframes shake {
-    0%, 100% { transform: translate(0, 0) rotate(0deg); }
-    15%  { transform: translate(-8px, -6px) rotate(-1deg); }
-    30%  { transform: translate(8px, 6px) rotate(1deg); }
-    45%  { transform: translate(-6px, 6px) rotate(-0.8deg); }
-    60%  { transform: translate(6px, -6px) rotate(0.8deg); }
-    75%  { transform: translate(-3px, 3px) rotate(-0.4deg); }
-    90%  { transform: translate(3px, -3px) rotate(0.4deg); }
+  0%, 100% { transform: translate(0, 0); }
+  15%  { transform: translate(-10px, -5px) rotate(-1deg); }
+  30%  { transform: translate(10px,  5px) rotate(1deg);  }
+  45%  { transform: translate(-7px,  5px) rotate(-0.7deg); }
+  60%  { transform: translate(7px,  -5px) rotate(0.7deg);  }
+  75%  { transform: translate(-4px,  3px); }
+  90%  { transform: translate(4px,  -3px); }
 }
 
-@keyframes correct-flash {
-    0%   { box-shadow: 0 0 0 rgba(74, 222, 128, 0); }
-    40%  { box-shadow: 0 0 40px rgba(74, 222, 128, 0.6); }
-    100% { box-shadow: 0 0 0 rgba(74, 222, 128, 0); }
+/* ── Scan beam ────────────────────────────────────────────────────────── */
+@keyframes scan {
+  0%   { top: -2px; opacity: 0; }
+  5%   { opacity: 0.7; }
+  95%  { opacity: 0.7; }
+  100% { top: 100%; opacity: 0; }
 }
 
-@keyframes wrong-pulse {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: 0.6; }
+/* ── Progress bar shimmer ─────────────────────────────────────────────── */
+@keyframes shimmer {
+  from { background-position: -200% center; }
+  to   { background-position: 200% center; }
 }
 
-@keyframes answer-appear {
-    0%   { opacity: 0; transform: translateX(-12px); }
-    100% { opacity: 1; transform: translateX(0); }
-}
-
-/* ─── Fuel bar flicker ────────────────────────────────────────────────────── */
+/* ── Fuel flicker ─────────────────────────────────────────────────────── */
 @keyframes flicker {
-    0%, 100% { opacity: 1; }
-    48%       { opacity: 1; }
-    50%       { opacity: 0.6; }
-    52%       { opacity: 1; }
-    80%       { opacity: 1; }
-    82%       { opacity: 0.7; }
-    84%       { opacity: 1; }
+  0%, 100% { opacity: 1; }
+  48%  { opacity: 1; }
+  50%  { opacity: 0.55; }
+  52%  { opacity: 1; }
+  82%  { opacity: 1; }
+  84%  { opacity: 0.7; }
+  86%  { opacity: 1; }
 }
 
-/* ─── Utility classes ─────────────────────────────────────────────────────── */
-.animate-screen-shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
-.animate-fade-in-up   { animation: fade-in-up 0.7s ease-out forwards; }
-.animate-fade-in-scale { animation: fade-in-scale 0.6s ease-out forwards; }
-.animate-pulse-fast   { animation: wrong-pulse 0.35s ease-in-out infinite; }
-.animate-correct      { animation: correct-flash 0.6s ease-out; }
-
-.star {
-    position: absolute;
-    border-radius: 50%;
-    background: white;
-    animation: twinkle var(--dur, 3s) ease-in-out infinite var(--delay, 0s);
+/* ── Score ring draw ──────────────────────────────────────────────────── */
+@keyframes ring-draw {
+  from { stroke-dasharray: 0 314; }
 }
 
-.nebula-orb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    pointer-events: none;
-    animation: nebula-pulse 8s ease-in-out infinite;
+/* ── Fade scale in ────────────────────────────────────────────────────── */
+@keyframes fade-scale {
+  from { opacity: 0; transform: scale(0.88); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
-.answer-btn-appear {
-    animation: answer-appear 0.35s ease-out both;
+/* ─────────────────────────────────────────────────────────────────────────
+   UTILITY CLASSES
+───────────────────────────────────────────────────────────────────────── */
+
+.quiz-font      { font-family: 'Outfit', 'Space Grotesk', system-ui, sans-serif; }
+
+.star-dot {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+  animation: twinkle var(--dur, 3s) ease-in-out infinite var(--delay, 0s);
 }
 
-/* ─── Beam scan effect ────────────────────────────────────────────────────── */
-.scan-beam {
-    position: absolute;
-    inset-inline: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, rgba(139,92,246,0.6), transparent);
-    animation: beam-scan 4s ease-in-out infinite;
-    pointer-events: none;
+.nebula-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  pointer-events: none;
+  animation: nebula-breathe var(--nb-dur, 10s) ease-in-out infinite var(--nb-delay, 0s);
 }
 
-/* Removes default tap highlight on mobile */
-button { -webkit-tap-highlight-color: transparent; }
+.scan-line {
+  position: absolute;
+  left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(167,139,250,0.5) 50%, transparent 100%);
+  animation: scan 5s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.animate-slide-up   { animation: slide-up 0.5s cubic-bezier(0.22,1,0.36,1) both; }
+.animate-fade-scale  { animation: fade-scale 0.45s cubic-bezier(0.22,1,0.36,1) both; }
+.animate-screen-shake { animation: shake 0.45s cubic-bezier(0.36,0.07,0.19,0.97) both; }
+.animate-success     { animation: success-glow 0.6s ease-out; }
+.animate-wrong       { animation: wrong-blink 0.35s ease-in-out infinite; }
+
+.option-appear {
+  animation: option-in 0.35s cubic-bezier(0.22,1,0.36,1) both;
+}
+
+/* Progress bar shimmer */
+.shimmer-bar {
+  background: linear-gradient(
+    90deg,
+    #6366f1 0%, #8b5cf6 25%, #a78bfa 50%, #8b5cf6 75%, #6366f1 100%
+  );
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
+}
+
+/* Glass card base */
+.glass-card {
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.07);
+}
+
+/* Remove tap highlight on mobile */
+button, a { -webkit-tap-highlight-color: transparent; }

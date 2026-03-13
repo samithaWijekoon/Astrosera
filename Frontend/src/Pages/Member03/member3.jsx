@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import './member3.css';
 
 const API                = 'http://localhost:5001/api';
-const QUIZ_TIME_LIMIT_MS = 120_000; // 2 minutes
+const QUIZ_TIME_LIMIT_MS = 120_000;
 
+/* ── Fisher-Yates ─────────────────────────────────────────────────────── */
 const shuffle = (arr) => {
     const a = [...arr];
     for (let i = a.length - 1; i > 0; i--) {
@@ -19,83 +20,85 @@ const formatTime = (ms) => {
     return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 };
 
-const OPTION_LETTERS = ['A', 'B', 'C', 'D'];
-
-/* ── Stars (memoised) ────────────────────────────────────────────────────── */
+/* ── Stars ────────────────────────────────────────────────────────────── */
 const Stars = () => {
     const stars = useMemo(() =>
-        Array.from({ length: 80 }, (_, i) => ({
+        Array.from({ length: 90 }, (_, i) => ({
             id: i,
-            top:  `${Math.random() * 100}%`,
-            left: `${Math.random() * 100}%`,
-            size: Math.random() * 2 + 0.5,
-            dur:  `${Math.random() * 4 + 2}s`,
-            delay:`${Math.random() * 5}s`,
-            opacity: Math.random() * 0.5 + 0.15,
+            top:   `${Math.random() * 100}%`,
+            left:  `${Math.random() * 100}%`,
+            size:  Math.random() * 2.2 + 0.4,
+            dur:   `${(Math.random() * 4 + 2).toFixed(1)}s`,
+            delay: `${(Math.random() * 6).toFixed(1)}s`,
+            op:    (Math.random() * 0.5 + 0.15).toFixed(2),
         })), []);
     return (
         <>
             {stars.map(s => (
-                <span key={s.id} className="star" style={{
+                <span key={s.id} className="star-dot" style={{
                     top: s.top, left: s.left,
                     width: s.size, height: s.size,
-                    opacity: s.opacity,
-                    '--dur': s.dur, '--delay': s.delay
+                    '--base-op': s.op, opacity: s.op,
+                    '--dur': s.dur, '--delay': s.delay,
                 }} />
             ))}
         </>
     );
 };
 
-/* ── Planets (background decoration) ────────────────────────────────────── */
-const SpacePlanets = () => (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        {/* Gas giant top-right — scaled down to not intrude on content */}
-        <div className="absolute rounded-full hidden sm:block" style={{
-            width: 220, height: 220, top: '-50px', right: '-50px',
-            background: 'radial-gradient(circle at 35% 35%, #7c3aed44, #1e0a4a66 60%, #00000099)',
-            boxShadow: '0 0 60px rgba(124,58,237,0.15), inset -15px -12px 30px rgba(0,0,0,0.6)',
+/* ── Background scene ─────────────────────────────────────────────────── */
+const SpaceScene = () => (
+    <div className="fixed inset-0 z-0 overflow-hidden bg-[#060614]">
+        <Stars />
+        {/* Nebula blobs */}
+        <div className="nebula-blob" style={{ width:500, height:500, top:'-120px', left:'-180px', background:'rgba(99,60,245,0.18)', '--nb-dur':'12s', '--nb-delay':'0s' }} />
+        <div className="nebula-blob" style={{ width:420, height:420, bottom:'-80px', right:'-100px', background:'rgba(6,182,212,0.13)', '--nb-dur':'15s', '--nb-delay':'3s' }} />
+        <div className="nebula-blob" style={{ width:300, height:300, top:'38%', left:'38%', background:'rgba(236,72,153,0.09)', '--nb-dur':'10s', '--nb-delay':'6s' }} />
+
+        {/* Gas giant — top right */}
+        <div className="absolute rounded-full" style={{
+            width:230, height:230, top:'-55px', right:'-55px',
+            background:'radial-gradient(circle at 38% 38%, rgba(124,58,237,0.4), rgba(30,10,74,0.5) 55%, rgba(0,0,0,0.7))',
+            boxShadow:'0 0 70px rgba(124,58,237,0.18), inset -18px -14px 36px rgba(0,0,0,0.6)',
         }}>
-            <div className="absolute" style={{
-                top:'42%', left:'-30%', width:'160%', height:'16%',
-                borderRadius:'50%', border:'2px solid rgba(139,92,246,0.2)',
-                transform:'rotateX(75deg)',
+            {/* Ring */}
+            <div style={{
+                position:'absolute', top:'42%', left:'-28%',
+                width:'156%', height:'16%',
+                borderRadius:'50%',
+                border:'2px solid rgba(167,139,250,0.22)',
+                transform:'rotateX(74deg)',
             }} />
         </div>
-        {/* Teal planet bottom-left */}
-        <div className="absolute rounded-full hidden md:block" style={{
-            width: 110, height: 110, bottom: '60px', left: '-30px',
-            background: 'radial-gradient(circle at 30% 30%, #0891b244, #0c4a6e66 55%, #00000099)',
-            boxShadow: '0 0 40px rgba(8,145,178,0.12)',
-            animation: 'drift 12s ease-in-out infinite alternate',
-        }} />
-        {/* Tiny moon */}
-        <div className="absolute rounded-full hidden sm:block" style={{
-            width: 12, height: 12, top: '55px', right: '130px',
-            background: 'radial-gradient(circle at 30% 30%, #c4b5fd, #4c1d95)',
-            boxShadow: '0 0 10px rgba(196,181,253,0.4)',
-            animation: 'drift 8s ease-in-out infinite alternate',
-        }} />
-        {/* Nebula colour wash */}
-        <div className="nebula-orb" style={{ width: 420, height: 420, top: '-80px', left: '-120px', background: 'rgba(109,40,217,0.12)', animationDelay: '0s' }} />
-        <div className="nebula-orb" style={{ width: 320, height: 320, bottom: '-60px', right: '-80px', background: 'rgba(6,182,212,0.09)', animationDelay: '4s' }} />
-    </div>
-);
 
-/* ── Shared backdrop ─────────────────────────────────────────────────────── */
-const SpaceBackdrop = () => (
-    <div className="fixed inset-0 z-0 bg-[#03030e] overflow-hidden">
-        <Stars />
-        <SpacePlanets />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,#03030e_100%)] pointer-events-none" />
+        {/* Tiny moon */}
+        <div className="absolute rounded-full" style={{
+            width:13, height:13, top:'58px', right:'136px',
+            background:'radial-gradient(circle at 35% 35%, #c4b5fd, #4c1d95)',
+            boxShadow:'0 0 10px rgba(196,181,253,0.5)',
+            animation:'float 9s ease-in-out infinite',
+        }} />
+
+        {/* Small teal planet bottom-left */}
+        <div className="absolute rounded-full hidden sm:block" style={{
+            width:100, height:100, bottom:'70px', left:'-25px',
+            background:'radial-gradient(circle at 32% 32%, rgba(8,145,178,0.45), rgba(12,74,110,0.5) 55%, rgba(0,0,0,0.7))',
+            boxShadow:'0 0 40px rgba(8,145,178,0.15)',
+            animation:'float 14s ease-in-out infinite',
+        }} />
+
+        {/* Deep radial vignette */}
+        <div className="absolute inset-0 pointer-events-none"
+            style={{ background:'radial-gradient(ellipse at center, transparent 30%, #060614 90%)' }} />
     </div>
 );
 
 /* ══════════════════════════════════════════════════════════════════════════
-   QUIZ COMPONENT
+   COMPONENT
 ══════════════════════════════════════════════════════════════════════════ */
 const Member3 = () => {
     const navigate = useNavigate();
+
     const [phase,          setPhase]          = useState('loading');
     const [allQuestions,   setAllQuestions]   = useState([]);
     const [quizQuestions,  setQuizQuestions]  = useState([]);
@@ -104,7 +107,7 @@ const Member3 = () => {
     const [feedback,       setFeedback]       = useState(null);
     const [loadError,      setLoadError]      = useState(null);
     const [savedState,     setSavedState]     = useState(null);
-    const [scoreInfo,      setScoreInfo]      = useState({ score:0, correctCount:0, timeTakenMs:0, fullMarks:false });
+    const [scoreInfo,      setScoreInfo]      = useState({ score:0, correctCount:0, timeTakenMs:0, fullMarks:false, total:0 });
     const [elapsed,        setElapsed]        = useState(0);
 
     const timerRef     = useRef(null);
@@ -114,25 +117,27 @@ const Member3 = () => {
     const token  = sessionStorage.getItem('token')  || localStorage.getItem('token');
 
     const totalQuestions  = quizQuestions.length;
-    const marsDistancePct = totalQuestions > 0 ? (currentQ / totalQuestions) * 100 : 0;
+    const progressPct     = totalQuestions > 0 ? (currentQ / totalQuestions) * 100 : 0;
     const fuelPct         = Math.max(0, 100 - (elapsed / QUIZ_TIME_LIMIT_MS) * 100);
     const timeLeftMs      = Math.max(0, QUIZ_TIME_LIMIT_MS - elapsed);
+    const fuelColor       = fuelPct < 20 ? '#ef4444' : fuelPct < 50 ? '#f59e0b' : '#22c55e';
+    const fuelGlow        = fuelPct < 20 ? 'rgba(239,68,68,0.7)' : fuelPct < 50 ? 'rgba(245,158,11,0.5)' : 'rgba(34,197,94,0.5)';
 
-    /* ── Restore saved state ─────────────────────────────────────── */
+    /* ── 0. Restore saved ───────────────────────────────────────── */
     useEffect(() => {
         const raw = localStorage.getItem('astrosera_quiz_state');
         if (raw) try { setSavedState(JSON.parse(raw)); } catch { localStorage.removeItem('astrosera_quiz_state'); }
     }, []);
 
-    /* ── Fetch questions ─────────────────────────────────────────── */
+    /* ── 1. Fetch questions ─────────────────────────────────────── */
     useEffect(() => {
         const load = async () => {
             try {
                 const headers = token ? { Authorization: `Bearer ${token}` } : {};
-                const res  = await fetch(`${API}/quiz`, { headers });
-                if (!res.ok) throw new Error(`Server error ${res.status}`);
-                const data = await res.json();
-                if (!Array.isArray(data) || !data.length) throw new Error('No questions in the database.');
+                const res     = await fetch(`${API}/quiz`, { headers });
+                if (!res.ok) throw new Error(`Server ${res.status}`);
+                const data    = await res.json();
+                if (!Array.isArray(data) || !data.length) throw new Error('No questions found.');
                 setAllQuestions(data);
                 setPhase('briefing');
             } catch (e) { setLoadError(e.message); setPhase('error'); }
@@ -141,14 +146,14 @@ const Member3 = () => {
         return () => { if (timerRef.current) clearInterval(timerRef.current); };
     }, [token]);
 
-    /* ── Timer helpers ───────────────────────────────────────────── */
+    /* ── Timer helpers ──────────────────────────────────────────── */
     const startTimer = (from = 0) => {
         startTimeRef.current = Date.now() - from;
         timerRef.current = setInterval(() => setElapsed(Date.now() - startTimeRef.current), 100);
     };
     const stopTimer = () => { if (timerRef.current) clearInterval(timerRef.current); };
 
-    /* ── Start fresh ─────────────────────────────────────────────── */
+    /* ── Start mission ──────────────────────────────────────────── */
     const startMission = () => {
         localStorage.removeItem('astrosera_quiz_state');
         setSavedState(null);
@@ -161,12 +166,12 @@ const Member3 = () => {
         setQuizQuestions(mapped);
         setCurrentQ(0); setSelectedOption(null); setFeedback(null);
         setElapsed(0);
-        setScoreInfo({ score: 0, correctCount: 0, timeTakenMs: 0, fullMarks: false });
+        setScoreInfo({ score: 0, correctCount: 0, timeTakenMs: 0, fullMarks: false, total: mapped.length });
         setPhase('quiz');
         startTimer(0);
     };
 
-    /* ── Resume ──────────────────────────────────────────────────── */
+    /* ── Resume ─────────────────────────────────────────────────── */
     const resumeMission = () => {
         if (!savedState) return;
         setQuizQuestions(savedState.quizQuestions);
@@ -178,7 +183,7 @@ const Member3 = () => {
         startTimer(savedState.elapsed);
     };
 
-    /* ── Pause & exit ────────────────────────────────────────────── */
+    /* ── Pause / exit ───────────────────────────────────────────── */
     const handlePause = () => {
         if (phase !== 'quiz') return;
         stopTimer();
@@ -186,7 +191,7 @@ const Member3 = () => {
         navigate('/');
     };
 
-    /* ── Pick answer ─────────────────────────────────────────────── */
+    /* ── Pick answer ────────────────────────────────────────────── */
     const handlePick = (opt) => {
         if (selectedOption || phase !== 'quiz') return;
         setSelectedOption(opt);
@@ -202,17 +207,17 @@ const Member3 = () => {
             } else {
                 finishQuiz(newCount, quizQuestions.length);
             }
-        }, 1400);
+        }, 1500);
     };
 
-    /* ── Auto-finish on timeout ──────────────────────────────────── */
+    /* ── Auto-submit on timeout ─────────────────────────────────── */
     useEffect(() => {
         if (phase === 'quiz' && elapsed >= QUIZ_TIME_LIMIT_MS)
             finishQuiz(scoreInfo.correctCount, quizQuestions.length);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [elapsed, phase]);
 
-    /* ── Finish ──────────────────────────────────────────────────── */
+    /* ── Finish ─────────────────────────────────────────────────── */
     const finishQuiz = useCallback(async (finalCount, total) => {
         stopTimer();
         const timeTakenMs = Math.min(Date.now() - startTimeRef.current, QUIZ_TIME_LIMIT_MS);
@@ -231,22 +236,22 @@ const Member3 = () => {
         setPhase('result');
     }, [userId]);
 
-    /* ── Restart ─────────────────────────────────────────────────── */
-    const restart = () => { setScoreInfo({ score:0, correctCount:0, timeTakenMs:0, fullMarks:false }); setPhase('briefing'); };
+    /* ── Restart ────────────────────────────────────────────────── */
+    const restart = () => { setScoreInfo({ score:0, correctCount:0, timeTakenMs:0, fullMarks:false, total:0 }); setPhase('briefing'); };
 
     /* ════════════════════════════════════════════════════════════════
        PHASE: LOADING
     ════════════════════════════════════════════════════════════════ */
     if (phase === 'loading') return (
-        <div className="relative min-h-screen flex items-center justify-center font-outfit overflow-hidden">
-            <SpaceBackdrop />
-            <div className="relative z-10 flex flex-col items-center gap-4 animate-fade-in-scale px-4 text-center">
+        <div className="relative min-h-screen flex items-center justify-center quiz-font overflow-hidden">
+            <SpaceScene />
+            <div className="relative z-10 flex flex-col items-center gap-5 animate-fade-scale">
                 <div className="relative w-16 h-16">
-                    <div className="absolute inset-0 rounded-full border-2 border-t-purple-400 border-purple-500/20 animate-spin" />
-                    <div className="absolute inset-2 rounded-full border-2 border-b-cyan-400 border-cyan-500/20 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }} />
-                    <div className="absolute inset-[30%] rounded-full bg-purple-500/30 blur-sm animate-pulse" />
+                    <div className="absolute inset-0 rounded-full border-[3px] border-transparent border-t-violet-400 animate-spin" />
+                    <div className="absolute inset-[5px] rounded-full border-[2px] border-transparent border-b-cyan-400 animate-spin" style={{ animationDuration:'1.4s', animationDirection:'reverse' }} />
+                    <div className="absolute inset-[28%] rounded-full bg-violet-500/20 animate-pulse" />
                 </div>
-                <p className="text-sm text-purple-300/70 tracking-[0.2em] uppercase animate-pulse">Establishing Uplink…</p>
+                <p className="text-[11px] text-purple-300/60 tracking-[0.3em] uppercase">Syncing with Command…</p>
             </div>
         </div>
     );
@@ -255,15 +260,15 @@ const Member3 = () => {
        PHASE: ERROR
     ════════════════════════════════════════════════════════════════ */
     if (phase === 'error') return (
-        <div className="relative min-h-screen flex items-center justify-center font-outfit p-4 overflow-hidden">
-            <SpaceBackdrop />
-            <div className="relative z-10 max-w-sm w-full text-center animate-fade-in-up">
-                <p className="text-5xl mb-4">🛸</p>
-                <h2 className="text-xl font-bold text-red-400 tracking-widest mb-2">SIGNAL LOST</h2>
-                <p className="text-gray-400 mb-6 text-sm leading-relaxed">{loadError}</p>
+        <div className="relative min-h-screen flex items-center justify-center quiz-font p-4 overflow-hidden">
+            <SpaceScene />
+            <div className="relative z-10 max-w-sm w-full text-center animate-slide-up">
+                <div className="text-5xl mb-5">🛸</div>
+                <h2 className="text-xl font-bold text-red-400 tracking-[0.15em] mb-2 uppercase">Signal Lost</h2>
+                <p className="text-gray-400 text-sm leading-relaxed mb-7">{loadError}</p>
                 <button onClick={() => window.location.reload()}
-                    className="px-6 py-2.5 rounded-full text-sm font-semibold tracking-widest uppercase border border-red-500/40 text-red-400 hover:bg-red-500/10 active:scale-95 transition-all">
-                    Retry
+                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold tracking-wider uppercase border border-red-500/30 text-red-400 hover:bg-red-500/10 active:scale-95 transition-all">
+                    ↻ Retry
                 </button>
             </div>
         </div>
@@ -273,35 +278,49 @@ const Member3 = () => {
        PHASE: BRIEFING
     ════════════════════════════════════════════════════════════════ */
     if (phase === 'briefing') return (
-        <div className="relative min-h-screen flex items-center justify-center font-outfit p-4 py-8 overflow-hidden">
-            <SpaceBackdrop />
+        <div className="relative min-h-screen flex items-center justify-center quiz-font p-4 py-10 overflow-hidden">
+            <SpaceScene />
 
-            <div className="relative z-10 w-full max-w-md mx-auto animate-fade-in-up">
-                <div className="relative bg-white/[0.04] border border-white/[0.10] rounded-2xl sm:rounded-3xl p-6 sm:p-8 overflow-hidden backdrop-blur-md shadow-[0_8px_60px_rgba(109,40,217,0.2)]">
-                    <div className="scan-beam" />
+            <div className="relative z-10 w-full max-w-lg mx-auto animate-slide-up">
+                {/* Card */}
+                <div className="glass-card rounded-3xl p-7 sm:p-10 overflow-hidden relative">
+                    <div className="scan-line" />
+
+                    {/* Glow accent */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-1 bg-gradient-to-r from-transparent via-violet-500 to-transparent opacity-60 rounded-full" />
 
                     {/* Header */}
-                    <div className="text-center mb-6">
-                        <div className="inline-flex items-center justify-center w-14 h-14 bg-purple-500/15 border border-purple-500/25 rounded-2xl mb-4 text-3xl">🚀</div>
-                        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-widest text-transparent bg-clip-text bg-gradient-to-br from-white via-purple-200 to-indigo-300">
-                            MISSION BRIEFING
+                    <div className="text-center mb-8">
+                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl text-3xl mb-5"
+                            style={{ background:'linear-gradient(135deg, rgba(124,58,237,0.3), rgba(99,102,241,0.15))', border:'1px solid rgba(167,139,250,0.3)' }}>
+                            🚀
+                        </div>
+                        <h1 className="text-3xl sm:text-4xl font-black tracking-widest text-white mb-1">
+                            MISSION{' '}
+                            <span className="text-transparent bg-clip-text"
+                                style={{ backgroundImage:'linear-gradient(135deg, #a78bfa, #818cf8)' }}>
+                                BRIEFING
+                            </span>
                         </h1>
-                        <div className="mt-2 h-px bg-gradient-to-r from-transparent via-purple-500/50 to-transparent" />
-                        <p className="mt-3 text-gray-400 text-sm leading-relaxed">10 astronomy questions · 2-minute fuel limit</p>
+                        <div className="mt-3 h-px mx-auto w-32"
+                            style={{ background:'linear-gradient(90deg, transparent, rgba(167,139,250,0.6), transparent)' }} />
+                        <p className="mt-4 text-gray-400 text-sm">10 questions · 2-minute fuel window · one attempt</p>
                     </div>
 
-                    {/* Rules */}
-                    <div className="grid grid-cols-1 gap-2 mb-6">
+                    {/* Mission rules */}
+                    <div className="space-y-2.5 mb-7">
                         {[
-                            { icon: '🌌', label: 'Objective',  text: 'Complete all astronomy questions.' },
-                            { icon: '⛽', label: 'Fuel',       text: '2-minute life support timer.' },
-                            { icon: '🔒', label: 'Navigation', text: 'One-way — no going back.' },
+                            { icon:'🌌', label:'Objective',   desc:'Answer 10 randomised astronomy questions.' },
+                            { icon:'⛽', label:'Fuel Limit',  desc:'2 minutes of life-support fuel.' },
+                            { icon:'🔒', label:'Navigation',  desc:'One-way only — no going back.' },
                         ].map(r => (
-                            <div key={r.label} className="flex items-center gap-3 bg-white/[0.03] rounded-xl px-4 py-3 border border-white/[0.07]">
-                                <span className="text-lg shrink-0">{r.icon}</span>
-                                <div className="min-w-0">
-                                    <span className="text-purple-300 font-semibold text-xs">{r.label}: </span>
-                                    <span className="text-gray-400 text-xs">{r.text}</span>
+                            <div key={r.label}
+                                className="flex items-start gap-3.5 px-4 py-3.5 rounded-2xl"
+                                style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)' }}>
+                                <span className="text-xl mt-0.5 shrink-0">{r.icon}</span>
+                                <div>
+                                    <span className="font-bold text-violet-300 text-sm">{r.label}: </span>
+                                    <span className="text-gray-400 text-sm">{r.desc}</span>
                                 </div>
                             </div>
                         ))}
@@ -309,35 +328,37 @@ const Member3 = () => {
 
                     {/* Paused banner */}
                     {savedState && (
-                        <div className="mb-4 bg-amber-500/10 border border-amber-500/25 rounded-xl px-4 py-3 flex items-center gap-3">
+                        <div className="mb-5 px-4 py-3 rounded-2xl flex items-center gap-3"
+                            style={{ background:'rgba(245,158,11,0.08)', border:'1px solid rgba(245,158,11,0.2)' }}>
                             <span className="text-xl">⏸</span>
                             <p className="text-amber-300 text-sm font-semibold">
-                                Paused at Q{savedState.currentQ + 1} of {savedState.quizQuestions?.length}
+                                Mission paused at Q{savedState.currentQ + 1}/{savedState.quizQuestions?.length}
                             </p>
                         </div>
                     )}
 
-                    {/* CTA Buttons */}
+                    {/* CTA */}
                     <div className="flex flex-col gap-3">
                         {savedState && (
                             <button onClick={resumeMission}
-                                className="w-full py-3.5 rounded-xl font-bold tracking-wider text-sm uppercase bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-[0_0_24px_rgba(16,185,129,0.3)] active:scale-[0.98] transition-all">
-                                ▶ Continue Mission
+                                className="w-full py-4 rounded-2xl font-bold text-sm tracking-widest uppercase text-white active:scale-[0.98] transition-all relative overflow-hidden"
+                                style={{ background:'linear-gradient(135deg, #059669, #0d9488)', boxShadow:'0 0 28px rgba(5,150,105,0.35)' }}>
+                                <span className="relative z-10">▶ Continue Mission</span>
                             </button>
                         )}
                         <button onClick={startMission}
-                            className={`w-full py-3.5 rounded-xl font-bold tracking-wider text-sm uppercase active:scale-[0.98] transition-all ${
-                                savedState
-                                    ? 'border border-white/10 bg-white/[0.04] text-gray-400 hover:text-white hover:bg-white/[0.07]'
-                                    : 'bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white shadow-[0_0_28px_rgba(124,58,237,0.4)]'
-                            }`}>
-                            {savedState ? '↺ Start Over' : '🚀 Launch Mission'}
+                            className={`w-full py-4 rounded-2xl font-bold text-sm tracking-widest uppercase text-white active:scale-[0.98] transition-all relative overflow-hidden ${savedState ? 'opacity-70' : ''}`}
+                            style={savedState
+                                ? { background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)' }
+                                : { background:'linear-gradient(135deg, #7c3aed, #4f46e5)', boxShadow:'0 0 32px rgba(124,58,237,0.4)' }
+                            }>
+                            <span className="relative z-10">{savedState ? '↺ Start Over' : '🚀 Launch Mission'}</span>
                         </button>
                     </div>
 
                     {!userId && (
-                        <p className="mt-4 text-center text-xs text-amber-500/70">
-                            ⚠ Sign in to save your score
+                        <p className="mt-5 text-center text-xs text-amber-400/60">
+                            Sign in to save your score and earn badges
                         </p>
                     )}
                 </div>
@@ -350,67 +371,90 @@ const Member3 = () => {
     ════════════════════════════════════════════════════════════════ */
     if (phase === 'result') {
         const { score, correctCount, total, timeTakenMs, fullMarks } = scoreInfo;
-        const scoreColor = score >= 80 ? '#4ade80' : score >= 50 ? '#facc15' : '#f87171';
-        const scoreLabel = score >= 80 ? 'Excellent! 🎉' : score >= 50 ? 'Good Job! 👍' : 'Keep Training 💪';
+        const ring  = score >= 80 ? '#4ade80' : score >= 50 ? '#f59e0b' : '#f87171';
+        const label = score >= 80 ? ['Stellar! 🌟', 'Outstanding performance, Commander!']
+                    : score >= 50 ? ['Mission Passed 👍', 'Solid work — keep improving!']
+                    :               ['Keep Training 💪', 'The stars demand more practice.'];
 
         return (
-            <div className="relative min-h-screen flex items-center justify-center font-outfit p-4 py-8 overflow-hidden">
-                <SpaceBackdrop />
-                <div className="relative z-10 w-full max-w-md mx-auto animate-fade-in-up">
-                    <div className="relative bg-white/[0.04] border border-white/[0.10] rounded-2xl sm:rounded-3xl p-6 sm:p-8 overflow-hidden backdrop-blur-md shadow-[0_8px_60px_rgba(109,40,217,0.2)]">
-                        <div className="scan-beam" />
+            <div className="relative min-h-screen flex items-center justify-center quiz-font p-4 py-10 overflow-hidden">
+                <SpaceScene />
+                <div className="relative z-10 w-full max-w-lg mx-auto animate-slide-up">
+                    <div className="glass-card rounded-3xl p-7 sm:p-10 overflow-hidden relative">
+                        <div className="scan-line" />
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-1 rounded-full opacity-70"
+                            style={{ background:`linear-gradient(90deg, transparent, ${ring}, transparent)` }} />
 
                         {/* Header */}
                         <div className="text-center mb-6">
-                            <p className="text-xs tracking-[0.3em] text-gray-500 uppercase mb-1">Mission Complete</p>
-                            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-widest text-white">MISSION REPORT</h2>
-                            <div className="mt-2 h-px bg-gradient-to-r from-transparent via-purple-500/50 to-transparent" />
+                            <p className="text-[10px] tracking-[0.35em] text-gray-500 uppercase mb-1">Mission Complete</p>
+                            <h2 className="text-3xl font-black tracking-widest text-white">REPORT</h2>
+                            <div className="mt-2 h-px mx-auto w-24 rounded-full"
+                                style={{ background:'linear-gradient(90deg, transparent, rgba(167,139,250,0.5), transparent)' }} />
                         </div>
 
                         {/* Score ring */}
-                        <div className="flex flex-col items-center mb-6">
-                            <div className="relative w-32 h-32">
+                        <div className="flex flex-col items-center mb-7">
+                            <div className="relative w-36 h-36">
                                 <svg viewBox="0 0 120 120" className="w-full h-full -rotate-90">
-                                    <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="10" />
-                                    <circle cx="60" cy="60" r="50" fill="none" stroke={scoreColor}
-                                        strokeWidth="10" strokeLinecap="round"
+                                    <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="9" />
+                                    <circle cx="60" cy="60" r="50" fill="none" stroke={ring} strokeWidth="9"
+                                        strokeLinecap="round"
                                         strokeDasharray={`${(score / 100) * 314} 314`}
-                                        style={{ filter: `drop-shadow(0 0 6px ${scoreColor})`, transition: 'stroke-dasharray 1.2s ease' }}
+                                        style={{ filter:`drop-shadow(0 0 8px ${ring})`, animation:'ring-draw 1.4s cubic-bezier(0.22,1,0.36,1) both' }}
                                     />
                                 </svg>
                                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                    <span className="text-3xl font-extrabold" style={{ color: scoreColor }}>{score}%</span>
+                                    <span className="text-4xl font-black leading-none" style={{ color: ring }}>{score}%</span>
                                 </div>
                             </div>
-                            <p className="mt-2 text-base font-semibold text-gray-300">{scoreLabel}</p>
+                            <p className="mt-2 text-lg font-bold text-white">{label[0]}</p>
+                            <p className="text-gray-500 text-xs mt-0.5">{label[1]}</p>
                         </div>
 
                         {/* Stats */}
                         <div className="grid grid-cols-2 gap-3 mb-5">
                             {[
-                                { icon: '🎯', label: 'Correct', val: `${correctCount} / ${total}` },
-                                { icon: '⏱', label: 'Time',    val: formatTime(timeTakenMs) },
+                                { icon:'🎯', label:'Correct',  val:`${correctCount} / ${total}` },
+                                { icon:'⏱',  label:'Time',     val: formatTime(timeTakenMs) },
                             ].map(s => (
-                                <div key={s.label} className="bg-white/[0.03] border border-white/[0.07] rounded-xl px-3 py-4 text-center">
-                                    <p className="text-lg mb-1">{s.icon}</p>
-                                    <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">{s.label}</p>
-                                    <p className="text-lg font-bold text-white">{s.val}</p>
+                                <div key={s.label} className="text-center rounded-2xl py-4 px-3"
+                                    style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)' }}>
+                                    <p className="text-2xl mb-1">{s.icon}</p>
+                                    <p className="text-[10px] text-gray-500 tracking-widest uppercase mb-1">{s.label}</p>
+                                    <p className="text-xl font-black text-white">{s.val}</p>
                                 </div>
                             ))}
                         </div>
 
                         {/* Badges */}
-                        <div className="flex flex-col gap-2 mb-6">
-                            {fullMarks && <div className="flex items-center gap-2 text-sm text-yellow-300 bg-yellow-500/10 border border-yellow-500/20 rounded-xl px-3 py-2"><span>🌟</span> Perfect score!</div>}
-                            {timeTakenMs < QUIZ_TIME_LIMIT_MS && score >= 50 && <div className="flex items-center gap-2 text-sm text-cyan-300 bg-cyan-500/10 border border-cyan-500/20 rounded-xl px-3 py-2"><span>⚡</span> Completed under 2 min!</div>}
-                            {userId
-                                ? <div className="flex items-center gap-2 text-sm text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-3 py-2"><span>💾</span> Score saved to your profile.</div>
-                                : <div className="flex items-center gap-2 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-3 py-2"><span>⚠</span> Sign in to save scores.</div>
-                            }
+                        <div className="space-y-2 mb-7 text-sm">
+                            {fullMarks && (
+                                <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl"
+                                    style={{ background:'rgba(234,179,8,0.1)', border:'1px solid rgba(234,179,8,0.2)' }}>
+                                    <span>🌟</span><span className="text-yellow-300 font-semibold">Perfect score — bonus badge earned!</span>
+                                </div>
+                            )}
+                            {timeTakenMs < QUIZ_TIME_LIMIT_MS && score >= 50 && (
+                                <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl"
+                                    style={{ background:'rgba(6,182,212,0.1)', border:'1px solid rgba(6,182,212,0.2)' }}>
+                                    <span>⚡</span><span className="text-cyan-300 font-semibold">Speed Demon — under 2 minutes!</span>
+                                </div>
+                            )}
+                            <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl"
+                                style={userId
+                                    ? { background:'rgba(34,197,94,0.08)', border:'1px solid rgba(34,197,94,0.18)' }
+                                    : { background:'rgba(239,68,68,0.08)', border:'1px solid rgba(239,68,68,0.18)' }}>
+                                <span>{userId ? '💾' : '⚠'}</span>
+                                <span className={userId ? 'text-emerald-300 font-semibold' : 'text-red-400 font-semibold'}>
+                                    {userId ? 'Score saved to your datacore.' : 'Sign in to save your score.'}
+                                </span>
+                            </div>
                         </div>
 
                         <button onClick={restart}
-                            className="w-full py-3.5 rounded-xl font-bold tracking-wider text-sm uppercase text-white border border-white/10 bg-white/[0.04] hover:bg-white/[0.08] active:scale-[0.98] transition-all">
+                            className="w-full py-4 rounded-2xl font-bold text-sm tracking-widest uppercase text-white active:scale-[0.98] transition-all"
+                            style={{ background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)' }}>
                             ↩ Return to Base
                         </button>
                     </div>
@@ -422,123 +466,167 @@ const Member3 = () => {
     /* ════════════════════════════════════════════════════════════════
        PHASE: QUIZ
     ════════════════════════════════════════════════════════════════ */
-    const q            = quizQuestions[currentQ];
-    const isFeedback   = feedback !== null;
-    const shakeClass   = isFeedback && feedback === 'incorrect' ? 'animate-screen-shake' : '';
+    const q          = quizQuestions[currentQ];
+    const isFeedback = feedback !== null;
+    const shakeClass = isFeedback && feedback === 'incorrect' ? 'animate-screen-shake' : '';
 
     return (
-        <div className={`relative min-h-screen flex flex-col font-outfit overflow-hidden ${shakeClass}`}>
-            <SpaceBackdrop />
+        <div className={`relative min-h-screen flex flex-col quiz-font overflow-hidden ${shakeClass}`}>
+            <SpaceScene />
 
-            {/* ── Sticky top bar (mobile-safe) ── */}
-            <div className="relative z-20 w-full bg-black/60 backdrop-blur-md border-b border-white/[0.06] px-4 py-3">
+            {/* ══ TOP HUD ══════════════════════════════════════════ */}
+            <div className="relative z-20 w-full px-3 sm:px-4 pt-4 pb-3">
                 <div className="max-w-2xl mx-auto flex items-center gap-3">
 
                     {/* Pause */}
-                    <button
-                        onClick={handlePause}
-                        disabled={!!selectedOption}
-                        className={`flex-shrink-0 flex items-center gap-1.5 text-xs font-bold tracking-widest uppercase px-3 py-2 rounded-lg border transition-all ${
-                            selectedOption ? 'border-white/5 text-gray-700 cursor-not-allowed' : 'border-white/10 text-gray-400 hover:text-purple-300 hover:border-purple-500/40 cursor-pointer active:scale-95'
-                        }`}>
-                        <span className="text-sm">←</span>
-                        <span className="hidden xs:inline">Pause</span>
+                    <button onClick={handlePause} disabled={!!selectedOption}
+                        className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold tracking-wider uppercase transition-all ${
+                            selectedOption
+                                ? 'text-gray-700 cursor-not-allowed'
+                                : 'text-gray-400 hover:text-violet-300 active:scale-95 cursor-pointer'
+                        }`}
+                        style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)' }}>
+                        <span>←</span>
+                        <span className="hidden sm:inline">Back</span>
                     </button>
 
-                    {/* Mars progress bar (fills available space) */}
-                    <div className="flex-1 flex flex-col gap-1 min-w-0">
-                        <div className="flex justify-between items-center">
-                            <span className="text-[9px] tracking-widest text-gray-600 uppercase">Q {currentQ + 1} / {totalQuestions}</span>
-                            <span className="text-[9px] tracking-widest text-orange-500/60 uppercase">Mars {marsDistancePct.toFixed(0)}%</span>
+                    {/* Progress section */}
+                    <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-center mb-1.5">
+                            <span className="text-[10px] font-semibold text-gray-500 tracking-widest uppercase">
+                                Q {currentQ + 1} <span className="text-gray-700">/ {totalQuestions}</span>
+                            </span>
+                            <span className="text-[10px] font-semibold tracking-widest uppercase"
+                                style={{ color:'rgba(249,115,22,0.7)' }}>
+                                {progressPct.toFixed(0)}% to Mars
+                            </span>
                         </div>
-                        <div className="relative h-1.5 bg-white/5 rounded-full overflow-hidden">
-                            <div className="absolute inset-y-0 left-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-orange-400 rounded-full transition-[width] duration-700"
-                                style={{ width: `${marsDistancePct}%` }} />
+                        <div className="h-1.5 rounded-full overflow-hidden" style={{ background:'rgba(255,255,255,0.05)' }}>
+                            <div className="shimmer-bar h-full rounded-full transition-[width] duration-700"
+                                style={{ width:`${progressPct}%` }} />
                         </div>
                     </div>
 
-                    {/* Fuel */}
-                    <div className="flex-shrink-0 flex items-center gap-1.5">
-                        <div className="w-16 sm:w-24 h-2 bg-white/5 rounded-full overflow-hidden border border-white/[0.06]">
+                    {/* Fuel bar */}
+                    <div className="flex-shrink-0 flex items-center gap-2">
+                        <div className="w-14 sm:w-20 h-1.5 rounded-full overflow-hidden" style={{ background:'rgba(255,255,255,0.05)' }}>
                             <div className="h-full rounded-full transition-[width] ease-linear duration-100"
                                 style={{
-                                    width: `${fuelPct}%`,
-                                    background: fuelPct < 20 ? '#ef4444' : fuelPct < 50 ? '#eab308' : '#22c55e',
-                                    boxShadow: fuelPct < 20 ? '0 0 6px rgba(239,68,68,0.7)' : fuelPct < 50 ? '0 0 5px rgba(234,179,8,0.5)' : '0 0 5px rgba(34,197,94,0.5)',
-                                    animation: fuelPct < 20 ? 'flicker 0.8s linear infinite' : 'none',
-                                }}
-                            />
+                                    width:`${fuelPct}%`,
+                                    background: fuelColor,
+                                    boxShadow:`0 0 6px ${fuelGlow}`,
+                                    animation: fuelPct < 20 ? 'flicker 0.7s linear infinite' : 'none',
+                                }} />
                         </div>
-                        <span className={`font-mono text-xs font-bold w-9 text-right ${fuelPct < 20 ? 'text-red-400' : 'text-gray-500'}`}>
+                        <span className={`font-mono text-xs font-bold w-9 text-right tabular-nums ${fuelPct < 20 ? 'text-red-400' : 'text-gray-500'}`}>
                             {formatTime(timeLeftMs)}
                         </span>
                     </div>
                 </div>
             </div>
 
-            {/* ── Main quiz content ── */}
-            <div className="relative z-10 flex-1 flex flex-col justify-between px-4 py-5 sm:py-8">
-                <div className="max-w-2xl mx-auto w-full flex flex-col flex-1 gap-4">
+            {/* ══ CONTENT ══════════════════════════════════════════ */}
+            <div className="relative z-10 flex-1 flex flex-col px-3 sm:px-4 pb-5 pt-2">
+                <div className="max-w-2xl mx-auto w-full flex flex-col gap-3">
 
-                    {/* Question card */}
-                    <div className="relative flex-1 bg-white/[0.03] border border-white/[0.07] rounded-2xl p-5 sm:p-8 overflow-hidden backdrop-blur-sm shadow-[0_4px_40px_rgba(0,0,0,0.4)] flex flex-col">
-                        <div className="scan-beam" />
-                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(139,92,246,0.05),transparent_60%)] pointer-events-none" />
+                    {/* ── Question card ─────────────────────────── */}
+                    <div className="glass-card rounded-3xl p-4 sm:p-6 flex flex-col overflow-hidden relative">
+                        <div style={{ minHeight: 0 }} />
+                        <div className="scan-line" />
+                        <div className="absolute inset-0 pointer-events-none"
+                            style={{ background:'radial-gradient(ellipse at 50% 0%, rgba(139,92,246,0.07) 0%, transparent 60%)' }} />
 
-                        {/* Sector label */}
-                        <p className="text-[10px] tracking-[0.25em] text-purple-400/60 uppercase mb-3">
-                            Sector {currentQ + 1} — Question
-                        </p>
+                        {/* Sector badge */}
+                        <div className="flex items-center justify-between mb-4">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase"
+                                style={{ background:'rgba(124,58,237,0.15)', border:'1px solid rgba(124,58,237,0.3)', color:'#c4b5fd' }}>
+                                ⬡ Sector {currentQ + 1}
+                            </span>
+                            {/* Small dot indicators */}
+                            <div className="flex items-center gap-1">
+                                {quizQuestions.map((_, i) => (
+                                    <div key={i} className="rounded-full transition-all duration-300"
+                                        style={{
+                                            width: i === currentQ ? 16 : 5,
+                                            height: 5,
+                                            background: i < currentQ
+                                                ? '#4ade80'
+                                                : i === currentQ
+                                                ? 'linear-gradient(90deg,#a78bfa,#818cf8)'
+                                                : 'rgba(255,255,255,0.07)',
+                                        }} />
+                                ))}
+                            </div>
+                        </div>
 
                         {/* Question */}
-                        <h2 className="relative z-10 text-base sm:text-xl font-semibold text-white leading-relaxed mb-6 flex-1">
+                        <h2 className="relative z-10 text-base sm:text-lg font-semibold leading-relaxed mb-4"
+                            style={{ color: '#4ade80' }}>
                             {q.questionText}
                         </h2>
 
                         {/* Options */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 relative z-10">
                             {q.options.map((opt, i) => {
-                                let cls = 'bg-white/[0.04] border-white/[0.08] text-gray-200 hover:bg-white/[0.08] hover:border-purple-500/40';
+                                const letters = ['A','B','C','D'];
+                                let style = {};
+                                let extraClass = `option-appear text-sm sm:text-[15px] font-medium text-gray-200`;
+
                                 if (isFeedback) {
-                                    if (opt === q.correctAnswer)        cls = 'bg-emerald-500/15 border-emerald-400/60 text-emerald-200 shadow-[0_0_20px_rgba(52,211,153,0.25)] animate-correct';
-                                    else if (selectedOption === opt)    cls = 'bg-red-500/15 border-red-500/50 text-red-300 shadow-[0_0_16px_rgba(239,68,68,0.2)] animate-pulse-fast';
-                                    else                                cls = 'bg-white/[0.02] border-white/[0.04] text-gray-600 opacity-40';
-                                } else if (selectedOption)              cls = 'bg-white/[0.02] border-white/[0.04] text-gray-600 opacity-40';
+                                    if (opt === q.correctAnswer) {
+                                        style = { background:'rgba(34,197,94,0.14)', borderColor:'rgba(74,222,128,0.65)', color:'#86efac', boxShadow:'0 0 20px rgba(74,222,128,0.25)' };
+                                        extraClass += ' animate-success';
+                                    } else if (selectedOption === opt) {
+                                        style = { background:'rgba(239,68,68,0.12)', borderColor:'rgba(239,68,68,0.55)', color:'#fca5a5', boxShadow:'0 0 16px rgba(239,68,68,0.2)' };
+                                        extraClass += ' animate-wrong';
+                                    } else {
+                                        style = { background:'rgba(255,255,255,0.01)', borderColor:'rgba(255,255,255,0.04)', color:'rgba(156,163,175,0.45)' };
+                                    }
+                                } else if (selectedOption) {
+                                    style = { background:'rgba(255,255,255,0.01)', borderColor:'rgba(255,255,255,0.04)', color:'rgba(156,163,175,0.45)' };
+                                } else {
+                                    style = { background:'rgba(255,255,255,0.04)', borderColor:'rgba(255,255,255,0.09)' };
+                                }
 
                                 return (
                                     <button
                                         key={i}
                                         onClick={() => handlePick(opt)}
                                         disabled={!!selectedOption}
-                                        style={{ animationDelay: `${i * 55}ms` }}
-                                        className={`answer-btn-appear flex items-center gap-3 px-4 py-3.5 rounded-xl border-2 text-left font-medium transition-all duration-200 outline-none min-h-[56px] ${
-                                            !selectedOption ? 'active:scale-[0.98] cursor-pointer' : 'cursor-default'
-                                        } ${cls}`}
+                                        style={{
+                                            animationDelay:`${i * 55}ms`,
+                                            border:'2px solid', borderRadius:'14px',
+                                            padding:'14px 16px', textAlign:'left',
+                                            display:'flex', alignItems:'center', gap:'12px',
+                                            minHeight:'56px',
+                                            transition:'all 0.2s ease',
+                                            outline:'none',
+                                            cursor: selectedOption ? 'default' : 'pointer',
+                                            ...style,
+                                        }}
+                                        className={`${extraClass} ${!selectedOption ? 'hover:!border-violet-500/50 hover:!bg-violet-500/10 active:scale-[0.98]' : ''}`}
                                     >
-                                        <span className="w-7 h-7 shrink-0 rounded-full border border-white/10 bg-black/30 flex items-center justify-center text-[11px] font-bold text-gray-500">
-                                            {OPTION_LETTERS[i]}
+                                        <span className="w-7 h-7 shrink-0 rounded-full flex items-center justify-center text-[10px] font-black"
+                                            style={{ background:'rgba(0,0,0,0.3)', border:'1px solid rgba(255,255,255,0.1)', color:'rgba(167,139,250,0.8)' }}>
+                                            {letters[i]}
                                         </span>
-                                        <span className="text-sm sm:text-base leading-snug flex-1">{opt}</span>
+                                        <span className="leading-snug">{opt}</span>
                                     </button>
                                 );
                             })}
                         </div>
                     </div>
 
-                    {/* Dot progress */}
-                    <div className="flex items-center justify-center gap-2 pb-1">
-                        {quizQuestions.map((_, i) => (
-                            <div key={i} className="rounded-full transition-all duration-300" style={{
-                                width: i === currentQ ? 22 : 7,
-                                height: 7,
-                                background: i < currentQ
-                                    ? '#4ade80'
-                                    : i === currentQ
-                                    ? 'linear-gradient(90deg,#a78bfa,#818cf8)'
-                                    : 'rgba(255,255,255,0.08)',
-                            }} />
-                        ))}
-                    </div>
+                    {/* ── Feedback hint ──────────────────────────── */}
+                    {isFeedback && (
+                        <div className="py-2.5 px-4 rounded-xl text-center text-sm font-semibold animate-slide-up"
+                            style={feedback === 'correct'
+                                ? { background:'rgba(34,197,94,0.1)', border:'1px solid rgba(34,197,94,0.2)', color:'#86efac' }
+                                : { background:'rgba(239,68,68,0.1)', border:'1px solid rgba(239,68,68,0.2)', color:'#fca5a5' }
+                            }>
+                            {feedback === 'correct' ? '✓ Correct! Moving to next sector…' : '✕ Incorrect. Check the highlighted answer.'}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
