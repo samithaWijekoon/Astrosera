@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './member3.css';
 
 // Using port 5001 as specified in prompt
@@ -17,8 +18,10 @@ const shuffleArray = (array) => {
 };
 
 const Member3 = () => {
+    const navigate = useNavigate();
     // Phases: loading | briefing | quiz | result | error
     const [phase, setPhase] = useState('loading');
+    const [savedState, setSavedState] = useState(null);
     
     // Data states
     const [allQuestions, setAllQuestions] = useState([]);
@@ -41,6 +44,18 @@ const Member3 = () => {
     // Stats
     const totalQuestions = quizQuestions.length;
     const answeredCount = currentQ; // Since we can't go back, currentQ is how many we've passed (before current is answered)
+
+    // 0. Check for saved state
+    useEffect(() => {
+        const saved = localStorage.getItem('astrosera_quiz_state');
+        if (saved) {
+            try {
+                setSavedState(JSON.parse(saved));
+            } catch (e) {
+                localStorage.removeItem('astrosera_quiz_state');
+            }
+        }
+    }, []);
 
     // 1. Fetch questions on mount
     useEffect(() => {
@@ -79,6 +94,8 @@ const Member3 = () => {
 
     // 2. Start Mission
     const startMission = () => {
+        localStorage.removeItem('astrosera_quiz_state');
+        setSavedState(null);
         // Shuffle ALL questions from the DB to get a random order
         let shuffled = shuffleArray(allQuestions);
         
@@ -102,6 +119,35 @@ const Member3 = () => {
         timerRef.current = setInterval(() => {
             setElapsed(Date.now() - startTimeRef.current);
         }, 100); // 100ms for smooth fuel bar
+    };
+
+    const resumeMission = () => {
+        if (!savedState) return;
+        setQuizQuestions(savedState.quizQuestions);
+        setCurrentQ(savedState.currentQ);
+        setScoreInfo(savedState.scoreInfo);
+        setElapsed(savedState.elapsed);
+        setSelectedOption(null);
+        setFeedback(null);
+        setPhase('quiz');
+        
+        startTimeRef.current = Date.now() - savedState.elapsed;
+        timerRef.current = setInterval(() => {
+            setElapsed(Date.now() - startTimeRef.current);
+        }, 100);
+    };
+
+    const saveQuizState = () => {
+        if (phase === 'quiz') {
+            const stateToSave = { quizQuestions, currentQ, scoreInfo, elapsed };
+            localStorage.setItem('astrosera_quiz_state', JSON.stringify(stateToSave));
+        }
+    };
+
+    const handlePauseAndExit = () => {
+        saveQuizState();
+        if (timerRef.current) clearInterval(timerRef.current);
+        navigate('/');
     };
 
     // 3. Handle Answer
@@ -157,6 +203,9 @@ const Member3 = () => {
             timeTakenMs,
             fullMarks
         });
+
+        localStorage.removeItem('astrosera_quiz_state');
+        setSavedState(null);
 
         // Submit to Gamification backend
         if (userId) {
@@ -250,15 +299,34 @@ const Member3 = () => {
                         <p className="mt-4 text-yellow-300/80 italic text-sm text-center">Your performance will be permanently recorded in the central database.</p>
                     </div>
 
-                    <button 
-                        onClick={startMission}
-                        className="group relative px-10 py-4 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full font-bold text-xl uppercase tracking-widest overflow-hidden shadow-[0_0_40px_rgba(147,51,234,0.4)] hover:shadow-[0_0_60px_rgba(147,51,234,0.6)] transition-all duration-300 hover:scale-105"
-                    >
-                        <span className="relative z-10 flex items-center justify-center">
-                            Launch Mission <span className="ml-3 group-hover:translate-x-2 transition-transform">🚀</span>
-                        </span>
-                        <div className="absolute inset-0 h-full w-full bg-gradient-to-r from-pink-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    </button>
+                    {savedState ? (
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                            <button 
+                                onClick={resumeMission}
+                                className="group relative px-10 py-4 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full font-bold text-xl uppercase tracking-widest overflow-hidden shadow-[0_0_40px_rgba(16,185,129,0.4)] hover:shadow-[0_0_60px_rgba(16,185,129,0.6)] transition-all duration-300 hover:scale-105"
+                            >
+                                <span className="relative z-10 flex items-center justify-center">
+                                    Continue Mission <span className="ml-3 group-hover:translate-x-2 transition-transform">▶</span>
+                                </span>
+                            </button>
+                            <button 
+                                onClick={startMission}
+                                className="group relative px-8 py-4 bg-gray-800 border border-gray-600 rounded-full font-bold text-lg uppercase tracking-widest overflow-hidden transition-all duration-300 hover:bg-red-900/50 hover:border-red-500"
+                            >
+                                <span className="relative z-10">Abort & Restart</span>
+                            </button>
+                        </div>
+                    ) : (
+                        <button 
+                            onClick={startMission}
+                            className="group relative px-10 py-4 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full font-bold text-xl uppercase tracking-widest overflow-hidden shadow-[0_0_40px_rgba(147,51,234,0.4)] hover:shadow-[0_0_60px_rgba(147,51,234,0.6)] transition-all duration-300 hover:scale-105"
+                        >
+                            <span className="relative z-10 flex items-center justify-center">
+                                Launch Mission <span className="ml-3 group-hover:translate-x-2 transition-transform">🚀</span>
+                            </span>
+                            <div className="absolute inset-0 h-full w-full bg-gradient-to-r from-pink-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        </button>
+                    )}
                     
                     {!userId && (
                         <p className="mt-6 text-red-400 text-sm bg-red-900/20 inline-block px-4 py-1 rounded-full border border-red-500/20">
@@ -356,14 +424,25 @@ const Member3 = () => {
                 </div>
 
                 {/* HUD Header */}
-                <header className="backdrop-blur-xl bg-black/40 border border-white/20 rounded-3xl px-6 py-4 mb-6 flex justify-between items-center bg-black/50 border-white/20 border-b-0 rounded-b-none rounded-t-3xl">
-                    <div className="flex items-center space-x-4">
-                        <div className="bg-purple-500/20 text-purple-300 border border-purple-500/30 px-3 py-1 rounded-md text-sm font-bold tracking-widest">
+                <header className="backdrop-blur-xl bg-black/40 border border-white/20 rounded-3xl px-6 py-4 mb-6 flex flex-col sm:flex-row justify-between items-center sm:bg-black/50 sm:border-b-0 sm:rounded-b-none sm:rounded-t-3xl gap-4 sm:gap-0">
+                    <div className="flex items-center w-full sm:w-auto justify-between sm:justify-start space-x-4">
+                        <button
+                            onClick={handlePauseAndExit}
+                            disabled={selectedOption !== null}
+                            className={`flex flex-shrink-0 items-center text-xs font-bold tracking-widest uppercase px-3 py-1.5 rounded-md border transition-colors ${
+                                selectedOption !== null 
+                                    ? 'bg-gray-800/50 text-gray-500 border-gray-700 cursor-not-allowed' 
+                                    : 'bg-white/5 text-gray-300 border-white/20 hover:bg-white/10 hover:text-white cursor-pointer'
+                            }`}
+                        >
+                            <span className="mr-2">⬅</span> Pause
+                        </button>
+                        <div className="bg-purple-500/20 text-purple-300 border border-purple-500/30 px-3 py-1 rounded-md text-sm font-bold tracking-widest whitespace-nowrap">
                             SECTOR {currentQ + 1} / {totalQuestions}
                         </div>
                     </div>
 
-                    <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-3 w-full sm:w-auto justify-between sm:justify-start">
                         <span className="text-gray-400 text-xs font-bold tracking-widest uppercase">Fuel Level</span>
                         <div className="w-32 sm:w-48 h-3 bg-red-900/50 rounded-full overflow-hidden border border-red-500/20">
                             <div 
