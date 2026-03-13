@@ -627,6 +627,57 @@ const Member3 = () => {
                             {feedback === 'correct' ? '✓ Correct! Moving to next sector…' : '✕ Incorrect. Check the highlighted answer.'}
                         </div>
                     )}
+
+                    {/* ── Live Solar System ─────────────────────── */}
+                    <style>{`
+                        @keyframes orb1{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+                        @keyframes orb2{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+                        @keyframes orb3{from{transform:rotate(120deg)}to{transform:rotate(480deg)}}
+                        @keyframes ast{from{transform:rotate(0deg)}to{transform:rotate(-360deg)}}
+                        @keyframes sunpulse{0%,100%{box-shadow:0 0 18px rgba(251,191,36,.85),0 0 40px rgba(251,191,36,.3);}50%{box-shadow:0 0 30px rgba(251,191,36,1),0 0 60px rgba(251,191,36,.5);}}
+                    `}</style>
+                    <div className="glass-card rounded-3xl overflow-hidden relative select-none"
+                        style={{ height: 160 }}>
+
+                        {/* Stars inside panel */}
+                        {Array.from({length:16},(_,i)=>{
+                            const top=`${10+Math.sin(i*2.3)*40+40}%`;
+                            const left=`${5+((i*17)%90)}%`;
+                            const sz=i%3===0?2:1;
+                            return <div key={i} className="absolute rounded-full bg-white" style={{width:sz,height:sz,top,left,opacity:0.25,animation:`twinkle ${2+i%3}s ease-in-out infinite ${i*0.3}s`}}/>;
+                        })}
+
+                        {/* Asteroid belt */}
+                        <div style={{position:'absolute',top:'50%',left:'50%',width:220,height:220,marginTop:-110,marginLeft:-110,borderRadius:'50%',border:'1px dashed rgba(255,255,255,0.06)',animation:'ast 55s linear infinite'}}>
+                            {[0,60,120,180,240,300].map(d=>(
+                                <div key={d} style={{position:'absolute',width:3,height:3,borderRadius:'50%',background:'rgba(255,255,255,0.2)',top:'50%',left:'50%',transform:`rotate(${d}deg) translateX(110px) translateY(-1.5px)`}}/>
+                            ))}
+                        </div>
+
+                        {/* Sun */}
+                        <div style={{position:'absolute',top:'50%',left:'50%',width:28,height:28,marginTop:-14,marginLeft:-14,borderRadius:'50%',background:'radial-gradient(circle at 38% 35%, #fef08a, #f59e0b 55%, #b45309)',animation:'sunpulse 3s ease-in-out infinite'}}/>
+
+                        {/* Orbit 1 — blue planet */}
+                        <div style={{position:'absolute',top:'50%',left:'50%',width:74,height:74,marginTop:-37,marginLeft:-37,borderRadius:'50%',border:'1px solid rgba(255,255,255,0.05)',animation:'orb1 3.5s linear infinite'}}>
+                            <div style={{position:'absolute',top:-5,left:'50%',marginLeft:-5,width:10,height:10,borderRadius:'50%',background:'radial-gradient(circle at 35% 35%, #93c5fd, #1e40af)',boxShadow:'0 0 8px rgba(147,197,253,0.7)'}}/>
+                        </div>
+
+                        {/* Orbit 2 — red planet */}
+                        <div style={{position:'absolute',top:'50%',left:'50%',width:124,height:124,marginTop:-62,marginLeft:-62,borderRadius:'50%',border:'1px solid rgba(255,255,255,0.04)',animation:'orb2 8s linear infinite'}}>
+                            <div style={{position:'absolute',top:-7,left:'50%',marginLeft:-7,width:14,height:14,borderRadius:'50%',background:'radial-gradient(circle at 35% 35%, #fca5a5, #b91c1c)',boxShadow:'0 0 10px rgba(252,165,165,0.5)'}}/>
+                        </div>
+
+                        {/* Orbit 3 — ringed purple planet */}
+                        <div style={{position:'absolute',top:'50%',left:'50%',width:178,height:178,marginTop:-89,marginLeft:-89,borderRadius:'50%',border:'1px solid rgba(255,255,255,0.03)',animation:'orb3 18s linear infinite'}}>
+                            <div style={{position:'absolute',top:-10,left:'50%',marginLeft:-10,width:20,height:20,borderRadius:'50%',background:'radial-gradient(circle at 35% 35%, #c4b5fd, #6d28d9)',boxShadow:'0 0 12px rgba(196,181,253,0.6)',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                                <div style={{position:'absolute',width:34,height:8,borderRadius:'50%',border:'2px solid rgba(196,181,253,0.45)',transform:'rotateX(68deg)'}}/>
+                            </div>
+                        </div>
+
+                        {/* Label */}
+                        <div style={{position:'absolute',bottom:8,right:12,fontSize:9,letterSpacing:'0.2em',textTransform:'uppercase',color:'rgba(167,139,250,0.3)'}}>Live Solar System</div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -634,3 +685,4 @@ const Member3 = () => {
 };
 
 export default Member3;
+
