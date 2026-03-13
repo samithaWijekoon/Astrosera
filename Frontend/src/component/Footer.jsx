@@ -24,35 +24,35 @@ const Footer = () => {
     ];
 
     return (
-        <footer className="w-full bg-black text-gray-400 py-12  font-sans">
-            <div className="max-w-7xl mx-auto px-6 md:px-12">
+        <footer className="w-full relative z-50 bg-[#050505]/80 backdrop-blur-2xl text-gray-400 py-16 font-sans border-t border-white/10">
+            <div className="max-w-7xl mx-auto px-8 md:px-12">
 
                 {/* Main Footer Content */}
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 mb-16">
+                <div className="grid grid-cols-2 lg:grid-cols-6 gap-x-8 gap-y-12 mb-16">
 
                     {/* Brand Column (Spans 2 columns on lg screens) */}
                     <div className="col-span-2 lg:col-span-2 pr-0 lg:pr-8">
-                        <div className="flex items-center text-white text-2xl font-bold mb-6">
-                            <IoRocketOutline className="text-blue-500 mr-2" />
+                        <div className="flex items-center text-white text-xl font-bold mb-6 tracking-wide">
+                            <IoRocketOutline className="text-gray-200 mr-2" size={24} />
                             <span>Astrosera</span>
                         </div>
-                        <p className="text-gray-400 mb-8 leading-relaxed max-w-sm">
+                        <p className="text-gray-500 mb-8 leading-relaxed max-w-sm text-sm font-medium">
                             Your AI-powered gateway to the universe. Explore space with accuracy, engagement, and personalization.
                         </p>
 
                         {/* Social Icons */}
-                        <div className="flex space-x-4">
-                            <a href="#" className="w-10 h-10 rounded-full bg-gray-900 border border-gray-800 flex items-center justify-center transition-all duration-300 hover:-translate-y-1 hover:bg-[#1DA1F2] hover:border-[#1DA1F2] hover:text-white hover:shadow-[0_0_20px_rgba(29,161,242,0.4)]">
-                                <FiTwitter size={18} />
+                        <div className="flex space-x-5">
+                            <a href="#" className="text-gray-500 hover:text-white transition-colors duration-300">
+                                <FiTwitter size={20} />
                             </a>
-                            <a href="#" className="w-10 h-10 rounded-full bg-gray-900 border border-gray-800 flex items-center justify-center transition-all duration-300 hover:-translate-y-1 hover:bg-white hover:border-white hover:text-black hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]">
-                                <FiGithub size={18} />
+                            <a href="#" className="text-gray-500 hover:text-white transition-colors duration-300">
+                                <FiGithub size={20} />
                             </a>
-                            <a href="#" className="w-10 h-10 rounded-full bg-gray-900 border border-gray-800 flex items-center justify-center transition-all duration-300 hover:-translate-y-1 hover:bg-[#0A66C2] hover:border-[#0A66C2] hover:text-white hover:shadow-[0_0_20px_rgba(10,102,194,0.4)]">
-                                <FiLinkedin size={18} />
+                            <a href="#" className="text-gray-500 hover:text-white transition-colors duration-300">
+                                <FiLinkedin size={20} />
                             </a>
-                            <a href="#" className="w-10 h-10 rounded-full bg-gray-900 border border-gray-800 flex items-center justify-center transition-all duration-300 hover:-translate-y-1 hover:bg-purple-600 hover:border-purple-600 hover:text-white hover:shadow-[0_0_20px_rgba(147,51,234,0.4)]">
-                                <FiMail size={18} />
+                            <a href="#" className="text-gray-500 hover:text-white transition-colors duration-300">
+                                <FiMail size={20} />
                             </a>
                         </div>
                     </div>
@@ -60,11 +60,11 @@ const Footer = () => {
                     {/* Link Columns */}
                     {footerSections.map((section, index) => (
                         <div key={index} className="col-span-1">
-                            <h4 className="text-white font-semibold mb-6">{section.title}</h4>
-                            <ul className="space-y-4 text-sm">
+                            <h4 className="text-gray-200 font-semibold mb-6 text-sm tracking-wide">{section.title}</h4>
+                            <ul className="space-y-4 text-sm font-medium">
                                 {section.links.map((link, i) => (
                                     <li key={i}>
-                                        <a href="#" className="hover:text-purple-400 transition-all duration-200 hover:translate-x-1 inline-block">
+                                        <a href="#" className="text-gray-500 hover:text-gray-200 transition-colors duration-300 inline-block">
                                             {link}
                                         </a>
                                     </li>
@@ -76,14 +76,15 @@ const Footer = () => {
                 </div>
 
                 {/* Bottom Bar */}
-                <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm">
+                <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center text-xs font-medium tracking-wide">
                     <div className="mb-4 md:mb-0 text-gray-500">
-                        &copy; 2024 Astrosera. All rights reserved. Powered by NASA data.
+                        &copy; 2024 Astrosera. All rights reserved.
                     </div>
-                    <div className="flex space-x-6">
-                        <a href="#" className="hover:text-purple-400 transition-colors duration-200">Privacy</a>
-                        <a href="#" className="hover:text-purple-400 transition-colors duration-200">Terms</a>
-                        <a href="#" className="hover:text-purple-400 transition-colors duration-200">Cookies</a>
+                    <div className="flex space-x-8">
+                        <a href="#" className="text-gray-500 hover:text-gray-200 transition-colors duration-300">Privacy Policy</a>
+                        <a href="#" className="text-gray-500 hover:text-gray-200 transition-colors duration-300">Terms of Use</a>
+                        <a href="#" className="text-gray-500 hover:text-gray-200 transition-colors duration-300">Legal</a>
+                        <a href="#" className="text-gray-500 hover:text-gray-200 transition-colors duration-300">Site Map</a>
                     </div>
                 </div>
 
