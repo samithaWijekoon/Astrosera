@@ -11,6 +11,7 @@ import Member3 from './Pages/Member03/member3'
 import Member4 from './Pages/Member4/Achievment'
 import AdminDashboard from './Pages/Member05/AdminDashboard';
 import Chat from './Pages/chat/chat' // Keep this import!
+import Profile from './Pages/Profile'
 
 const App = () => {
   return (
@@ -21,6 +22,7 @@ const App = () => {
         <Route path="/chat" element={<Chat />} /> 
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/profile" element={<Profile />} />
         
         <Route path="/events" element={<Home />} />
         <Route path="/quiz" element={<Member3 />} />
