@@ -7,7 +7,7 @@ import Home from './Pages/Home'
 import Login from './Pages/Login'
 import Signup from './Pages/Signup'
 import Member6 from './Pages/Member6/member6'
-import Member3 from './Pages/Member03/member3'
+// import Member3 from './Pages/Member03/member3'
 import Member4 from './Pages/Member4/Achievment'
 import AdminDashboard from './Pages/Member05/AdminDashboard';
 import Chat from './Pages/chat/chat' // Keep this import!
@@ -25,7 +25,7 @@ const App = () => {
         <Route path="/profile" element={<Profile />} />
         
         <Route path="/events" element={<Home />} />
-        <Route path="/quiz" element={<Member3 />} />
+        {/* <Route path="/quiz" element={<Member3 />} /> */}
         <Route path="/achievements" element={<Member4 />} />
         <Route path="/analytics" element={<Home />} />
         <Route path="/news" element={<Member6 />} />
