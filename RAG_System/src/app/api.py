@@ -3,6 +3,7 @@ from pathlib import Path
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 from .models import QuestionRequest, QAResponse
 from .services.qa_service import answer_question
