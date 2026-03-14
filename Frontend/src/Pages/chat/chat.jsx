@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import './chat.css';
 
 // API Configuration
-const RAG_API_URL = 'http://localhost:8000';
+const RAG_API_URL = 'http://localhost:8001';
 
 
 const chat = () => {
@@ -36,7 +36,7 @@ const chat = () => {
 
   const checkApiHealth = async () => {
     try {
-      const response = await fetch(`${RAG_API_URL}/api/health`);
+      const response = await fetch(`${RAG_API_URL}/health`);
       if (response.ok) {
         const data = await response.json();
         console.log('API Health:', data);
@@ -73,15 +73,13 @@ const chat = () => {
 
     try {
       // Call RAG API
-      const response = await fetch(`${RAG_API_URL}/api/query`, {
+      const response = await fetch(`${RAG_API_URL}/qa`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           question: currentQuestion,
-          session_id: sessionId,
-          use_history: true
         })
       });
 
@@ -91,14 +89,18 @@ const chat = () => {
 
       const data = await response.json();
       
-      // Bot response with citations
+      // Bot response
+      // citations from RAG is a dict {key: {title, content...}}, convert to array
+      const citationsArray = data.citations
+        ? Object.values(data.citations)
+        : [];
+
       const botMsg = { 
         id: Date.now() + 1, 
         text: data.answer, 
         sender: 'bot',
-        citations: data.citations || [],
-        timestamp: data.timestamp,
-        searchQuery: data.search_query
+        citations: citationsArray,
+        timestamp: new Date().toISOString()
       };
       
       setMessages(prev => [...prev, botMsg]);
@@ -123,10 +125,6 @@ const chat = () => {
 
   const handleClearChat = async () => {
     try {
-      await fetch(`${RAG_API_URL}/api/session/${sessionId}`, {
-        method: 'DELETE'
-      });
-      
       setMessages([
         { 
           id: Date.now(), 
@@ -136,7 +134,7 @@ const chat = () => {
         }
       ]);
     } catch (error) {
-      console.error('Error clearing session:', error);
+      console.error('Error clearing chat:', error);
     }
   };
 
@@ -235,7 +233,7 @@ const chat = () => {
 
       {apiStatus === 'error' && (
         <div className="api-error-banner">
-          ⚠️ RAG API is not running. Start it with: <code>cd rag_system && python app.py</code>
+      ⚠️ RAG API is not running. Start it with: <code>venv/bin/uvicorn src.app.api:app --reload --port 8001</code>
         </div>
       )}
     </div>
