@@ -24,7 +24,7 @@ const Footer = () => {
     ];
 
     return (
-        <footer className="w-full bg-black text-gray-400 py-12  font-sans">
+        <footer className="relative z-20 w-full bg-black text-gray-400 py-12  font-sans">
             <div className="max-w-7xl mx-auto px-6 md:px-12">
 
                 {/* Main Footer Content */}

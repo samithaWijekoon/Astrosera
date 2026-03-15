@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
@@ -13,6 +14,13 @@ require('dotenv').config();
 connectDB();
 
 const app = express();
+
+app.use(express.json());
+
+// Serve badge images (and any other public assets in Frontend/public/images)
+app.use('/images', express.static(path.join(__dirname, '../../Frontend/public/images')));
+
+console.log('FRONTEND_URI:', process.env.FRONTEND_URI);
 
 // 1. CORS CONFIGURATION (Flexible for local development)
 app.use(cors({
