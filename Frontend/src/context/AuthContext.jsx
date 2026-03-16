@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
@@ -9,7 +9,13 @@ const backendurl = "http://localhost:5001"; // Use localhost instead of 127.0.0.
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [email, setEmail] = useState(() => localStorage.getItem('astrosera_email') || '');
     const navigate = useNavigate();
+
+    function saveEmail(e) {
+        setEmail(e);
+        localStorage.setItem('astrosera_email', e);
+    }
 
     useEffect(() => {
         // 1. Check for stored user on page load/refresh
@@ -147,10 +153,13 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, signup, logout, googleLogin, updateUser, loading }}>
+        <AuthContext.Provider value={{ user, login, signup, logout, googleLogin, updateUser, loading, email, saveEmail }}>
             {children}
         </AuthContext.Provider>
     );
 };
+
+// ─── useUser hook (merged from UserContext) ───────────────────────────────────
+export function useUser() { return useContext(AuthContext); }
 
 export default AuthContext;
