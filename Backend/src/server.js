@@ -1,11 +1,28 @@
-const app = require('./app')
+const app        = require('./app');
 require('dotenv').config();
+const rateLimit  = require('express-rate-limit');
+const cors       = require('cors');
 
-const PORT = process.env.PORT
+const asteroidRoutes = require('./routes/asteroids');
+const alertRoutes    = require('./routes/alerts');
+const { startCron }  = require('./services/notificationService');
+
+const PORT = process.env.PORT || 5000;
+
+app.use(cors({ origin: process.env.CLIENT_URL || '*' }));
+app.use(rateLimit({ windowMs: 60 * 1000, max: 100 }));
+
+app.get('/api/health', (_, res) => res.json({ status: 'ok', ts: new Date() }));
+app.use('/api/asteroids', asteroidRoutes);
+app.use('/api/alerts',    alertRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`)
-})
+    console.log(`🚀 AstroSera API → http://localhost:${PORT}`);
+    console.log(`💾 JSON file DB (no MongoDB needed)`);
+    startCron();
+    console.log(`⏰ Alert cron started (every 30 min)`);
+});
 
 
 
@@ -96,4 +113,3 @@ app.listen(PORT, () => {
 
 // const PORT = process.env.PORT || 5000;
 // app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
