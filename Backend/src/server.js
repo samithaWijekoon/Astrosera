@@ -5,11 +5,21 @@ const cors       = require('cors');
 
 const asteroidRoutes = require('./routes/asteroids');
 const alertRoutes    = require('./routes/alerts');
-const { startCron }  = require('./services/notificationService');
+const { startCron }  = require('./services/notificationServices');
 
 const PORT = process.env.PORT || 5000;
 
-app.use(cors({ origin: process.env.CLIENT_URL || '*' }));
+const allowedOrigins = [
+    process.env.FRONTEND_URI,
+    process.env.CLIENT_URL,
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost:5174',
+    'http://127.0.0.1:5174',
+    'http://localhost:3000',
+].filter(Boolean);
+
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(rateLimit({ windowMs: 60 * 1000, max: 100 }));
 
 app.get('/api/health', (_, res) => res.json({ status: 'ok', ts: new Date() }));
