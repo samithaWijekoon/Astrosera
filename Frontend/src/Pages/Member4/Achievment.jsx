@@ -479,8 +479,6 @@ const Member4 = () => {
     );
   }
 
-  const myEntry = leaderboard.find(e => e.isUser);
-
   return (
     <div className="relative min-h-[100vh] bg-black overflow-hidden font-sans">
       <style>{`
