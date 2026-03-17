@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
         const topUsers = await User.find()
             .sort({ totalScore: -1 })
             .limit(10)
-            .select('username avatarInitials totalScore');
+            .select('username avatarInitials totalScore _id');
 
         // Batch-fetch streaks from UserStats
         const userIds = topUsers.map(u => u._id.toString());
@@ -28,13 +28,38 @@ router.get('/', async (req, res) => {
         const leaderboard = topUsers.map((u, i) => ({
             rank: i + 1,
             name: u.username || 'Unknown',
-            avatar: u.avatarInitials || u.username.slice(0, 2).toUpperCase(),
-            score: u.totalScore,
+            avatar: u.avatarInitials || (u.username ? u.username.slice(0, 2).toUpperCase() : '??'),
+            score: u.totalScore || 0,
             streak: streakMap[u._id.toString()] || 0,
             isUser: userId ? u._id.toString() === userId : false,
         }));
 
-        return res.json({ leaderboard });
+        // Optional: include current user rank even if not in top 10
+        let currentUser = null;
+        if (userId && !leaderboard.some(e => e.isUser)) {
+            const me = await User.findById(userId).select('username avatarInitials totalScore _id');
+            if (me) {
+                const [myStats, higherCount] = await Promise.all([
+                    UserStats.findOne({ userId }).select('currentStreak'),
+                    User.countDocuments({ totalScore: { $gt: me.totalScore || 0 } }),
+                ]);
+
+                currentUser = {
+                    rank: higherCount + 1,
+                    name: me.username || 'Unknown',
+                    avatar: me.avatarInitials || (me.username ? me.username.slice(0, 2).toUpperCase() : '??'),
+                    score: me.totalScore || 0,
+                    streak: myStats?.currentStreak || 0,
+                    isUser: true,
+                };
+            }
+        }
+
+        return res.json({
+            success: true,
+            leaderboard,
+            currentUser,
+        });
     } catch (err) {
         console.error('[GET /leaderboard]', err);
         return res.status(500).json({ error: 'Internal server error' });
