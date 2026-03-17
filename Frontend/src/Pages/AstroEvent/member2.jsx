@@ -6,7 +6,7 @@ import AsteroidDetail from '../../component/asteroid/AsteroidDetail';
 import PlanetOrbitalViz from '../../component/asteroid/PlanetOrbitalViz';
 import BellButton from '../../component/asteroid/BellButton';
 import PlanetViz from '../../component/asteroid/PlanetViz';
-import { useUser } from '../../context/UserContext';
+import { useUser } from '../../context/AuthContext';
 
 // ─── Planet Data ────────────────────────────────────────────────────────────
 const PLANETS = [
