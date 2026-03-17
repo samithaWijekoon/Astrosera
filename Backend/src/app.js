@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const connectDB = require('./config/db');
+const { connectDB } = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const leaderboardRoutes = require('./routes/leaderboardRoutes');
 const gamificationRoutes = require('./routes/gamification');
