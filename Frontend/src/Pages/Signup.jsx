@@ -1,14 +1,32 @@
 import React, { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
+import { GoogleLogin } from '@react-oauth/google';
 
 const Signup = () => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const { signup } = useContext(AuthContext);
+    const [passwordRules, setPasswordRules] = useState({
+        length: false,
+        uppercase: false,
+        number: false,
+        specialChar: false,
+    });
+    const { signup, googleLogin } = useContext(AuthContext);
     const [error, setError] = useState('');
+
+    const handlePasswordChange = (e) => {
+        const val = e.target.value;
+        setPassword(val);
+        setPasswordRules({
+            length: val.length >= 8,
+            uppercase: /[A-Z]/.test(val),
+            number: /\d/.test(val),
+            specialChar: /[@$!%*?&#]/.test(val),
+        });
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -18,7 +36,20 @@ const Signup = () => {
             return setError("Passwords do not match");
         }
 
+        const isPasswordValid = Object.values(passwordRules).every(Boolean);
+        if (!isPasswordValid) {
+            return setError("Please ensure your password meets all requirements.");
+        }
+
         const result = await signup(username, email, password);
+        if (!result.success) {
+            setError(result.message);
+        }
+    };
+
+    const handleGoogleSuccess = async (credentialResponse) => {
+        setError('');
+        const result = await googleLogin(credentialResponse.credential);
         if (!result.success) {
             setError(result.message);
         }
@@ -68,9 +99,23 @@ const Signup = () => {
                             className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all duration-300"
                             placeholder="Create a password"
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={handlePasswordChange}
                             required
                         />
+                        <div className="mt-2 text-xs space-y-1">
+                            <p className={passwordRules.length ? "text-green-500" : "text-red-500"}>
+                                {passwordRules.length ? "✓" : "✗"} Minimum 8 characters
+                            </p>
+                            <p className={passwordRules.uppercase ? "text-green-500" : "text-red-500"}>
+                                {passwordRules.uppercase ? "✓" : "✗"} At least one uppercase letter
+                            </p>
+                            <p className={passwordRules.number ? "text-green-500" : "text-red-500"}>
+                                {passwordRules.number ? "✓" : "✗"} At least one number
+                            </p>
+                            <p className={passwordRules.specialChar ? "text-green-500" : "text-red-500"}>
+                                {passwordRules.specialChar ? "✓" : "✗"} At least one special character (@, #, $, %, etc.)
+                            </p>
+                        </div>
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-300 mb-2">Confirm Password</label>
@@ -90,6 +135,23 @@ const Signup = () => {
                     >
                         Sign Up
                     </button>
+                    
+                    <div className="flex items-center my-6">
+                        <div className="flex-grow border-t border-gray-600"></div>
+                        <span className="flex-shrink-0 mx-4 text-gray-500 text-sm">Or get started with</span>
+                        <div className="flex-grow border-t border-gray-600"></div>
+                    </div>
+
+                    <div className="flex justify-center">
+                        <GoogleLogin
+                            onSuccess={handleGoogleSuccess}
+                            onError={() => setError('Google Sign-In failed to initialize.')}
+                            theme="filled_black"
+                            width="100%"
+                            size="large"
+                            text="signup_with"
+                        />
+                    </div>
                 </form>
 
                 <div className="mt-8 text-center text-gray-400 text-sm">

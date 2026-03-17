@@ -8,6 +8,7 @@ import StatsSection from '../component/landingpage/StatsSection'
 import GetStartedSection from '../component/landingpage/GetStartedSection'
 import PricingSection from '../component/landingpage/PricingSection'
 import LocationFeature from '../component/landingpage/LocationFeature'
+import NewsFeedSection from '../component/landingpage/NewsFeedSection'
 
 const Home = () => {
     return (
@@ -17,7 +18,8 @@ const Home = () => {
             <FeaturesSection />
             <div id="chat"><DailyQuizSection /></div>
             <LocationFeature />
-            <div id="news"><EventsSection /></div>
+            <div id="news-feed"><NewsFeedSection /></div>
+            <div id="events"><EventsSection /></div>
             <StatsSection />
             <PricingSection />
             <div id="dashboard"><GetStartedSection /></div>

@@ -1,3 +1,4 @@
+from typing import Optional, Dict
 from pydantic import BaseModel
 
 class QuestionRequest(BaseModel):
@@ -17,4 +18,4 @@ class QAResponse(BaseModel):
     """
     answer: str
     context: str
-    citations: dict[str, dict] | None = None
+    citations: Optional[Dict[str, Dict]] = None
