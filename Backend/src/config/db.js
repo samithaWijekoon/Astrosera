@@ -6,12 +6,22 @@ require('dotenv').config();
 // ─── MongoDB Connection ───────────────────────────────────────────────────────
 
 const connectDB = async () => {
+    const uri = process.env.MONGO_URI;
+    if (!uri) {
+        console.warn('MongoDB URI not set. Continuing without MongoDB.');
+        return null;
+    }
+
     try {
-        const conn = await mongoose.connect(process.env.MONGO_URI);
+        const conn = await mongoose.connect(uri);
         console.log(`MongoDB Connected: ${conn.connection.host}`);
+        return conn;
     } catch (error) {
-        console.error(`Error: ${error.message}`);
-        process.exit(1);
+        const required = String(process.env.MONGO_REQUIRED).toLowerCase() === 'true';
+        console.error(`MongoDB connection error: ${error.message}`);
+        if (required) process.exit(1);
+        console.warn('Continuing without MongoDB because MONGO_REQUIRED is not true.');
+        return null;
     }
 };
 
