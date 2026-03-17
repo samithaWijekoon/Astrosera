@@ -96,19 +96,19 @@ function SectionHeader({ title, earnedCount, totalCount }) {
 
 function BadgeRow({ badges, onSelect, className = '' }) {
   return (
-    <div className={`flex flex-wrap gap-5 justify-center ${className}`}>
+    <div className={`badge-grid ${className}`}>
       {badges.map(b => (
         <button
           key={b.id}
-          className={`relative group overflow-hidden flex flex-col items-center justify-center w-32 h-36 rounded-2xl border transition-all duration-300 transform-gpu hover:-translate-y-2 hover:rotate-1 hover:shadow-[0_0_25px_rgba(168,85,247,0.5)] cursor-pointer ${b.earned ? 'bg-white/10 border-purple-500/50 hover:bg-white/20' : 'bg-black/40 border-white/10 hover:border-white/30 grayscale contrast-75 opacity-60 hover:opacity-100 hover:grayscale-0'}`}
-          onClick={() => onSelect(b)}
+          className={`relative group overflow-hidden flex flex-col items-center justify-center w-full h-36 rounded-2xl border transition-all duration-300 transform-gpu ${b.earned ? 'bg-white/10 border-purple-500/50 hover:bg-white/20 hover:-translate-y-2 hover:rotate-1 hover:shadow-[0_0_25px_rgba(168,85,247,0.5)] cursor-pointer' : 'bg-black/40 border-white/10 grayscale contrast-75 opacity-60 cursor-default'}`}
+          onClick={() => b.earned && onSelect(b)}
         >
           <ScannerEffect />
           <CircuitPattern />
           {b.earned && <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-transparent pointer-events-none mix-blend-overlay"></div>}
           
           <div className="relative z-10 flex flex-col items-center p-2">
-            <span className={`text-5xl mb-3 transition-transform duration-500 group-hover:scale-110 ${b.earned ? 'drop-shadow-[0_0_20px_rgba(168,85,247,0.8)]' : ''}`}>
+            <span className={`text-5xl mb-3 transition-transform duration-500 ${b.earned ? 'group-hover:scale-110 drop-shadow-[0_0_20px_rgba(168,85,247,0.8)]' : ''}`}>
               {b.image ? <img src={b.image} alt={b.name} className="w-14 h-14 object-contain" /> : '🏅'}
             </span>
             <span className={`text-xs text-center font-bold px-2 leading-tight font-outfit uppercase tracking-wider ${b.earned ? 'text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]' : 'text-gray-400'}`}>
@@ -588,15 +588,15 @@ const Member4 = () => {
         )}
 
         {/* ─── MAIN CONTENT GRID ─── */}
-        <div className="flex flex-col lg:flex-row gap-8">
-            {/* ─── BADGE CATEGORY CARDS ─── */}
-            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-            {categories.map((category, idx) => {
+        <div className="flex flex-col gap-8">
+            {/* ─── BADGE CATEGORY CARDS (side by side) ─── */}
+            <div className="achievement-categories-grid">
+            {categories.filter(c => c.title !== 'Total Days').map((category, idx) => {
                 const earnedCount = category.badges.filter(b => b.earned).length;
                 return (
                 <div
                     key={idx}
-                    className={`bg-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-8 relative overflow-hidden group transition-all duration-500 hover:border-purple-500/40 hover:shadow-[0_0_40px_rgba(168,85,247,0.15)] ${category.title === 'Total Days' ? 'md:col-span-2' : ''}`}
+                    className="bg-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-8 relative overflow-hidden group transition-all duration-500 hover:border-purple-500/40 hover:shadow-[0_0_40px_rgba(168,85,247,0.15)]"
                 >
                     <CircuitPattern />
                     <ScannerEffect />
@@ -616,57 +616,102 @@ const Member4 = () => {
             })}
             </div>
 
-            {/* ─── LEADERBOARD ─── */}
-            <aside className="w-full lg:w-[420px]">
-                <div className="bg-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-8 relative overflow-hidden group h-full max-h-[850px] flex flex-col transition-all duration-500 hover:border-cyan-500/40 hover:shadow-[0_0_40px_rgba(34,211,238,0.15)]">
+            {/* ─── TOTAL DAYS (centered below) ─── */}
+            {categories.filter(c => c.title === 'Total Days').map((category, idx) => {
+                const earnedCount = category.badges.filter(b => b.earned).length;
+                return (
+                <div
+                    key={`total-${idx}`}
+                    className="achievement-total-days bg-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-8 relative overflow-hidden group transition-all duration-500 hover:border-purple-500/40 hover:shadow-[0_0_40px_rgba(168,85,247,0.15)]"
+                >
+                    <CircuitPattern />
+                    <ScannerEffect />
+                    <div className="relative z-10">
+                        <SectionHeader
+                            title={category.title}
+                            earnedCount={earnedCount}
+                            totalCount={category.badges.length}
+                        />
+                        <BadgeRow
+                            badges={category.badges}
+                            onSelect={setSelectedBadge}
+                        />
+                    </div>
+                </div>
+                );
+            })}
+
+            {/* ─── LEADERBOARD (full width below) ─── */}
+            <div className="achievement-leaderboard">
+                <div className="bg-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-8 relative overflow-hidden group max-h-[850px] flex flex-col transition-all duration-500 hover:border-cyan-500/40 hover:shadow-[0_0_40px_rgba(34,211,238,0.15)]">
                     <CircuitPattern />
                     <ScannerEffect />
                     <div className="relative z-10 flex flex-col h-full">
                         <div className="mb-6">
                             <SectionHeader title="Global Leaderboard" />
                         </div>
-                        
-                        <div className="flex-1 overflow-y-auto pr-3 space-y-4 scrollbar-hide" ref={leaderboardRef} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                            {leaderboard.length === 0 ? (
-                                <div className="text-gray-500 text-center py-12 font-mono text-sm border border-dashed border-gray-700 rounded-2xl bg-black/20">
-                                    <div className="text-3xl mb-3 opacity-50">📡</div>
-                                    NO DATA DETECTED.<br/>INITIALIZE A QUIZ TO BEGIN.
-                                </div>
-                            ) : leaderboard.map((entry, i) => {
-                                const medals = ['🥇', '🥈', '🥉'];
-                                const hasMedal = i < 3;
-                                return (
-                                    <div key={i} className={`flex items-center gap-4 p-4 rounded-2xl border transition-all duration-300 hover:-translate-y-1 cursor-default ${entry.isUser ? 'bg-gradient-to-r from-purple-900/40 to-cyan-900/20 border-purple-500/50 shadow-[0_0_20px_rgba(168,85,247,0.3)] ring-1 ring-inset ring-purple-500/20' : 'bg-black/30 border-white/10 hover:bg-white/5 hover:border-white/20'}`}>
-                                        <div className="w-8 text-center font-mono font-bold text-gray-500">
-                                            {hasMedal ? <span className="text-2xl drop-shadow-md">{medals[i]}</span> : <span className="text-sm">#{entry.rank}</span>}
-                                        </div>
-                                        <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold uppercase shadow-inner ${entry.isUser ? 'bg-gradient-to-br from-purple-500 to-cyan-500 text-white border-2 border-white/30 shadow-[0_0_10px_rgba(168,85,247,0.5)]' : 'bg-gradient-to-br from-gray-800 to-gray-900 text-gray-400 border border-gray-700'}`}>
-                                            {entry.avatar}
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className={`font-bold truncate text-base ${entry.isUser ? 'text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]' : 'text-gray-300'}`}>{entry.name}</div>
-                                            <div className="text-[10px] text-gray-400 uppercase tracking-widest font-outfit mt-0.5">
-                                                <span className="text-orange-400 glow">🔥 {entry.streak}</span> DAY STREAK
-                                            </div>
-                                        </div>
-                                        <div className="flex flex-col items-end gap-1.5 min-w-[80px]">
-                                            <div className={`font-mono font-bold text-sm ${entry.isUser ? 'text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.8)]' : 'text-gray-300'}`}>
-                                                {entry.score.toLocaleString()}
-                                            </div>
-                                            <div className="w-full h-1.5 bg-gray-900 rounded-full overflow-hidden shadow-inner">
-                                                <div 
-                                                    className={`h-full rounded-full transition-all duration-1000 ${entry.isUser ? 'bg-gradient-to-r from-cyan-400 to-purple-500 shadow-[0_0_10px_rgba(168,85,247,1)]' : 'bg-purple-600/70'}`} 
-                                                    style={{ width: `${(entry.score / maxScore) * 100}%` }}
-                                                ></div>
-                                            </div>
-                                        </div>
+
+                        <div className="lb-content-row">
+                            <div className="flex-1 overflow-y-auto pr-3 space-y-4 scrollbar-hide" ref={leaderboardRef} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', maxHeight: '300px' }}>
+                                {leaderboard.length === 0 ? (
+                                    <div className="text-gray-500 text-center py-12 font-mono text-sm border border-dashed border-gray-700 rounded-2xl bg-black/20">
+                                        <div className="text-3xl mb-3 opacity-50">📡</div>
+                                        NO DATA DETECTED.<br/>INITIALIZE A QUIZ TO BEGIN.
                                     </div>
-                                );
-                            })}
+                                ) : leaderboard.map((entry, i) => {
+                                    const medals = ['🥇', '🥈', '🥉'];
+                                    const hasMedal = i < 3;
+                                    return (
+                                        <div key={i} className={`flex items-center gap-4 p-4 rounded-2xl border transition-all duration-300 hover:-translate-y-1 cursor-default ${entry.isUser ? 'bg-gradient-to-r from-purple-900/40 to-cyan-900/20 border-purple-500/50 shadow-[0_0_20px_rgba(168,85,247,0.3)] ring-1 ring-inset ring-purple-500/20' : 'bg-black/30 border-white/10 hover:bg-white/5 hover:border-white/20'}`}>
+                                            <div className="w-8 text-center font-mono font-bold text-gray-500">
+                                                {hasMedal ? <span className="text-2xl drop-shadow-md">{medals[i]}</span> : <span className="text-sm">#{entry.rank}</span>}
+                                            </div>
+                                            <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold uppercase shadow-inner ${entry.isUser ? 'bg-gradient-to-br from-purple-500 to-cyan-500 text-white border-2 border-white/30 shadow-[0_0_10px_rgba(168,85,247,0.5)]' : 'bg-gradient-to-br from-gray-800 to-gray-900 text-gray-400 border border-gray-700'}`}>
+                                                {entry.avatar}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className={`font-bold truncate text-base ${entry.isUser ? 'text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]' : 'text-gray-300'}`}>{entry.name}</div>
+                                                <div className="text-[10px] text-gray-400 uppercase tracking-widest font-outfit mt-0.5">
+                                                    <span className="text-orange-400 glow">🔥 {entry.streak}</span> DAY STREAK
+                                                </div>
+                                            </div>
+                                            <div className="flex flex-col items-end gap-1.5 min-w-[80px]">
+                                                <div className={`font-mono font-bold text-sm ${entry.isUser ? 'text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.8)]' : 'text-gray-300'}`}>
+                                                    {entry.score.toLocaleString()}
+                                                </div>
+                                                <div className="w-full h-1.5 bg-gray-900 rounded-full overflow-hidden shadow-inner">
+                                                    <div 
+                                                        className={`h-full rounded-full transition-all duration-1000 ${entry.isUser ? 'bg-gradient-to-r from-cyan-400 to-purple-500 shadow-[0_0_10px_rgba(168,85,247,1)]' : 'bg-purple-600/70'}`} 
+                                                        style={{ width: `${(entry.score / maxScore) * 100}%` }}
+                                                    ></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Side scroll buttons */}
+                            <div className="lb-sidebar">
+                                <button
+                                    className="lb-scroll-btn"
+                                    onClick={() => leaderboardRef.current?.scrollBy({ top: -200, behavior: 'smooth' })}
+                                    aria-label="Scroll up"
+                                >
+                                    ▲
+                                </button>
+                                <button
+                                    className="lb-scroll-btn"
+                                    onClick={() => leaderboardRef.current?.scrollBy({ top: 200, behavior: 'smooth' })}
+                                    aria-label="Scroll down"
+                                >
+                                    ▼
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </aside>
+            </div>
         </div>
 
         {/* ─── BADGE MODAL ─── */}
