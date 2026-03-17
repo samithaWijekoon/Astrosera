@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { setAlert, removeAlert, checkAlert } from '../../services/api';
-import { useUser } from '../../context/UserContext';
+import { useUser } from '../../context/AuthContext';
 
 export default function BellButton({ asteroid }) {
   const { email } = useUser();
