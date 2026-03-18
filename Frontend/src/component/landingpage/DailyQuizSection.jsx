@@ -1,10 +1,42 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FaFire, FaTrophy, FaMedal, FaChartLine } from "react-icons/fa";
-import { IoMdCheckmarkCircle } from "react-icons/io";
+import { IoMdCheckmarkCircle, IoMdCloseCircle } from "react-icons/io";
 import { HiLightBulb } from "react-icons/hi";
 import { BsStars } from "react-icons/bs";
 
 const DailyQuizSection = () => {
+    const navigate = useNavigate();
+    const [questionData, setQuestionData] = useState(null);
+    const [selectedAnswer, setSelectedAnswer] = useState(null);
+    const [isCorrect, setIsCorrect] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchRandomQuiz = async () => {
+            try {
+                // Fetch random quiz from Node backend
+                const response = await fetch('http://localhost:5001/api/quiz/random');
+                if (response.ok) {
+                    const data = await response.json();
+                    // Structure the options into an array for easy mapping
+                    const options = [data.option1, data.option2, data.option3, data.option4].filter(Boolean);
+                    setQuestionData({ ...data, options });
+                }
+            } catch (error) {
+                console.error("Failed to fetch random quiz", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchRandomQuiz();
+    }, []);
+
+    const handleOptionSelect = (option) => {
+        if (selectedAnswer) return; // Prevent changing answer once selected
+        setSelectedAnswer(option);
+        setIsCorrect(option === questionData.correctAnswer);
+    };
     return (
         <section
             className="relative min-h-screen w-full bg-[#0a0a0a] flex items-center justify-center p-4 md:p-8 lg:p-12 font-sans overflow-hidden"
@@ -60,47 +92,81 @@ const DailyQuizSection = () => {
                             <div className="h-1 flex-1 bg-gray-700/50 rounded-full"></div>
                         </div>
 
-                        {/* Question */}
-                        <h3 className="text-base md:text-lg text-gray-200 font-medium mb-6 leading-relaxed">
-                            What is the approximate temperature at the core of the Sun?
-                        </h3>
+                        {/* Question & Options */}
+                        {loading ? (
+                            <div className="animate-pulse space-y-4">
+                                <div className="h-6 bg-gray-800 rounded w-3/4 mb-6"></div>
+                                <div className="h-12 bg-gray-800 rounded"></div>
+                                <div className="h-12 bg-gray-800 rounded"></div>
+                                <div className="h-12 bg-gray-800 rounded"></div>
+                                <div className="h-12 bg-gray-800 rounded"></div>
+                            </div>
+                        ) : questionData ? (
+                            <>
+                                <h3 className="text-base md:text-lg text-gray-200 font-medium mb-6 leading-relaxed">
+                                    {questionData.question}
+                                </h3>
 
-                        {/* Options */}
-                        <div className="space-y-3 mb-6">
-                            {/* Option 1 */}
-                            <div className="group p-3 rounded-xl border border-gray-700/50 bg-gray-800/20 hover:bg-gray-800/40 transition-all duration-200 cursor-pointer text-gray-400 hover:text-gray-200 text-sm hover:scale-[1.01] hover:border-purple-500/30">
-                                5,500°C (surface temperature)
-                            </div>
+                                <div className="space-y-3 mb-6">
+                                    {questionData.options.map((option, index) => {
+                                        let optionStyle = "border-gray-700/50 bg-gray-800/20 text-gray-400 hover:text-gray-200 hover:bg-gray-800/40 hover:border-purple-500/30";
+                                        let icon = null;
 
-                            {/* Option 2 (Correct/Selected) */}
-                            <div className="relative p-3 rounded-xl border border-green-500/30 bg-green-900/10 text-white flex justify-between items-center shadow-[0_0_15px_rgba(34,197,94,0.05)] cursor-pointer text-sm transform scale-[1.01]">
-                                <span className="font-medium">15 million°C</span>
-                                <IoMdCheckmarkCircle className="text-green-500 text-lg" />
-                            </div>
+                                        if (selectedAnswer) {
+                                            if (option === questionData.correctAnswer) {
+                                                optionStyle = "border-green-500/30 bg-green-900/10 text-white shadow-[0_0_15px_rgba(34,197,94,0.05)]";
+                                                icon = <IoMdCheckmarkCircle className="text-green-500 text-lg" />;
+                                            } else if (option === selectedAnswer) {
+                                                optionStyle = "border-red-500/30 bg-red-900/10 text-white shadow-[0_0_15px_rgba(239,68,68,0.05)]";
+                                                icon = <IoMdCloseCircle className="text-red-500 text-lg" />;
+                                            } else {
+                                                optionStyle = "border-gray-800/50 bg-gray-900/20 text-gray-500 cursor-not-allowed opacity-50";
+                                            }
+                                        }
 
-                            {/* Option 3 */}
-                            <div className="p-3 rounded-xl border border-gray-700/50 bg-gray-800/20 hover:bg-gray-800/40 transition-all duration-200 cursor-pointer text-gray-400 hover:text-gray-200 text-sm hover:scale-[1.01] hover:border-purple-500/30">
-                                1 million°C
-                            </div>
+                                        return (
+                                            <div
+                                                key={index}
+                                                onClick={() => handleOptionSelect(option)}
+                                                className={`relative p-3 rounded-xl border flex justify-between items-center transition-all duration-200 cursor-pointer text-sm hover:scale-[1.01] ${optionStyle}`}
+                                            >
+                                                <span className="font-medium">{option}</span>
+                                                {icon}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
 
-                            {/* Option 4 */}
-                            <div className="p-3 rounded-xl border border-gray-700/50 bg-gray-800/20 hover:bg-gray-800/40 transition-all duration-200 cursor-pointer text-gray-400 hover:text-gray-200 text-sm hover:scale-[1.01] hover:border-purple-500/30">
-                                100,000°C
-                            </div>
-                        </div>
-
-                        {/* Fact Box */}
-                        <div className="bg-blue-900/10 border border-blue-800/20 rounded-xl p-4 flex items-start hover:bg-blue-900/20 transition-colors">
-                            <div className="bg-blue-500/10 p-1.5 rounded-lg mr-3 shrink-0">
-                                <HiLightBulb className="text-blue-400 text-base animate-pulse" />
-                            </div>
-                            <div>
-                                <h4 className="text-blue-400 text-xs font-bold mb-0.5">Did you know?</h4>
-                                <p className="text-gray-400 text-xs leading-relaxed">
-                                    The Sun's core reaches temperatures of about 15 million degrees Celsius, hot enough to sustain nuclear fusion reactions that power our solar system.
-                                </p>
-                            </div>
-                        </div>
+                                {/* Post-Answer Pop-up */}
+                                {selectedAnswer && (
+                                    <div className="animate-fade-in-up mt-6 space-y-4">
+                                        <div className={`bg-${isCorrect ? 'green' : 'red'}-900/10 border border-${isCorrect ? 'green' : 'red'}-800/20 rounded-xl p-4 flex items-start`}>
+                                            <div className={`bg-${isCorrect ? 'green' : 'red'}-500/10 p-1.5 rounded-lg mr-3 shrink-0`}>
+                                                <HiLightBulb className={`text-${isCorrect ? 'green' : 'red'}-400 text-base animate-pulse`} />
+                                            </div>
+                                            <div>
+                                                <h4 className={`text-${isCorrect ? 'green' : 'red'}-400 text-xs font-bold mb-0.5`}>
+                                                    {isCorrect ? "Correct! Did you know?" : "Not quite! Did you know?"}
+                                                </h4>
+                                                <p className="text-gray-400 text-xs leading-relaxed">
+                                                    The correct answer is {questionData.correctAnswer}. Keep exploring the universe to learn more!
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <button 
+                                            onClick={() => navigate('/quiz')}
+                                            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl transition duration-300 shadow-lg shadow-purple-900/20 transform hover:scale-[1.02]"
+                                        >
+                                            Try more quizzes 🚀
+                                        </button>
+                                    </div>
+                                )}
+                            </>
+                        ) : (
+                            <h3 className="text-base md:text-lg text-red-400 font-medium mb-6 leading-relaxed">
+                                Failed to load today's quiz. Please try again later.
+                            </h3>
+                        )}
 
                     </div>
                 </div>

@@ -58,6 +58,19 @@ const clearQuizzes = async (req, res) => {
     }
 };
 
+// 3.5. Function to fetch random quiz for homepage widget
+const getRandomQuiz = async (req, res) => {
+    try {
+        const randomQuiz = await Quiz.aggregate([{ $sample: { size: 1 } }]);
+        if (!randomQuiz || randomQuiz.length === 0) {
+            return res.status(404).json({ message: "No questions found in database." });
+        }
+        res.status(200).json(randomQuiz[0]);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // 4. Check if user can play today
 const getQuizStatus = async (req, res) => {
     try {
@@ -83,4 +96,4 @@ const getQuizStatus = async (req, res) => {
     }
 };
 
-module.exports = { uploadQuizExcel, getQuizzes, clearQuizzes, getQuizStatus };
+module.exports = { uploadQuizExcel, getQuizzes, clearQuizzes, getQuizStatus, getRandomQuiz };
