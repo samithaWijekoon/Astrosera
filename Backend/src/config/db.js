@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const fs       = require('fs');
 const path     = require('path');
-require('dotenv').config();
+require('dotenv').config({ override: true });
 
 // ─── MongoDB Connection ───────────────────────────────────────────────────────
 

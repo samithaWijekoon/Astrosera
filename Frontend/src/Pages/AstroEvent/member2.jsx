@@ -208,7 +208,7 @@ export default function Member2() {
     } catch (err) {
       setError(err?.response?.status === 429
         ? 'NASA API rate limit reached. Please wait a moment and try again.'
-        : 'Could not connect to backend. Make sure it is running on port 5000.');
+        : 'Could not connect to backend. Make sure it is running on port 5001.');
       setAsteroids([]);
     } finally { setLoading(false); }
   }
