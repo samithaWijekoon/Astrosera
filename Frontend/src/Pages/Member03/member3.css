@@ -103,3 +103,121 @@
     opacity: 0.55;
   }
 }
+
+/* Screen shake */
+@keyframes shake {
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  15% {
+    transform: translate(-10px, -5px) rotate(-1deg);
+  }
+
+  30% {
+    transform: translate(10px, 5px) rotate(1deg);
+  }
+
+  45% {
+    transform: translate(-7px, 5px) rotate(-0.7deg);
+  }
+
+  60% {
+    transform: translate(7px, -5px) rotate(0.7deg);
+  }
+
+  75% {
+    transform: translate(-4px, 3px);
+  }
+
+  90% {
+    transform: translate(4px, -3px);
+  }
+}
+
+/* Scan beam */
+@keyframes scan {
+  0% {
+    top: -2px;
+    opacity: 0;
+  }
+
+  5% {
+    opacity: 0.7;
+  }
+
+  95% {
+    opacity: 0.7;
+  }
+
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+/* Progress bar shimmer */
+@keyframes shimmer {
+  from {
+    background-position: -200% center;
+  }
+
+  to {
+    background-position: 200% center;
+  }
+}
+
+/* Fuel flicker */
+@keyframes flicker {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  48% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.55;
+  }
+
+  52% {
+    opacity: 1;
+  }
+
+  82% {
+    opacity: 1;
+  }
+
+  84% {
+    opacity: 0.7;
+  }
+
+  86% {
+    opacity: 1;
+  }
+}
+
+/* Score ring draw */
+@keyframes ring-draw {
+  from {
+    stroke-dasharray: 0 314;
+  }
+}
+
+/* Fade scale in */
+@keyframes fade-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.88);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
