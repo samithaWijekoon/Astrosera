@@ -100,8 +100,8 @@ function BadgeRow({ badges, onSelect, className = '' }) {
       {badges.map(b => (
         <button
           key={b.id}
-          className={`relative group overflow-hidden flex flex-col items-center justify-center w-full h-36 rounded-2xl border transition-all duration-300 transform-gpu ${b.earned ? 'bg-white/10 border-purple-500/50 hover:bg-white/20 hover:-translate-y-2 hover:rotate-1 hover:shadow-[0_0_25px_rgba(168,85,247,0.5)] cursor-pointer' : 'bg-black/40 border-white/10 grayscale contrast-75 opacity-60 cursor-default'}`}
-          onClick={() => b.earned && onSelect(b)}
+          className={`relative group overflow-hidden flex flex-col items-center justify-center w-full h-36 rounded-2xl border transition-all duration-300 transform-gpu cursor-pointer ${b.earned ? 'bg-white/10 border-purple-500/50 hover:bg-white/20 hover:-translate-y-2 hover:rotate-1 hover:shadow-[0_0_25px_rgba(168,85,247,0.5)]' : 'bg-black/40 border-white/10 grayscale contrast-75 opacity-60 hover:-translate-y-1 hover:bg-white/5'}`}
+          onClick={() => onSelect(b)}
         >
           <ScannerEffect />
           <CircuitPattern />
