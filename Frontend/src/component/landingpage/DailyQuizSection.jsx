@@ -1,10 +1,37 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { FaFire, FaTrophy, FaMedal, FaChartLine } from "react-icons/fa";
 import { IoMdCheckmarkCircle } from "react-icons/io";
 import { HiLightBulb } from "react-icons/hi";
 import { BsStars } from "react-icons/bs";
+import AuthContext from '../../context/AuthContext';
+
+const API_BASE = 'http://localhost:5001/api';
 
 const DailyQuizSection = () => {
+    const { user } = useContext(AuthContext);
+    const [userData, setUserData] = useState(null);
+
+    useEffect(() => {
+        const loadStats = async () => {
+            const userId = localStorage.getItem('userId');
+            if (userId) {
+                try {
+                    const res = await fetch(`${API_BASE}/gamification/dashboard/${userId}`);
+                    const data = await res.json();
+                    if (data.success) {
+                        setUserData(data.user);
+                    }
+                } catch (e) {
+                    console.error('Failed to load user stats:', e);
+                }
+            }
+        };
+        loadStats();
+    }, [user]);
+
+    const streakCount = userData?.currentStreak || 0;
+    const totalScore = userData?.totalScore || 0;
+
     return (
         <section
             className="relative min-h-screen w-full bg-[#0a0a0a] flex items-center justify-center p-4 md:p-8 lg:p-12 font-sans overflow-hidden"
@@ -31,7 +58,7 @@ const DailyQuizSection = () => {
                     </div>
                     <div>
                         <div className="text-[10px] text-purple-200">Daily Streak</div>
-                        <div className="text-sm font-bold text-white">15 Days</div>
+                        <div className="text-sm font-bold text-white">{streakCount} Days</div>
                     </div>
                 </div>
             </div>
@@ -49,7 +76,7 @@ const DailyQuizSection = () => {
                                 <p className="text-gray-400 text-xs">Question 1 of 3</p>
                             </div>
                             <div className="mt-3 md:mt-0 bg-orange-900/20 border border-orange-700/30 text-orange-400 px-3 py-1 rounded-full text-xs font-medium flex items-center animate-pulse">
-                                <FaFire className="mr-1.5" /> 15 day streak
+                                <FaFire className="mr-1.5" /> {streakCount} day streak
                             </div>
                         </div>
 
@@ -114,7 +141,7 @@ const DailyQuizSection = () => {
                         <div className="flex items-start justify-between mb-3">
                             <div>
                                 <h4 className="text-gray-400 text-xs mb-0.5">Current Streak</h4>
-                                <div className="text-2xl font-bold text-orange-500 animate-pulse">15 days</div>
+                                <div className="text-2xl font-bold text-orange-500 animate-pulse">{streakCount} days</div>
                             </div>
                             <div className="bg-orange-500/10 p-2 rounded-lg">
                                 <FaFire className="text-orange-500 text-lg" />
@@ -155,7 +182,7 @@ const DailyQuizSection = () => {
 
                             <div className="flex justify-between items-center pt-2 border-t border-gray-800/50">
                                 <span className="text-gray-400 text-xs">Points Earned</span>
-                                <span className="text-purple-400 font-bold text-sm">2,340</span>
+                                <span className="text-purple-400 font-bold text-sm">{totalScore.toLocaleString()}</span>
                             </div>
                         </div>
                     </div>
