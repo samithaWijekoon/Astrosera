@@ -26,6 +26,7 @@ const userSchema = new mongoose.Schema(
         avatarInitials: { type: String },
         streakCount: { type: Number, default: 0 },
         lastQuizDate: { type: Date },
+        activeDates: { type: [Date], default: [] },
     },
     { timestamps: true }
 );
