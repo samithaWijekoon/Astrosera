@@ -38,4 +38,14 @@ const uploadQuizExcel = async (req, res) => {
     }
 };
 
-module.exports = { uploadQuizExcel };
+// 2. Function to get all quizzes for Analytics View
+const getQuizzes = async (req, res) => {
+    try {
+        const quizzes = await Quiz.find().sort({ questionNo: 1 });
+        res.status(200).json(quizzes);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+module.exports = { uploadQuizExcel, getQuizzes };
