@@ -521,13 +521,6 @@ const Member4 = () => {
                     {userData?.totalScore?.toLocaleString() || 0}
                   </strong>
                 </span>
-                <span className="w-1.5 h-1.5 rounded-full bg-gray-600 shadow-[0_0_5px_rgba(255,255,255,0.3)]" />
-                <span className="text-gray-400 uppercase tracking-widest text-xs font-bold flex items-center gap-2">
-                  BEST 
-                  <strong className="text-pink-400 text-lg ml-1 drop-shadow-[0_0_10px_rgba(244,114,182,0.8)]">
-                    {userData?.personalBestScore || 0}
-                  </strong>
-                </span>
               </div>
             </div>
           </div>
