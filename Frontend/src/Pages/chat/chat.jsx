@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import './chat.css';
 
 // API Configuration
 const RAG_API_URL = 'http://localhost:8001';
-
 
 const chat = () => {
   const [messages, setMessages] = useState([
@@ -19,6 +19,8 @@ const chat = () => {
   const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
   const [apiStatus, setApiStatus] = useState('checking'); // checking, connected, error
   const messagesEndRef = useRef(null);
+  const location = useLocation();
+  const hasSentAutoQuery = useRef(false);
 
   // Auto-scroll to bottom when new messages arrive
   const scrollToBottom = () => {
@@ -50,8 +52,28 @@ const chat = () => {
     }
   };
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
+  // Auto-query triggers when coming from Home via router state
+  useEffect(() => {
+    if (apiStatus === 'connected' && location.state?.autoQuery && !hasSentAutoQuery.current) {
+      hasSentAutoQuery.current = true;
+      const query = location.state.autoQuery;
+      
+      // (a) Update the chat input state variable
+      setInput(query);
+      
+      // (b) Execute query automatically
+      handleSend(query);
+      
+      // (c) Clear location state to prevent resending on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [apiStatus, location.state?.autoQuery]);
+
+  const handleSend = async (autoQueryStr) => {
+    // If autoQueryStr is a string from our hook, use it. Otherwise, use state input.
+    const textToSend = typeof autoQueryStr === 'string' ? autoQueryStr : input;
+    
+    if (!textToSend.trim()) return;
     
     // Check API status
     if (apiStatus !== 'connected') {
@@ -62,13 +84,15 @@ const chat = () => {
     // User message
     const userMsg = { 
       id: Date.now(), 
-      text: input, 
+      text: textToSend, 
       sender: 'user',
       timestamp: new Date().toISOString()
     };
     setMessages(prev => [...prev, userMsg]);
-    const currentQuestion = input;
+    const currentQuestion = textToSend;
+    
     setInput("");
+    
     setIsTyping(true);
 
     try {
