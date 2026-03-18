@@ -1,0 +1,51 @@
+/* ASTROSERA QUIZ */
+
+/* Google Font  */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+/* Star twinkling */
+@keyframes twinkle {
+
+  0%,
+  100% {
+    opacity: var(--base-op, 0.3);
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.6);
+  }
+}
+
+/* Nebula breathing */
+@keyframes nebula-breathe {
+
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: scale(1) rotate(0deg);
+  }
+
+  50% {
+    opacity: 0.28;
+    transform: scale(1.06) rotate(3deg);
+  }
+}
+
+/* Float drift for planets */
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0px) translateX(0px);
+  }
+
+  33% {
+    transform: translateY(-14px) translateX(6px);
+  }
+
+  66% {
+    transform: translateY(6px) translateX(-8px);
+  }
+}
