@@ -3,6 +3,7 @@ import './chat.css';
 
 // API Configuration
 const RAG_API_URL = 'http://localhost:8001';
+const MAIN_API_URL = 'http://localhost:5001/api';
 
 
 const chat = () => {
@@ -104,6 +105,23 @@ const chat = () => {
       };
       
       setMessages(prev => [...prev, botMsg]);
+
+      // Record interaction for gamification (Streak tracking)
+      const userId = localStorage.getItem('userId');
+      if (userId) {
+        try {
+          await fetch(`${MAIN_API_URL}/gamification/record-interaction`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userId,
+              isQuiz: false
+            })
+          });
+        } catch (e) {
+          console.error('Failed to record chat interaction for streak:', e);
+        }
+      }
       
     } catch (error) {
       console.error('Error querying RAG:', error);
