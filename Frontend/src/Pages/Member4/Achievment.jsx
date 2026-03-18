@@ -108,7 +108,7 @@ function BadgeRow({ badges, onSelect, className = '' }) {
           {b.earned && <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-transparent pointer-events-none mix-blend-overlay"></div>}
           
           <div className="relative z-10 flex flex-col items-center p-2">
-            <span className={`text-5xl mb-3 transition-transform duration-500 ${b.earned ? 'group-hover:scale-110 drop-shadow-[0_0_20px_rgba(168,85,247,0.8)]' : ''}`}>
+            <span className={`text-5xl mb-3 dance-slow transition-transform duration-500 ${b.earned ? 'group-hover:scale-110 drop-shadow-[0_0_20px_rgba(168,85,247,0.8)]' : ''}`}>
               {b.image ? <img src={b.image} alt={b.name} className="w-14 h-14 object-contain" /> : '🏅'}
             </span>
             <span className={`text-xs text-center font-bold px-2 leading-tight font-outfit uppercase tracking-wider ${b.earned ? 'text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]' : 'text-gray-400'}`}>
@@ -497,9 +497,7 @@ const Member4 = () => {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-28">
 
         {/* ─── PROFILE HEADER ─── */}
-        <header className="bg-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-6 md:p-8 flex flex-col md:flex-row justify-between items-center gap-8 mb-12 shadow-[0_0_50px_rgba(0,0,0,0.6)] relative overflow-hidden group">
-          <CircuitPattern />
-          <ScannerEffect />
+        <header className="p-6 md:p-8 flex flex-col md:flex-row justify-between items-center gap-8 mb-12 relative group rounded-3xl border border-purple-500/30 shadow-[0_0_20px_rgba(168,85,247,0.1)] transition-all duration-500 hover:border-purple-500/60 hover:shadow-[0_0_40px_rgba(168,85,247,0.3)]">
           <div className="relative z-10 flex items-center gap-6 w-full md:w-auto">
             <div className="flex-1">
               <h1 className="font-outfit text-4xl md:text-5xl font-bold text-white tracking-[0.1em] uppercase mb-5 drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">
@@ -527,16 +525,13 @@ const Member4 = () => {
 
           {/* Streak / Calendar button */}
           <button
-            className={`relative z-10 flex items-center gap-5 rounded-2xl p-5 transition-all duration-300 border backdrop-blur-md transform-gpu hover:-translate-y-2 hover:shadow-[0_0_30px_rgba(249,115,22,0.4)] cursor-pointer ${showCalendar ? 'bg-gradient-to-br from-orange-500/20 to-red-500/20 border-orange-500/50' : 'bg-black/40 border-white/10 hover:border-orange-500/40 hover:bg-black/60'}`}
+            className="relative z-10 flex flex-col items-center justify-center gap-2 transition-all duration-300 transform-gpu hover:-translate-y-2 hover:scale-105 cursor-pointer group"
             onClick={() => setShowCalendar(!showCalendar)}
           >
-            <div className="text-5xl drop-shadow-[0_0_20px_rgba(249,115,22,0.8)] group-hover:animate-pulse">🔥</div>
-            <div className="flex flex-col items-start pr-2">
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1">Current Streak</span>
-              <span className="font-mono text-2xl font-bold text-orange-400 drop-shadow-[0_0_10px_rgba(249,115,22,0.5)]">
-                {userData?.currentStreak || 0} DAYS
-              </span>
-            </div>
+            <div className={`text-6xl drop-shadow-[0_0_30px_rgba(249,115,22,0.8)] transition-all duration-300 ${showCalendar ? 'animate-pulse scale-110' : 'group-hover:animate-pulse'}`}>🔥</div>
+            <span className="font-mono text-xl font-bold text-orange-400 drop-shadow-[0_0_15px_rgba(249,115,22,0.8)] tracking-widest">
+              {userData?.currentStreak || 0} DAYS
+            </span>
           </button>
         </header>
 
@@ -589,10 +584,8 @@ const Member4 = () => {
                 return (
                 <div
                     key={idx}
-                    className="bg-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-8 relative overflow-hidden group transition-all duration-500 hover:border-purple-500/40 hover:shadow-[0_0_40px_rgba(168,85,247,0.15)]"
+                    className="p-8 relative group transition-all duration-500 rounded-3xl border border-purple-500/30 shadow-[0_0_20px_rgba(168,85,247,0.1)] hover:border-purple-500/60 hover:shadow-[0_0_40px_rgba(168,85,247,0.3)]"
                 >
-                    <CircuitPattern />
-                    <ScannerEffect />
                     <div className="relative z-10">
                         <SectionHeader
                             title={category.title}
@@ -615,10 +608,8 @@ const Member4 = () => {
                 return (
                 <div
                     key={`total-${idx}`}
-                    className="achievement-total-days bg-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-8 relative overflow-hidden group transition-all duration-500 hover:border-purple-500/40 hover:shadow-[0_0_40px_rgba(168,85,247,0.15)]"
+                    className="achievement-total-days p-8 relative group transition-all duration-500 rounded-3xl border border-purple-500/30 shadow-[0_0_20px_rgba(168,85,247,0.1)] hover:border-purple-500/60 hover:shadow-[0_0_40px_rgba(168,85,247,0.3)]"
                 >
-                    <CircuitPattern />
-                    <ScannerEffect />
                     <div className="relative z-10">
                         <SectionHeader
                             title={category.title}
@@ -636,16 +627,14 @@ const Member4 = () => {
 
             {/* ─── LEADERBOARD (full width below) ─── */}
             <div className="achievement-leaderboard">
-                <div className="bg-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-8 relative overflow-hidden group max-h-[850px] flex flex-col transition-all duration-500 hover:border-cyan-500/40 hover:shadow-[0_0_40px_rgba(34,211,238,0.15)]">
-                    <CircuitPattern />
-                    <ScannerEffect />
+                <div className="p-8 relative group flex flex-col transition-all duration-500 rounded-3xl border border-purple-500/30 shadow-[0_0_20px_rgba(168,85,247,0.1)] hover:border-purple-500/60 hover:shadow-[0_0_40px_rgba(168,85,247,0.3)]">
                     <div className="relative z-10 flex flex-col h-full">
                         <div className="mb-6">
                             <SectionHeader title="Global Leaderboard" />
                         </div>
 
                         <div className="lb-content-row">
-                            <div className="flex-1 overflow-y-auto pr-3 space-y-4 scrollbar-hide" ref={leaderboardRef} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', maxHeight: '300px' }}>
+                            <div className="flex-1 overflow-y-auto pr-3 space-y-2 scrollbar-hide" ref={leaderboardRef} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', maxHeight: '420px' }}>
                                 {leaderboard.length === 0 ? (
                                     <div className="text-gray-500 text-center py-12 font-mono text-sm border border-dashed border-gray-700 rounded-2xl bg-black/20">
                                         <div className="text-3xl mb-3 opacity-50">📡</div>
@@ -655,11 +644,11 @@ const Member4 = () => {
                                     const medals = ['🥇', '🥈', '🥉'];
                                     const hasMedal = i < 3;
                                     return (
-                                        <div key={i} className={`flex items-center gap-4 p-4 rounded-2xl border transition-all duration-300 hover:-translate-y-1 cursor-default ${entry.isUser ? 'bg-gradient-to-r from-purple-900/40 to-cyan-900/20 border-purple-500/50 shadow-[0_0_20px_rgba(168,85,247,0.3)] ring-1 ring-inset ring-purple-500/20' : 'bg-black/30 border-white/10 hover:bg-white/5 hover:border-white/20'}`}>
+                                        <div key={i} className={`flex items-center gap-3 p-2 rounded-2xl border transition-all duration-300 hover:-translate-y-1 cursor-default ${entry.isUser ? 'bg-gradient-to-r from-purple-900/40 to-cyan-900/20 border-purple-500/50 shadow-[0_0_20px_rgba(168,85,247,0.3)] ring-1 ring-inset ring-purple-500/20' : 'bg-black/30 border-white/10 hover:bg-white/5 hover:border-white/20'}`}>
                                             <div className="w-8 text-center font-mono font-bold text-gray-500">
-                                                {hasMedal ? <span className="text-2xl drop-shadow-md">{medals[i]}</span> : <span className="text-sm">#{entry.rank}</span>}
+                                                {hasMedal ? <span className="text-xl drop-shadow-md">{medals[i]}</span> : <span className="text-sm">#{entry.rank}</span>}
                                             </div>
-                                            <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold uppercase shadow-inner ${entry.isUser ? 'bg-gradient-to-br from-purple-500 to-cyan-500 text-white border-2 border-white/30 shadow-[0_0_10px_rgba(168,85,247,0.5)]' : 'bg-gradient-to-br from-gray-800 to-gray-900 text-gray-400 border border-gray-700'}`}>
+                                            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold uppercase shadow-inner ${entry.isUser ? 'bg-gradient-to-br from-purple-500 to-cyan-500 text-white border-2 border-white/30 shadow-[0_0_10px_rgba(168,85,247,0.5)]' : 'bg-gradient-to-br from-gray-800 to-gray-900 text-gray-400 border border-gray-700'}`}>
                                                 {entry.avatar}
                                             </div>
                                             <div className="flex-1 min-w-0">
@@ -671,12 +660,6 @@ const Member4 = () => {
                                             <div className="flex flex-col items-end gap-1.5 min-w-[80px]">
                                                 <div className={`font-mono font-bold text-sm ${entry.isUser ? 'text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.8)]' : 'text-gray-300'}`}>
                                                     {entry.score.toLocaleString()}
-                                                </div>
-                                                <div className="w-full h-1.5 bg-gray-900 rounded-full overflow-hidden shadow-inner">
-                                                    <div 
-                                                        className={`h-full rounded-full transition-all duration-1000 ${entry.isUser ? 'bg-gradient-to-r from-cyan-400 to-purple-500 shadow-[0_0_10px_rgba(168,85,247,1)]' : 'bg-purple-600/70'}`} 
-                                                        style={{ width: `${(entry.score / maxScore) * 100}%` }}
-                                                    ></div>
                                                 </div>
                                             </div>
                                         </div>
