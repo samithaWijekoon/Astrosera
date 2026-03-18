@@ -14,7 +14,7 @@ export default function AsteroidAlerts() {
     setError('');
     getAlerts(email)
       .then(setAlerts)
-      .catch(() => setError('Could not load alerts. Is the backend running on port 5000?'))
+      .catch(() => setError('Could not load alerts. Is the backend running on port 5001?'))
       .finally(() => setLoading(false));
   }, [email]);
 

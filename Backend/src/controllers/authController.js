@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const { generateOtp, sendOtpEmail } = require('../utils/emailUtils');
 require('dotenv').config();
 
 // Generate JWT Token
@@ -30,6 +31,8 @@ const registerUser = async (req, res) => {
             return res.status(400).json({ message: 'User already exists' });
         }
 
+        const otpCode = generateOtp();
+
         // Create User - role defaults to 'student' in Model
         const user = await User.create({
             username,
@@ -37,17 +40,16 @@ const registerUser = async (req, res) => {
             password,
             // Ensure initials are set for Member 04 Leaderboard
             avatarInitials: username.slice(0, 2).toUpperCase(),
+            otpCode,
+            isVerified: false,
         });
 
         if (user) {
-            const token = generateToken(user._id, user.username, user.email);
-            res.status(201).json({
-                _id: user._id,
-                username: user.username,
-                email: user.email,
-                role: user.role,
-                token: token,
-            });
+            // Attempt to send the OTP email in the background
+            sendOtpEmail(email, otpCode);
+
+            // Respond successfully advising them to check email (No JWT dispatched)
+            res.status(201).json({ message: 'User registered. Please verify OTP.' });
         } else {
             res.status(400).json({ message: 'Invalid user data' });
         }
@@ -55,6 +57,35 @@ const registerUser = async (req, res) => {
         // Detailed log for your MacBook terminal to debug "Server Error"
         console.error("Signup Controller Error:", error.message);
         res.status(500).json({ message: 'Server Error: ' + error.message });
+    }
+};
+
+// @desc    Verify OTP for a user
+// @route   POST /api/auth/verify-otp
+const verifyOtp = async (req, res) => {
+    try {
+        const { email, otp_code } = req.body;
+
+        const user = await User.findOne({ email });
+        
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        if (user.isVerified) {
+            return res.status(200).json({ message: 'User is already verified' });
+        }
+        if (user.otpCode !== otp_code) {
+            return res.status(400).json({ message: 'Invalid OTP code.' });
+        }
+
+        user.isVerified = true;
+        user.otpCode = null;
+        await user.save();
+
+        res.status(200).json({ message: 'Email verified successfully.' });
+    } catch (error) {
+        console.error("OTP Verification Error:", error.message);
+        res.status(500).json({ message: 'Server Error' });
     }
 };
 
@@ -68,6 +99,12 @@ const loginUser = async (req, res) => {
 
         // Using the matchPassword method defined in User.js model
         if (user && (await user.matchPassword(password))) {
+            
+            // Critical check: ensure the user has verified their OTP before returning JWT
+            if (!user.isVerified) {
+                return res.status(403).json({ message: 'Email not verified.' });
+            }
+
             const token = generateToken(user._id, user.username, user.email);
             res.json({
                 _id: user._id,
@@ -200,6 +237,7 @@ const googleAuth = async (req, res) => {
 
 module.exports = {
     registerUser,
+    verifyOtp,
     loginUser,
     googleAuth,
     getMe,
