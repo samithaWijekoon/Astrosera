@@ -26,6 +26,8 @@ const userSchema = new mongoose.Schema(
         avatarInitials: { type: String },
         streakCount: { type: Number, default: 0 },
         lastQuizDate: { type: Date },
+        isVerified: { type: Boolean, default: false },
+        otpCode: { type: String, default: null },
     },
     { timestamps: true }
 );
