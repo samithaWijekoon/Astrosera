@@ -1,36 +1,70 @@
 /* Achievement Tab Layout */
 
-/* Badge grid: 5 per row */
-.badge-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 1rem;
-    justify-items: center;
-}
-
-@media (max-width: 1024px) {
-    .badge-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-@media (max-width: 640px) {
-    .badge-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
 /* Categories grid: two columns side by side on desktop */
-.achievement-categories-grid {
+.badges-grid-categories {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
 }
 
-@media (min-width: 768px) {
-    .achievement-categories-grid {
-        grid-template-columns: 1fr 1fr;
+@media (max-width: 768px) {
+    .badges-grid-categories {
+        grid-template-columns: 1fr;
     }
+}
+
+.badge-category-card {
+    position: relative;
+    overflow: hidden;
+    background: rgba(43, 31, 62, 0.4);
+    border: 1.5px solid rgba(168, 85, 247, 0.3);
+    border-radius: 24px;
+    padding: 24px 20px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.1);
+    transition: transform 0.4s ease;
+}
+
+.badge-category-card:hover {
+    border-color: rgba(168, 85, 247, 0.6);
+    box-shadow: 0 0 40px rgba(168, 85, 247, 0.3);
+}
+
+.badge-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.badge-item {
+    flex: 1 1 calc(20% - 8px);
+    min-width: 48px;
+    max-width: 100%;
+    padding: 16px 10px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s ease;
+}
+
+.badge-item__icon {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.badge-img {
+    width: 100%;
+    height: 100%;
+    max-width: 64px;
+    max-height: 64px;
+    object-fit: contain;
 }
 
 /* Total Days: centered, max-width constrained */

@@ -96,11 +96,11 @@ function SectionHeader({ title, earnedCount, totalCount }) {
 
 function BadgeRow({ badges, onSelect, className = '' }) {
   return (
-    <div className={`badge-grid ${className}`}>
+    <div className={`badge-row ${className}`}>
       {badges.map(b => (
         <button
           key={b.id}
-          className={`relative group overflow-hidden flex flex-col items-center justify-center w-full h-36 rounded-2xl border transition-all duration-300 transform-gpu cursor-pointer ${b.earned ? 'bg-white/10 border-purple-500/50 hover:bg-white/20 hover:-translate-y-2 hover:rotate-1 hover:shadow-[0_0_25px_rgba(168,85,247,0.5)]' : 'bg-black/40 border-white/10 grayscale contrast-75 opacity-60 hover:-translate-y-1 hover:bg-white/5'}`}
+          className={`badge-item group overflow-hidden cursor-pointer ${b.earned ? 'earned bg-white/10 border-purple-500/50 hover:bg-white/20 hover:-translate-y-2 hover:rotate-1 hover:shadow-[0_0_25px_rgba(168,85,247,0.5)]' : 'locked bg-black/40 border-white/10 grayscale contrast-75 opacity-60 hover:-translate-y-1 hover:bg-white/5'}`}
           onClick={() => onSelect(b)}
         >
           <ScannerEffect />
@@ -108,8 +108,8 @@ function BadgeRow({ badges, onSelect, className = '' }) {
           {b.earned && <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-transparent pointer-events-none mix-blend-overlay"></div>}
           
           <div className="relative z-10 flex flex-col items-center p-2">
-            <span className={`text-5xl mb-3 dance-slow transition-transform duration-500 ${b.earned ? 'group-hover:scale-110 drop-shadow-[0_0_20px_rgba(168,85,247,0.8)]' : ''}`}>
-              {b.image ? <img src={b.image} alt={b.name} className="w-14 h-14 object-contain" /> : '🏅'}
+            <span className={`badge-item__icon dance-slow transition-transform duration-500 ${b.earned ? 'group-hover:scale-110 drop-shadow-[0_0_20px_rgba(168,85,247,0.8)]' : ''}`}>
+              {b.image ? <img src={b.image} alt={b.name} className={`badge-img ${b.id && b.id.startsWith('mm') ? 'scale-[0.75]' : ''}`} /> : <span className="text-4xl">🏅</span>}
             </span>
             <span className={`text-xs text-center font-bold px-2 leading-tight font-outfit uppercase tracking-wider ${b.earned ? 'text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]' : 'text-gray-400'}`}>
               {b.name}
@@ -578,13 +578,13 @@ const Member4 = () => {
         {/* ─── MAIN CONTENT GRID ─── */}
         <div className="flex flex-col gap-8">
             {/* ─── BADGE CATEGORY CARDS (side by side) ─── */}
-            <div className="achievement-categories-grid">
+            <div className="badges-grid-categories">
             {categories.filter(c => c.title !== 'Total Days').map((category, idx) => {
                 const earnedCount = category.badges.filter(b => b.earned).length;
                 return (
                 <div
                     key={idx}
-                    className="p-8 relative group transition-all duration-500 rounded-3xl border border-purple-500/30 shadow-[0_0_20px_rgba(168,85,247,0.1)] hover:border-purple-500/60 hover:shadow-[0_0_40px_rgba(168,85,247,0.3)]"
+                    className="badge-category-card group"
                 >
                     <div className="relative z-10">
                         <SectionHeader
@@ -608,7 +608,7 @@ const Member4 = () => {
                 return (
                 <div
                     key={`total-${idx}`}
-                    className="achievement-total-days p-8 relative group transition-all duration-500 rounded-3xl border border-purple-500/30 shadow-[0_0_20px_rgba(168,85,247,0.1)] hover:border-purple-500/60 hover:shadow-[0_0_40px_rgba(168,85,247,0.3)]"
+                    className="badge-category-card group achievement-total-days"
                 >
                     <div className="relative z-10">
                         <SectionHeader
@@ -627,7 +627,7 @@ const Member4 = () => {
 
             {/* ─── LEADERBOARD (full width below) ─── */}
             <div className="achievement-leaderboard">
-                <div className="p-8 relative group flex flex-col transition-all duration-500 rounded-3xl border border-purple-500/30 shadow-[0_0_20px_rgba(168,85,247,0.1)] hover:border-purple-500/60 hover:shadow-[0_0_40px_rgba(168,85,247,0.3)]">
+                <div className="badge-category-card group flex flex-col">
                     <div className="relative z-10 flex flex-col h-full">
                         <div className="mb-6">
                             <SectionHeader title="Global Leaderboard" />
