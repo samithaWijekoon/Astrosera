@@ -221,3 +221,59 @@
     transform: scale(1);
   }
 }
+
+/* UTILITY CLASSES */
+
+.quiz-font {
+  font-family: 'Outfit', 'Space Grotesk', system-ui, sans-serif;
+}
+
+.star-dot {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+  animation: twinkle var(--dur, 3s) ease-in-out infinite var(--delay, 0s);
+}
+
+.nebula-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  pointer-events: none;
+  animation: nebula-breathe var(--nb-dur, 10s) ease-in-out infinite var(--nb-delay, 0s);
+}
+
+.scan-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(167, 139, 250, 0.5) 50%, transparent 100%);
+  animation: scan 5s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-fade-scale {
+  animation: fade-scale 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-screen-shake {
+  animation: shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+.animate-success {
+  animation: success-glow 0.6s ease-out;
+}
+
+.animate-wrong {
+  animation: wrong-blink 0.35s ease-in-out infinite;
+}
+
+.option-appear {
+  animation: option-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
