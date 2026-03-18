@@ -12,6 +12,7 @@ import AdminDashboard from './Pages/Member05/AdminDashboard';
 import Chat from './Pages/chat/chat' // Keep this import!
 import Profile from './Pages/Profile'
 import AsteroidAlerts from './Pages/AsteroidAlerts/AsteroidAlerts'
+import Member3 from './Pages/Member03/member3'
 
 const App = () => {
   return (
@@ -32,6 +33,9 @@ const App = () => {
         
         {/* Member 05 - Admin & Analytics Dashboard */}
         <Route path="/admin" element={<AdminDashboard />} />
+        
+        {/* Member 03 - Quiz */}
+        <Route path="/quiz" element={<Member3 />} />
       </Routes>
       <Footer />
     </>
