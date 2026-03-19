@@ -302,7 +302,7 @@ const Member6 = () => {
                             <div className="apod-footer">
                                 <span className="apod-credit">📷 {displayApod.photographer}</span>
                                 <a href={displayApod.url} target="_blank" rel="noopener noreferrer" className="apod-link">
-                                    View Full Resolution →
+                                    View HD Image →
                                 </a>
                             </div>
                         </div>
@@ -485,7 +485,7 @@ const Member6 = () => {
                                     {loading && (
                                         <div className="loading-indicator">
                                             <div className="spinner"></div>
-                                            <p>Loading more cosmic news...</p>
+                                            <p>Fetching the latest cosmic stories...</p>
                                         </div>
                                     )}
 
@@ -504,7 +504,7 @@ const Member6 = () => {
                             ) : loading ? (
                                 <div className="loading-indicator" style={{ gridColumn: '1 / -1', marginTop: '40px' }}>
                                     <div className="spinner"></div>
-                                    <p>Searching the cosmos...</p>
+                                    <p>Scanning the cosmos for stories...</p>
                                 </div>
                             ) : (
                                 <div className="empty-state">
