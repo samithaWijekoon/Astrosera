@@ -263,7 +263,7 @@ const Member6 = () => {
                     <span className="search-icon-left">🔭</span>
                     <input
                         type="text"
-                        placeholder="Explore the cosmos — search news, galaxies, missions..."
+                        placeholder="Search the universe — discover news, galaxies, missions & more..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(searchTerm); }}
@@ -508,8 +508,8 @@ const Member6 = () => {
                             ) : (
                                 <div className="empty-state">
                                     <span className="empty-icon">🔭</span>
-                                    <h3>No cosmic news found</h3>
-                                    <p>Try adjusting your search or filters</p>
+                                    <h3>No cosmic news found yet</h3>
+                                    <p>Try adjusting your search or filters to explore more</p>
                                 </div>
                             )}
                         </div>
