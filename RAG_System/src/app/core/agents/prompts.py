@@ -33,8 +33,6 @@ Instructions:
 - **NEVER summarize too aggressively.** Provide detailed information if available in the context.
 - **Formatting is CRITICAL:**
     - Use Markdown-like syntax for structure: ### for headers, ** for bold, - for lists.
-    - Use `<span style="color: #4dc9ff">` for key headers and names to make them stand out.
-    - Use `<span style="color: #ffcc00">` for summary points in the highlights section.
     - Always include a "### Key Highlights" section at the end without symbols.
 - You MUST cite your sources using the stable chunk IDs provided in the context.
 - Format: Include [C1], [C2], etc. immediately after statements derived from those chunks.
@@ -53,7 +51,6 @@ check the draft answer against the original context and ensure it is beautiful, 
 Instructions:
 - Compare every claim in the draft answer against the provided context.
 - **CRITICAL: Remove ALL symbols and emojis.** The output must be text only (plus allowed HTML/Markdown).
-- **Verify color usage:** Ensure `<span style="color: ...">` tags are used around key terms and headers.
 - **Verify the "Key Highlights" section exists** and is titled simply "### Key Highlights".
 - **Check the formatting:** Ensure bolding, lists, and headings are used correctly.
 - Verify that every [C#] citation is accurate and grounded in the source material.
