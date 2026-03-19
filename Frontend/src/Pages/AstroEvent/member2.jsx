@@ -186,6 +186,26 @@ export default function Member2() {
   const [draftEmail, setDraftEmail] = useState('');
   const loaded = useRef(false);
 
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const particles = useMemo(() => Array.from({ length: 30 }).map((_, i) => ({
+    id: i,
+    left: `${Math.random() * 100}%`,
+    top: `${Math.random() * 100}%`,
+    size: Math.random() * 2 + 1 + 'px',
+    speed: Math.random() * 1.5 + 0.5
+  })), []);
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      setMousePos({
+        x: (e.clientX / window.innerWidth - 0.5) * 40,
+        y: (e.clientY / window.innerHeight - 0.5) * 40
+      });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   const START = useMemo(() => fmt(new Date()), []);
   const END   = useMemo(() => fmt(new Date(Date.now() + 6 * 86400000)), []);
 
@@ -238,6 +258,23 @@ export default function Member2() {
         className="absolute inset-0 pointer-events-none opacity-40 z-0" 
         style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='15' cy='15' r='1' fill='%23ffffff'/%3E%3Ccircle cx='75' cy='45' r='1.5' fill='%23ffffff'/%3E%3Ccircle cx='45' cy='85' r='0.8' fill='%23ffffff'/%3E%3Ccircle cx='85' cy='10' r='1' fill='%23ffffff'/%3E%3C/svg%3E\")" }}
       ></div>
+
+      {/* Particle Parallax Layer */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        {particles.map(p => (
+          <div
+            key={p.id}
+            className="absolute bg-white rounded-full opacity-60 transition-transform duration-1000 ease-out shadow-[0_0_8px_rgba(255,255,255,0.8)]"
+            style={{
+              left: p.left,
+              top: p.top,
+              width: p.size,
+              height: p.size,
+              transform: `translate(${mousePos.x * p.speed}px, ${mousePos.y * p.speed}px)`
+            }}
+          />
+        ))}
+      </div>
 
       {/* Nebula Orbs */}
       <div className="absolute top-[10%] left-[10%] w-[30rem] h-[30rem] bg-purple-600/20 rounded-full blur-[100px] pointer-events-none z-0 animate-pulse"></div>
