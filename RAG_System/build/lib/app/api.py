@@ -1,21 +1,85 @@
 from pathlib import Path
 
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile, status
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
-from .models import QuestionRequest, QAResponse
+from .models import QuestionRequest, QAResponse, APODResponse, EPICResponse
 from .services.qa_service import answer_question
 from .services.indexing_service import index_pdf_file
+from .services.apod_service import fetch_apod
+from .services.epic_service import fetch_latest_epic_image
 
 app = FastAPI(
-    title="stronomy document RAG system",
+    title="Astronomy document RAG system",
     description=(
-        "Demo API for asking questions about a vector databases paper. "
-        "The `/qa` endpoint currently returns placeholder responses and "
-        "will be wired to a multi agent RAG pipeline in later user stories."
+        "API for asking questions about the astronomy knowledge base. "
+        "The `/qa` endpoint runs a multi-agent RAG pipeline."
     ),
     version="0.1.0",
 )
+
+# Allow the React frontend (any origin during development) to call this API
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint."""
+    return {"status": "ok", "message": "RAG API is running"}
+
+
+@app.get("/apod", response_model=APODResponse, status_code=status.HTTP_200_OK)
+async def get_apod() -> APODResponse:
+    """Fetch today's NASA Astronomy Picture of the Day.
+
+    Proxies the NASA APOD API so the API key stays server-side.
+    Returns the image URL, title, explanation, and metadata.
+    """
+    try:
+        data = await fetch_apod()
+        return APODResponse(
+            title=data.get("title", ""),
+            explanation=data.get("explanation", ""),
+            url=data.get("url", ""),
+            hdurl=data.get("hdurl"),
+            date=data.get("date", ""),
+            media_type=data.get("media_type", "image"),
+            copyright=data.get("copyright"),
+        )
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=f"Failed to fetch APOD from NASA: {exc}",
+        )
+
+
+@app.get("/epic", response_model=EPICResponse, status_code=status.HTTP_200_OK)
+async def get_epic() -> EPICResponse:
+    """Fetch the most recent NASA EPIC Earth image.
+
+    Proxies the NASA EPIC API so the API key stays server-side.
+    Returns the image URL, caption, and metadata.
+    """
+    try:
+        data = await fetch_latest_epic_image()
+        return EPICResponse(
+            caption=data.get("caption", ""),
+            url=data.get("url", ""),
+            date=data.get("date", ""),
+            identifier=data.get("identifier", ""),
+        )
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=f"Failed to fetch EPIC image from NASA: {exc}",
+        )
 
 @app.exception_handler(Exception)
 async def unhandled_exception_handler(
