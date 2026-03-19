@@ -16,7 +16,6 @@ const renderFormattedText = (text) => {
         let headerLevel = null;
         let lineContent = line;
 
-        // Parse headers
         if (line.startsWith('### ')) {
           isHeader = true; headerLevel = 3; lineContent = line.substring(4);
         } else if (line.startsWith('## ')) {
@@ -25,14 +24,12 @@ const renderFormattedText = (text) => {
           isHeader = true; headerLevel = 1; lineContent = line.substring(2);
         }
 
-        // Parse lists
         let isList = false;
         if (line.trim().startsWith('- ') || line.trim().startsWith('* ')) {
           isList = true;
           lineContent = line.substring(line.indexOf(' ') + 1);
         }
 
-        // Inline parse
         const inlineParts = lineContent.split(/(\*\*.*?\*\*|`.*?`)/g);
         const renderedInline = inlineParts.map((part, i) => {
           if (part.startsWith('**') && part.endsWith('**')) {
@@ -68,33 +65,88 @@ const renderFormattedText = (text) => {
   );
 };
 
+const StarCanvas = () => {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let animationFrameId;
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    window.addEventListener('resize', resize);
+    resize();
+
+    const stars = Array.from({ length: 180 }).map(() => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      radius: Math.random() * 1.5 + 0.5,
+      speedY: Math.random() * 0.3 + 0.1,
+      opacity: Math.random(),
+      fadeSpeed: Math.random() * 0.02 + 0.005,
+      fadingOut: Math.random() > 0.5
+    }));
+
+    const render = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      stars.forEach(star => {
+        star.y -= star.speedY;
+        if (star.y < 0) {
+          star.y = canvas.height;
+          star.x = Math.random() * canvas.width;
+        }
+
+        if (star.fadingOut) {
+          star.opacity -= star.fadeSpeed;
+          if (star.opacity <= 0.1) star.fadingOut = false;
+        } else {
+          star.opacity += star.fadeSpeed;
+          if (star.opacity >= 1) star.fadingOut = true;
+        }
+
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
+        ctx.fill();
+      });
+
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    render();
+    return () => {
+      window.removeEventListener('resize', resize);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} className="stars-canvas" />;
+};
+
 const chat = () => {
-  const [messages, setMessages] = useState([
-    { 
-      id: 1, 
-      text: "Hello! I am AstraBot, your AI astronomy assistant. Ask me anything about the cosmos!", 
-      sender: 'bot',
-      timestamp: new Date().toISOString()
-    }
-  ]);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
-  const [apiStatus, setApiStatus] = useState('checking'); // checking, connected, error
+  const [apiStatus, setApiStatus] = useState('checking');
+  
   const messagesEndRef = useRef(null);
+  const textareaRef = useRef(null);
   const location = useLocation();
   const hasSentAutoQuery = useRef(false);
 
-  // Auto-scroll to bottom when new messages arrive
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, isTyping]);
 
-  // Check API health on mount
   useEffect(() => {
     checkApiHealth();
   }, []);
@@ -103,231 +155,216 @@ const chat = () => {
     try {
       const response = await fetch(`${RAG_API_URL}/health`);
       if (response.ok) {
-        const data = await response.json();
-        console.log('API Health:', data);
         setApiStatus('connected');
       } else {
         setApiStatus('error');
       }
     } catch (error) {
-      console.error('API Health Check Failed:', error);
       setApiStatus('error');
     }
   };
 
-  // Auto-query triggers when coming from Home via router state
   useEffect(() => {
     if (apiStatus === 'connected' && location.state?.autoQuery && !hasSentAutoQuery.current) {
       hasSentAutoQuery.current = true;
       const query = location.state.autoQuery;
-      
-      // (a) Update the chat input state variable
       setInput(query);
-      
-      // (b) Execute query automatically
       handleSend(query);
-      
-      // (c) Clear location state to prevent resending on refresh
       window.history.replaceState({}, document.title);
     }
   }, [apiStatus, location.state?.autoQuery]);
 
-  const handleSend = async (autoQueryStr) => {
-    // If autoQueryStr is a string from our hook, use it. Otherwise, use state input.
-    const textToSend = typeof autoQueryStr === 'string' ? autoQueryStr : input;
-    
+  const autoResize = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px';
+    }
+  };
+
+  const handleInput = (e) => {
+    setInput(e.target.value);
+    autoResize();
+  };
+
+  const clearChat = () => {
+    setMessages([]);
+    setInput("");
+    if (textareaRef.current) textareaRef.current.style.height = 'auto';
+  };
+
+  const handleQuickPrompt = (promptText) => {
+    setInput(promptText);
+    handleSend(promptText);
+  };
+
+  const handleSend = async (overrideText) => {
+    const textToSend = typeof overrideText === 'string' ? overrideText : input;
     if (!textToSend.trim()) return;
     
-    // Check API status
     if (apiStatus !== 'connected') {
-      alert('RAG API is not available. Please ensure the API is running on port 8000.');
+      alert('RAG API is offline. Please start it on port 8001.');
       return;
     }
 
-    // User message
-    const userMsg = { 
+    const newMsgArr = [...messages, { 
       id: Date.now(), 
       text: textToSend, 
       sender: 'user',
       timestamp: new Date().toISOString()
-    };
-    setMessages(prev => [...prev, userMsg]);
-    const currentQuestion = textToSend;
-    
+    }];
+    setMessages(newMsgArr);
     setInput("");
-    
+    if (textareaRef.current) textareaRef.current.style.height = 'auto';
     setIsTyping(true);
 
     try {
-      // Call RAG API
       const response = await fetch(`${RAG_API_URL}/qa`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          question: currentQuestion,
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: textToSend })
       });
 
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error(`API Error: ${response.status}`);
       const data = await response.json();
       
-      // Bot response
-      // citations from RAG is a dict {key: {title, content...}}, convert to array
-      const citationsArray = data.citations
-        ? Object.values(data.citations)
-        : [];
-
-      const botMsg = { 
+      setMessages(prev => [...prev, { 
         id: Date.now() + 1, 
         text: data.answer, 
         sender: 'bot',
-        citations: citationsArray,
         timestamp: new Date().toISOString()
-      };
-      
-      setMessages(prev => [...prev, botMsg]);
+      }]);
 
-      // Record interaction for gamification (Streak tracking)
       const userId = localStorage.getItem('userId');
       if (userId) {
         try {
           await fetch(`${MAIN_API_URL}/gamification/record-interaction`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              userId,
-              isQuiz: false
-            })
+            body: JSON.stringify({ userId, isQuiz: false })
           });
-        } catch (e) {
-          console.error('Failed to record chat interaction for streak:', e);
-        }
+        } catch (e) {}
       }
       
     } catch (error) {
-      console.error('Error querying RAG:', error);
-      
-      // Error message
-      const errorMsg = {
+      setMessages(prev => [...prev, {
         id: Date.now() + 1,
-        text: "I apologize, but I'm having trouble connecting to my knowledge base right now. Please make sure the RAG API is running and try again.",
+        text: "I apologize, but I'm having trouble connecting to my knowledge base right now.",
         sender: 'bot',
         isError: true,
         timestamp: new Date().toISOString()
-      };
-      
-      setMessages(prev => [...prev, errorMsg]);
+      }]);
     } finally {
       setIsTyping(false);
     }
   };
 
-  const handleClearChat = async () => {
-    try {
-      setMessages([
-        { 
-          id: Date.now(), 
-          text: "Chat history cleared! I'm ready for new questions.", 
-          sender: 'bot',
-          timestamp: new Date().toISOString()
-        }
-      ]);
-    } catch (error) {
-      console.error('Error clearing chat:', error);
-    }
-  };
-
   return (
     <div className="chat-container">
+      <StarCanvas />
+      
+      {apiStatus === 'error' && (
+        <div className="api-error-banner">
+          ⚠️ RAG API offline. Start with: uvicorn src.app.api:app --reload --port 8001
+        </div>
+      )}
+
       <header className="chat-header">
-        <div>
-          <h1>AstraBot 🌟</h1>
-          <p>Your AI Astronomy Assistant</p>
+        <div className="header-left">
+          <div className="status-dot"></div>
+          <h1 className="app-title">AstraBot</h1>
+          <span className="app-subtitle">astronomy AI</span>
         </div>
-        <div className="header-controls">
-          <div className={`api-status ${apiStatus}`}>
-            <span className="status-dot"></span>
-            {apiStatus === 'connected' && 'Connected'}
-            {apiStatus === 'checking' && 'Checking...'}
-            {apiStatus === 'error' && 'API Offline'}
-          </div>
-          <button onClick={handleClearChat} className="clear-btn" title="Clear Chat">
-            🗑️ Clear
-          </button>
-        </div>
+        <button onClick={clearChat} className="clear-chat-btn">
+          Clear chat
+        </button>
       </header>
 
       <div className="chat-window">
-        {messages.map((msg) => (
-          <div key={msg.id} className={`message-bubble ${msg.sender} ${msg.isError ? 'error' : ''}`}>
-            <div className="message-content">
-              {renderFormattedText(msg.text)}
-              
-              {msg.searchQuery && msg.searchQuery !== msg.text && (
-                <div className="search-query-info">
-                  <small>🔍 Searched for: "{msg.searchQuery}"</small>
-                </div>
-              )}
+        {messages.length === 0 ? (
+          <div className="welcome-screen">
+            <div className="welcome-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-2.773l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+              </svg>
             </div>
-            
-            <div className="message-timestamp">
-              {new Date(msg.timestamp).toLocaleTimeString([], { 
-                hour: '2-digit', 
-                minute: '2-digit' 
-              })}
+            <h2 className="welcome-title">Ask me about space</h2>
+            <p className="welcome-subtitle">AstraBot is ready to explore the cosmos with you.</p>
+            <div className="quick-prompts">
+              {['Universe', 'Black holes', 'Mars', 'Stars', 'Dark matter'].map(p => (
+                <button key={p} className="prompt-chip" onClick={() => handleQuickPrompt(p)}>{p} ✨</button>
+              ))}
             </div>
           </div>
-        ))}
-        
-        {isTyping && (
-          <div className="typing-indicator">
-            <div className="typing-dots">
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-            <span className="typing-text">AstraBot is thinking...</span>
+        ) : (
+          <div className="chat-content-wrapper">
+            {messages.map((msg) => (
+              <div key={msg.id} className={`message-row ${msg.sender}`}>
+                {msg.sender === 'bot' && (
+                  <div className="bot-avatar-wrapper">
+                    <div className="bot-avatar">A</div>
+                  </div>
+                )}
+                <div className={`message-content ${msg.isError ? 'error' : ''}`}>
+                  {msg.sender === 'user' ? (
+                    <div className="message-box">{msg.text}</div>
+                  ) : (
+                    renderFormattedText(msg.text)
+                  )}
+                  <div className="timestamp">
+                    {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </div>
+                </div>
+              </div>
+            ))}
+            
+            {isTyping && (
+              <div className="message-row bot">
+                <div className="bot-avatar-wrapper">
+                  <div className="bot-avatar">A</div>
+                </div>
+                <div className="message-content">
+                  <div className="typing-indicator">
+                    <span></span><span></span><span></span>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} style={{ height: '1px' }} />
           </div>
         )}
-        
-        <div ref={messagesEndRef} />
       </div>
 
-      <div className="chat-input-area">
-        <button 
-          className="voice-input-btn" 
-          title="Voice Input (Coming Soon)"
-          disabled
-        >
-          🎤
-        </button>
-        <input 
-          type="text" 
-          placeholder="Ask about space, planets, stars, galaxies..." 
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-          disabled={isTyping || apiStatus !== 'connected'}
-        />
-        <button 
-          className="send-btn" 
-          onClick={handleSend}
-          disabled={!input.trim() || isTyping || apiStatus !== 'connected'}
-        >
-          {isTyping ? '...' : 'Send'}
-        </button>
-      </div>
-
-      {apiStatus === 'error' && (
-        <div className="api-error-banner">
-      ⚠️ RAG API is not running. Start it with: <code>venv/bin/uvicorn src.app.api:app --reload --port 8001</code>
+      <div className="input-container-wrapper">
+        <div className="input-bar">
+          <textarea 
+            ref={textareaRef}
+            rows={1}
+            placeholder="Ask about space, planets, stars, galaxies..." 
+            value={input}
+            onChange={handleInput}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSend();
+              }
+            }}
+            disabled={isTyping || apiStatus !== 'connected'}
+          />
+          <button 
+            className="send-btn" 
+            onClick={() => handleSend()}
+            disabled={!input.trim() || isTyping || apiStatus !== 'connected'}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
         </div>
-      )}
+        <div className="input-hint">
+          AstraBot can make mistakes. Verify important information.
+        </div>
+      </div>
     </div>
   );
 };
