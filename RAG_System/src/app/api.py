@@ -20,10 +20,7 @@ app = FastAPI(
     version="0.1.0",
 )
 
-<<<<<<< HEAD
 # Allow the React frontend (any origin during development) to call this API
-=======
->>>>>>> 22a3232897f379252af51dbe549e806c51805aa4
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -32,15 +29,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-<<<<<<< HEAD
 @app.get("/health")
 async def health_check():
     """Health check endpoint."""
     return {"status": "ok", "message": "RAG API is running"}
-=======
-@app.get("/api/health")
-async def health_check():
-    return {"status": "ok"}
 
 
 @app.get("/apod", response_model=APODResponse, status_code=status.HTTP_200_OK)
@@ -88,7 +80,6 @@ async def get_epic() -> EPICResponse:
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail=f"Failed to fetch EPIC image from NASA: {exc}",
         )
->>>>>>> 22a3232897f379252af51dbe549e806c51805aa4
 
 @app.exception_handler(Exception)
 async def unhandled_exception_handler(

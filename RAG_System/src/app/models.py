@@ -18,10 +18,7 @@ class QAResponse(BaseModel):
     """
     answer: str
     context: str
-<<<<<<< HEAD
     citations: Optional[Dict[str, Dict]] = None
-=======
-    citations: dict[str, dict] | None = None
 
 
 class APODResponse(BaseModel):
@@ -33,10 +30,10 @@ class APODResponse(BaseModel):
     title: str
     explanation: str
     url: str
-    hdurl: str | None = None
+    hdurl: Optional[str] = None
     date: str
     media_type: str
-    copyright: str | None = None
+    copyright: Optional[str] = None
 
 
 class EPICResponse(BaseModel):
@@ -49,4 +46,3 @@ class EPICResponse(BaseModel):
     url: str
     date: str
     identifier: str
->>>>>>> 22a3232897f379252af51dbe549e806c51805aa4
