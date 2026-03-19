@@ -41,8 +41,8 @@ function PlanetCard({ planet, isSelected, onClick }) {
   const data = PLANET_DATA[planet.id];
   return (
     <button onClick={onClick}
-      className={`relative flex flex-col items-center p-4 rounded-xl border transition-all duration-300 cursor-pointer w-full ${
-        isSelected ? 'border-purple-500 bg-purple-900/30' : 'border-gray-800 bg-gray-900/40 hover:border-purple-800 hover:bg-gray-900/70'
+      className={`relative flex flex-col items-center p-4 rounded-xl border transition-all duration-300 cursor-pointer w-full bg-white/5 backdrop-blur-lg border-white/10 hover:border-purple-500/50 ${
+        isSelected ? 'shadow-[0_0_15px_rgba(168,85,247,0.3)] bg-purple-900/30 border-purple-500/80' : ''
       }`}>
       <div className="rounded-full mb-3 flex-shrink-0" style={{
         width: Math.max(planet.size, 32) + 'px', height: Math.max(planet.size, 32) + 'px',
@@ -80,7 +80,7 @@ function PlanetDetail({ planet }) {
     ['Discovery Year',   data.discoveryDate],
   ];
   return (
-    <div className="bg-gray-900/70 border border-purple-900/40 rounded-xl p-6 mt-6">
+    <div className="bg-white/5 backdrop-blur-lg border border-white/10 hover:border-purple-500/50 transition-colors duration-500 rounded-xl p-6 mt-6 shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
       <div className="flex items-center gap-4 mb-6">
         <div className="rounded-full flex-shrink-0" style={{
           width: 52, height: 52,
@@ -145,7 +145,7 @@ function PlanetsTab() {
       {selected && <PlanetDetail planet={selected} />}
 
       {/* Quick facts */}
-      <div className="bg-gray-900/40 border border-gray-800 rounded-xl p-5 mt-6">
+      <div className="bg-white/5 backdrop-blur-lg border border-white/10 hover:border-purple-500/50 transition-colors duration-500 rounded-xl p-5 mt-6 shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
         <p className="text-xs text-gray-500 uppercase tracking-widest mb-4">Quick Facts</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           {[
@@ -350,8 +350,8 @@ export default function Member2() {
               { label: 'Closest Approach',      value: loading ? '—' : stats.closest,   sub: 'lunar distances',     color: 'text-purple-400' },
               { label: 'Max Velocity',          value: loading ? '—' : stats.fastest,   sub: 'km/s fastest object', color: 'text-white' },
             ].map(s => (
-              <div key={s.label} className="bg-gray-900/60 border border-purple-900/30 rounded-xl p-4 relative overflow-hidden">
-                <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-600 to-transparent" />
+              <div key={s.label} className="bg-white/5 backdrop-blur-lg border border-white/10 hover:border-purple-500/50 transition-all duration-300 rounded-xl p-4 relative overflow-hidden group shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
+                <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-600 to-transparent opacity-50 group-hover:opacity-100 transition-opacity" />
                 <p className="text-gray-500 text-xs uppercase tracking-widest mb-2">{s.label}</p>
                 <p className={`text-3xl font-bold ${s.color}`}>{s.value}</p>
                 <p className="text-gray-600 text-xs mt-1">{s.sub}</p>
