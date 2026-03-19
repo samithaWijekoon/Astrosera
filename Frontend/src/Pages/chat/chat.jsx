@@ -6,6 +6,68 @@ import './chat.css';
 const RAG_API_URL = 'http://localhost:8001';
 const MAIN_API_URL = 'http://localhost:5001/api';
 
+const renderFormattedText = (text) => {
+  if (!text) return null;
+  const lines = text.split('\n');
+  return (
+    <div className="markdown-content">
+      {lines.map((line, blockIndex) => {
+        let isHeader = false;
+        let headerLevel = null;
+        let lineContent = line;
+
+        // Parse headers
+        if (line.startsWith('### ')) {
+          isHeader = true; headerLevel = 3; lineContent = line.substring(4);
+        } else if (line.startsWith('## ')) {
+          isHeader = true; headerLevel = 2; lineContent = line.substring(3);
+        } else if (line.startsWith('# ')) {
+          isHeader = true; headerLevel = 1; lineContent = line.substring(2);
+        }
+
+        // Parse lists
+        let isList = false;
+        if (line.trim().startsWith('- ') || line.trim().startsWith('* ')) {
+          isList = true;
+          lineContent = line.substring(line.indexOf(' ') + 1);
+        }
+
+        // Inline parse
+        const inlineParts = lineContent.split(/(\*\*.*?\*\*|`.*?`)/g);
+        const renderedInline = inlineParts.map((part, i) => {
+          if (part.startsWith('**') && part.endsWith('**')) {
+            return <span key={i} className="highlight-text">{part.slice(2, -2)}</span>;
+          }
+          if (part.startsWith('`') && part.endsWith('`')) {
+            return <span key={i} className="highlight-code">{part.slice(1, -1)}</span>;
+          }
+          return <span key={i}>{part}</span>;
+        });
+
+        if (line.trim() === '') {
+          return <div key={blockIndex} style={{ height: '0.4rem' }} />;
+        }
+
+        if (isHeader) {
+          const Tag = `h${headerLevel}`;
+          return <Tag key={blockIndex} className="markdown-header">{renderedInline}</Tag>;
+        }
+
+        if (isList) {
+          return (
+            <div key={blockIndex} className="markdown-list-item">
+              <span className="list-bullet">•</span>
+              <span>{renderedInline}</span>
+            </div>
+          );
+        }
+
+        return <div key={blockIndex} className="markdown-paragraph">{renderedInline}</div>;
+      })}
+    </div>
+  );
+};
+
 const chat = () => {
   const [messages, setMessages] = useState([
     { 
@@ -204,23 +266,11 @@ const chat = () => {
         {messages.map((msg) => (
           <div key={msg.id} className={`message-bubble ${msg.sender} ${msg.isError ? 'error' : ''}`}>
             <div className="message-content">
-              <p>{msg.text}</p>
+              {renderFormattedText(msg.text)}
               
               {msg.searchQuery && msg.searchQuery !== msg.text && (
                 <div className="search-query-info">
                   <small>🔍 Searched for: "{msg.searchQuery}"</small>
-                </div>
-              )}
-              
-              {msg.citations && msg.citations.length > 0 && (
-                <div className="citation-container">
-                  <div className="citation-header">📚 Sources:</div>
-                  {msg.citations.map((cite, idx) => (
-                    <div key={idx} className="source-card">
-                      <div className="source-title">{cite.title}</div>
-                      <div className="source-preview">{cite.content_preview}</div>
-                    </div>
-                  ))}
                 </div>
               )}
             </div>
