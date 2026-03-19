@@ -1,9 +1,169 @@
-/* Replaced with Tailwind CSS UI Redesign */
+/* Achievement Tab Layout */
 
+/* Categories grid: two columns side by side on desktop */
+.badges-grid-categories {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+@media (max-width: 768px) {
+    .badges-grid-categories {
+        grid-template-columns: 1fr;
+    }
+}
+
+.badge-category-card {
+    position: relative;
+    overflow: hidden;
+    background: rgba(43, 31, 62, 0.4);
+    border: 1.5px solid rgba(168, 85, 247, 0.3);
+    border-radius: 24px;
+    padding: 24px 20px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.1);
+    transition: transform 0.4s ease;
+}
+
+.badge-category-card:hover {
+    border-color: rgba(168, 85, 247, 0.6);
+    box-shadow: 0 0 40px rgba(168, 85, 247, 0.3);
+}
+
+.badge-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.badge-item {
+    flex: 1 1 calc(20% - 8px);
+    min-width: 48px;
+    max-width: 100%;
+    padding: 16px 10px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s ease;
+}
+
+.badge-item__icon {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.badge-img {
+    width: 100%;
+    height: 100%;
+    max-width: 64px;
+    max-height: 64px;
+    object-fit: contain;
+}
+
+/* Total Days: centered, max-width constrained */
+.achievement-total-days {
+    width: 100%;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Leaderboard: full width, scrollable */
+.achievement-leaderboard {
+    width: 100%;
+}
+
+.achievement-leaderboard > div {
+    max-height: 400px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.achievement-leaderboard > div::-webkit-scrollbar {
+    display: none;
+}
+
+.achievement-leaderboard > div > div > div:last-child {
+    max-height: 300px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.achievement-leaderboard > div > div > div:last-child::-webkit-scrollbar {
+    display: none;
+}
+
+/* Leaderboard scroll buttons - sidebar layout */
+.lb-content-row {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    flex: 1;
+    min-height: 0;
+}
+
+.lb-sidebar {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 0;
+    gap: 12px;
+}
+
+.lb-scroll-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(34, 211, 238, 0.1));
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 50%;
+    color: rgba(209, 213, 219, 0.8);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+    flex-shrink: 0;
+}
+
+.lb-scroll-btn:hover {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.3), rgba(34, 211, 238, 0.2));
+    border-color: rgba(168, 85, 247, 0.5);
+    color: #fff;
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+    transform: scale(1.1);
+}
+
+.lb-scroll-btn:active {
+    transform: scale(0.9);
+}
+
+/* Scrollbar hide utility */
 .scrollbar-hide::-webkit-scrollbar {
     display: none;
 }
 .scrollbar-hide {
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
+}
+
+@keyframes danceSlow {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-4px) rotate(-3deg); }
+  50% { transform: translateY(-2px) rotate(0deg); }
+  75% { transform: translateY(2px) rotate(3deg); }
+}
+.dance-slow {
+  animation: danceSlow 4s ease-in-out infinite;
 }
