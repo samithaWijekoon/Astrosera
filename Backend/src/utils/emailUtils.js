@@ -1,4 +1,6 @@
 const nodemailer = require('nodemailer');
+require('dotenv').config(); // Load immediately before transporter uses process.env
+
 
 // Generate a random 6-digit number, padded with zeroes
 const generateOtp = () => {
@@ -20,7 +22,7 @@ const transporter = nodemailer.createTransport({
 const sendOtpEmail = async (receiverEmail, otpCode) => {
     try {
         if (!process.env.SMTP_EMAIL || !process.env.SMTP_PASSWORD) {
-            console.error("Missing SMTP credentials in .env. Email skipped.");
+            console.error("Missing SMTP credentials. Email skipped.");
             return false;
         }
 
