@@ -18,4 +18,35 @@ class QAResponse(BaseModel):
     """
     answer: str
     context: str
+<<<<<<< HEAD
     citations: Optional[Dict[str, Dict]] = None
+=======
+    citations: dict[str, dict] | None = None
+
+
+class APODResponse(BaseModel):
+    """Response body for the `/apod` endpoint.
+
+    Mirrors the NASA APOD API response structure with only the
+    fields we need for the chat interface card.
+    """
+    title: str
+    explanation: str
+    url: str
+    hdurl: str | None = None
+    date: str
+    media_type: str
+    copyright: str | None = None
+
+
+class EPICResponse(BaseModel):
+    """Response body for the `/epic` endpoint.
+
+    Contains the most recent Earth image from the EPIC camera.
+    """
+    title: str = "NASA EPIC Earth Imagery"
+    caption: str
+    url: str
+    date: str
+    identifier: str
+>>>>>>> 22a3232897f379252af51dbe549e806c51805aa4
