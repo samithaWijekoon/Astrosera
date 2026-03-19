@@ -231,13 +231,17 @@ export default function Member2() {
   }), [asteroids]);
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-[#020617] via-[#0f172a] to-[#020617] font-outfit">
+    <div className="relative min-h-screen bg-gradient-to-b from-[#020617] via-[#0f172a] to-[#020617] font-outfit overflow-hidden">
       
       {/* Stars Background Layer */}
       <div 
         className="absolute inset-0 pointer-events-none opacity-40 z-0" 
         style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='15' cy='15' r='1' fill='%23ffffff'/%3E%3Ccircle cx='75' cy='45' r='1.5' fill='%23ffffff'/%3E%3Ccircle cx='45' cy='85' r='0.8' fill='%23ffffff'/%3E%3Ccircle cx='85' cy='10' r='1' fill='%23ffffff'/%3E%3C/svg%3E\")" }}
       ></div>
+
+      {/* Nebula Orbs */}
+      <div className="absolute top-[10%] left-[10%] w-[30rem] h-[30rem] bg-purple-600/20 rounded-full blur-[100px] pointer-events-none z-0 animate-pulse"></div>
+      <div className="absolute top-[50%] right-[5%] w-[40rem] h-[40rem] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none z-0 animate-pulse" style={{ animationDelay: '2s', animationDuration: '4s' }}></div>
 
       <div className="relative z-10 pt-24 pb-16 px-6 md:px-12">
         {/* Page Header */}
