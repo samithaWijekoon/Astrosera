@@ -89,9 +89,9 @@ const NewsFeedSection = () => {
 
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="mb-12 text-center md:text-left">
-                    <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">📰 Galactic News Feed</h2>
+                    <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">📰 Cosmic News Hub</h2>
                     <p className="text-gray-400 max-w-2xl text-lg">
-                        Stay updated on the latest cosmic discoveries, rocket launches, and space weather events directly from NASA and other major astronomy sources.
+                        Your gateway to the latest cosmic discoveries, rocket launches, and space weather events — curated from NASA and leading astronomy sources worldwide.
                     </p>
                 </div>
 
