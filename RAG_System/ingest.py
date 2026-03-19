@@ -1,12 +1,9 @@
 """
 NASA Data Ingestion Script
-==========================
+
 Chunks all PDF and .txt files in a folder and stores them into Pinecone.
 
-Usage:
-    python ingest.py                          # default: src/app/data/uploads/
-    python ingest.py --folder /path/to/data   # custom folder
-    python ingest.py --folder /path/to/data --chunk-size 800 --overlap 100
+
 """
 
 import argparse
@@ -46,7 +43,7 @@ def load_file(file_path: Path):
     elif suffix in (".txt", ".md"):
         loader = TextLoader(str(file_path), encoding="utf-8")
     else:
-        print(f"  ⚠️  Skipping unsupported file type: {file_path.name}")
+        print(f"    Skipping unsupported file type: {file_path.name}")
         return []
     return loader.load()
 
@@ -61,10 +58,10 @@ def ingest_folder(folder: Path, chunk_size: int, chunk_overlap: int) -> None:
     ])
 
     if not files:
-        print(f"❌ No PDF or TXT files found in: {folder}")
+        print(f" No PDF or TXT files found in: {folder}")
         return
 
-    print(f"\n✅ Found {len(files)} file(s) in '{folder}'")
+    print(f"\n Found {len(files)} file(s) in '{folder}'")
     print(f"   Chunk size: {chunk_size}, Overlap: {chunk_overlap}\n")
 
     text_splitter = RecursiveCharacterTextSplitter(
@@ -76,7 +73,7 @@ def ingest_folder(folder: Path, chunk_size: int, chunk_overlap: int) -> None:
     total_chunks = 0
 
     for file_path in files:
-        print(f"📄 Processing: {file_path.name} ...", end=" ", flush=True)
+        print(f" Processing: {file_path.name} ...", end=" ", flush=True)
         docs = load_file(file_path)
         if not docs:
             continue
@@ -92,9 +89,9 @@ def ingest_folder(folder: Path, chunk_size: int, chunk_overlap: int) -> None:
 
         vector_store.add_documents(chunks)
         total_chunks += len(chunks)
-        print(f"→ {len(chunks)} chunks indexed ✅")
+        print(f"→ {len(chunks)} chunks indexed ")
 
-    print(f"\n🎉 Done! Total chunks stored to Pinecone: {total_chunks}")
+    print(f"\n Done! Total chunks stored to Pinecone: {total_chunks}")
 
 
 def main():
@@ -121,7 +118,7 @@ def main():
 
     folder = Path(args.folder)
     if not folder.exists():
-        print(f"❌ Folder not found: {folder}")
+        print(f" Folder not found: {folder}")
         return
 
     ingest_folder(folder, chunk_size=args.chunk_size, chunk_overlap=args.overlap)
