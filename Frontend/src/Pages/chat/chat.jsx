@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import './chat.css';
 
 // API Configuration
-const RAG_API_URL = 'http://localhost:8001';
+const RAG_API_URL = import.meta.env.VITE_RAG_API_URL || 'http://localhost:8000';
 const MAIN_API_URL = 'http://localhost:5001/api';
 
 const renderFormattedText = (text) => {
@@ -93,7 +93,7 @@ const StarCanvas = () => {
 
     const render = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
+
       stars.forEach(star => {
         star.y -= star.speedY;
         if (star.y < 0) {
@@ -133,7 +133,7 @@ const chat = () => {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [apiStatus, setApiStatus] = useState('checking');
-  
+
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
   const location = useLocation();
@@ -200,15 +200,15 @@ const chat = () => {
   const handleSend = async (overrideText) => {
     const textToSend = typeof overrideText === 'string' ? overrideText : input;
     if (!textToSend.trim()) return;
-    
+
     if (apiStatus !== 'connected') {
       alert('RAG API is offline. Please start it on port 8001.');
       return;
     }
 
-    const newMsgArr = [...messages, { 
-      id: Date.now(), 
-      text: textToSend, 
+    const newMsgArr = [...messages, {
+      id: Date.now(),
+      text: textToSend,
       sender: 'user',
       timestamp: new Date().toISOString()
     }];
@@ -226,10 +226,10 @@ const chat = () => {
 
       if (!response.ok) throw new Error(`API Error: ${response.status}`);
       const data = await response.json();
-      
-      setMessages(prev => [...prev, { 
-        id: Date.now() + 1, 
-        text: data.answer, 
+
+      setMessages(prev => [...prev, {
+        id: Date.now() + 1,
+        text: data.answer,
         sender: 'bot',
         timestamp: new Date().toISOString()
       }]);
@@ -242,9 +242,9 @@ const chat = () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId, isQuiz: false })
           });
-        } catch (e) {}
+        } catch (e) { }
       }
-      
+
     } catch (error) {
       setMessages(prev => [...prev, {
         id: Date.now() + 1,
@@ -261,10 +261,10 @@ const chat = () => {
   return (
     <div className="chat-container">
       <StarCanvas />
-      
+
       {apiStatus === 'error' && (
         <div className="api-error-banner">
-          ⚠️ RAG API offline. Start with: uvicorn src.app.api:app --reload --port 8001
+          ⚠️ RAG API offline. Start with: uvicorn src.app.api:app --reload --port 8000
         </div>
       )}
 
@@ -316,7 +316,7 @@ const chat = () => {
                 </div>
               </div>
             ))}
-            
+
             {isTyping && (
               <div className="message-row bot">
                 <div className="bot-avatar-wrapper">
@@ -336,10 +336,10 @@ const chat = () => {
 
       <div className="input-container-wrapper">
         <div className="input-bar">
-          <textarea 
+          <textarea
             ref={textareaRef}
             rows={1}
-            placeholder="Ask about space, planets, stars, galaxies..." 
+            placeholder="Ask about space, planets, stars, galaxies..."
             value={input}
             onChange={handleInput}
             onKeyDown={(e) => {
@@ -350,8 +350,8 @@ const chat = () => {
             }}
             disabled={isTyping || apiStatus !== 'connected'}
           />
-          <button 
-            className="send-btn" 
+          <button
+            className="send-btn"
             onClick={() => handleSend()}
             disabled={!input.trim() || isTyping || apiStatus !== 'connected'}
           >
