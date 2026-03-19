@@ -2,284 +2,253 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import './chat.css';
 
-// API Configuration
 const RAG_API_URL = 'http://localhost:8001';
 const MAIN_API_URL = 'http://localhost:5001/api';
 
-const chat = () => {
-  const [messages, setMessages] = useState([
-    { 
-      id: 1, 
-      text: "Hello! I am AstraBot, your AI astronomy assistant. Ask me anything about the cosmos!", 
-      sender: 'bot',
-      timestamp: new Date().toISOString()
-    }
-  ]);
-  const [input, setInput] = useState("");
+const QUICK_PROMPTS = [
+  { label: 'Tell me about the Universe', icon: '🌌' },
+  { label: 'What is a black hole?', icon: '🕳️' },
+  { label: 'Tell me about Mars', icon: '🔴' },
+  { label: 'How do stars form?', icon: '⭐' },
+  { label: 'What is dark matter?', icon: '🔭' },
+];
+
+const StarCanvas = () => {
+  const canvasRef = useRef(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    let animId;
+    let stars = [];
+
+    const init = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      stars = Array.from({ length: 180 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.2 + 0.2,
+        speed: Math.random() * 0.4 + 0.05,
+        opacity: Math.random() * 0.7 + 0.1,
+        twinkle: Math.random() * Math.PI * 2,
+      }));
+    };
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const t = Date.now() / 1000;
+      stars.forEach(s => {
+        s.y -= s.speed;
+        if (s.y < -2) { s.y = canvas.height + 2; s.x = Math.random() * canvas.width; }
+        const op = s.opacity * (0.6 + 0.4 * Math.sin(t * 1.2 + s.twinkle));
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${op})`;
+        ctx.fill();
+      });
+      animId = requestAnimationFrame(draw);
+    };
+
+    init();
+    draw();
+    window.addEventListener('resize', init);
+    return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', init); };
+  }, []);
+
+  return <canvas ref={canvasRef} className="star-canvas" />;
+};
+
+const Chat = () => {
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
-  const [apiStatus, setApiStatus] = useState('checking'); // checking, connected, error
+  const [apiStatus, setApiStatus] = useState('checking');
   const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
   const location = useLocation();
   const hasSentAutoQuery = useRef(false);
 
-  // Auto-scroll to bottom when new messages arrive
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isTyping]);
 
-  // Check API health on mount
-  useEffect(() => {
-    checkApiHealth();
-  }, []);
+  useEffect(() => { checkApiHealth(); }, []);
 
   const checkApiHealth = async () => {
     try {
-      const response = await fetch(`${RAG_API_URL}/health`);
-      if (response.ok) {
-        const data = await response.json();
-        console.log('API Health:', data);
-        setApiStatus('connected');
-      } else {
-        setApiStatus('error');
-      }
-    } catch (error) {
-      console.error('API Health Check Failed:', error);
+      const res = await fetch(`${RAG_API_URL}/health`);
+      setApiStatus(res.ok ? 'connected' : 'error');
+    } catch {
       setApiStatus('error');
     }
   };
 
-  // Auto-query triggers when coming from Home via router state
   useEffect(() => {
     if (apiStatus === 'connected' && location.state?.autoQuery && !hasSentAutoQuery.current) {
       hasSentAutoQuery.current = true;
-      const query = location.state.autoQuery;
-      
-      // (a) Update the chat input state variable
-      setInput(query);
-      
-      // (b) Execute query automatically
-      handleSend(query);
-      
-      // (c) Clear location state to prevent resending on refresh
+      handleSend(location.state.autoQuery);
       window.history.replaceState({}, document.title);
     }
   }, [apiStatus, location.state?.autoQuery]);
 
-  const handleSend = async (autoQueryStr) => {
-    // If autoQueryStr is a string from our hook, use it. Otherwise, use state input.
-    const textToSend = typeof autoQueryStr === 'string' ? autoQueryStr : input;
-    
-    if (!textToSend.trim()) return;
-    
-    // Check API status
+  const handleSend = async (overrideText) => {
+    const text = typeof overrideText === 'string' ? overrideText : input;
+    if (!text.trim()) return;
     if (apiStatus !== 'connected') {
-      alert('RAG API is not available. Please ensure the API is running on port 8000.');
+      alert('RAG API is not available. Please ensure the API is running on port 8001.');
       return;
     }
-
-    // User message
-    const userMsg = { 
-      id: Date.now(), 
-      text: textToSend, 
-      sender: 'user',
-      timestamp: new Date().toISOString()
-    };
+    const userMsg = { id: Date.now(), text, sender: 'user', timestamp: new Date().toISOString() };
     setMessages(prev => [...prev, userMsg]);
-    const currentQuestion = textToSend;
-    
-    setInput("");
-    
+    setInput('');
     setIsTyping(true);
-
     try {
-      // Call RAG API
-      const response = await fetch(`${RAG_API_URL}/qa`, {
+      const res = await fetch(`${RAG_API_URL}/qa`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          question: currentQuestion,
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: text }),
       });
-
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      // Bot response
-      // citations from RAG is a dict {key: {title, content...}}, convert to array
-      const citationsArray = data.citations
-        ? Object.values(data.citations)
-        : [];
-
-      const botMsg = { 
-        id: Date.now() + 1, 
-        text: data.answer, 
-        sender: 'bot',
-        citations: citationsArray,
-        timestamp: new Date().toISOString()
-      };
-      
-      setMessages(prev => [...prev, botMsg]);
-
-      // Record interaction for gamification (Streak tracking)
+      if (!res.ok) throw new Error(`${res.status}`);
+      const data = await res.json();
+      const citations = data.citations ? Object.values(data.citations) : [];
+      setMessages(prev => [...prev, {
+        id: Date.now() + 1, text: data.answer, sender: 'bot',
+        citations, timestamp: new Date().toISOString(),
+      }]);
       const userId = localStorage.getItem('userId');
       if (userId) {
-        try {
-          await fetch(`${MAIN_API_URL}/gamification/record-interaction`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              userId,
-              isQuiz: false
-            })
-          });
-        } catch (e) {
-          console.error('Failed to record chat interaction for streak:', e);
-        }
+        fetch(`${MAIN_API_URL}/gamification/record-interaction`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, isQuiz: false }),
+        }).catch(() => {});
       }
-      
-    } catch (error) {
-      console.error('Error querying RAG:', error);
-      
-      // Error message
-      const errorMsg = {
+    } catch {
+      setMessages(prev => [...prev, {
         id: Date.now() + 1,
-        text: "I apologize, but I'm having trouble connecting to my knowledge base right now. Please make sure the RAG API is running and try again.",
-        sender: 'bot',
-        isError: true,
-        timestamp: new Date().toISOString()
-      };
-      
-      setMessages(prev => [...prev, errorMsg]);
+        text: "I'm having trouble reaching the knowledge base. Please make sure the RAG API is running on port 8001.",
+        sender: 'bot', isError: true, timestamp: new Date().toISOString(),
+      }]);
     } finally {
       setIsTyping(false);
     }
   };
 
-  const handleClearChat = async () => {
-    try {
-      setMessages([
-        { 
-          id: Date.now(), 
-          text: "Chat history cleared! I'm ready for new questions.", 
-          sender: 'bot',
-          timestamp: new Date().toISOString()
-        }
-      ]);
-    } catch (error) {
-      console.error('Error clearing chat:', error);
-    }
+  const handleKey = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
   };
 
+  const formatTime = (iso) =>
+    new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  const showWelcome = messages.length === 0;
+
   return (
-    <div className="chat-container">
-      <header className="chat-header">
-        <div>
-          <h1>AstraBot 🌟</h1>
-          <p>Your AI Astronomy Assistant</p>
-        </div>
-        <div className="header-controls">
-          <div className={`api-status ${apiStatus}`}>
-            <span className="status-dot"></span>
-            {apiStatus === 'connected' && 'Connected'}
-            {apiStatus === 'checking' && 'Checking...'}
-            {apiStatus === 'error' && 'API Offline'}
-          </div>
-          <button onClick={handleClearChat} className="clear-btn" title="Clear Chat">
-            🗑️ Clear
-          </button>
-        </div>
-      </header>
+    <div className="chat-root">
+      <StarCanvas />
+      <div className="chat-shell">
 
-      <div className="chat-window">
-        {messages.map((msg) => (
-          <div key={msg.id} className={`message-bubble ${msg.sender} ${msg.isError ? 'error' : ''}`}>
-            <div className="message-content">
-              <p>{msg.text}</p>
-              
-              {msg.searchQuery && msg.searchQuery !== msg.text && (
-                <div className="search-query-info">
-                  <small>🔍 Searched for: "{msg.searchQuery}"</small>
+        {/* Top bar */}
+        <header className="chat-topbar">
+          <div className="chat-brand">
+            <span className={`brand-dot ${apiStatus}`} />
+            <span className="brand-name">AstraBot</span>
+            <span className="brand-tag">astronomy AI</span>
+          </div>
+          <button className="chat-clear-btn" onClick={() => setMessages([])}>Clear chat</button>
+        </header>
+
+        {/* Messages */}
+        <div className="chat-messages">
+          {showWelcome ? (
+            <div className="chat-welcome">
+              <div className="welcome-icon">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                  <circle cx="12" cy="12" r="4" />
+                  <path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+                </svg>
+              </div>
+              <h2 className="welcome-title">Ask me about space</h2>
+              <p className="welcome-sub">Powered by AstraRAG — your astronomy knowledge base</p>
+              <div className="welcome-chips">
+                {QUICK_PROMPTS.map((p, i) => (
+                  <button key={i} className="chip" onClick={() => handleSend(p.label)}>
+                    <span>{p.icon}</span> {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <>
+              {messages.map(msg => (
+                <div key={msg.id} className={`msg-row ${msg.sender}`}>
+                  {msg.sender === 'bot' && <div className="bot-av">A</div>}
+                  <div className="msg-body">
+                    <div className={`msg-text ${msg.isError ? 'error' : ''}`}>{msg.text}</div>
+                    {msg.citations && msg.citations.length > 0 && (
+                      <div className="msg-sources">
+                        <div className="sources-label">Sources</div>
+                        {msg.citations.map((c, i) => (
+                          <div key={i} className="source-item">
+                            <div className="source-title">{c.title}</div>
+                            <div className="source-preview">{c.content_preview}</div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <div className="msg-time">{formatTime(msg.timestamp)}</div>
+                  </div>
+                </div>
+              ))}
+              {isTyping && (
+                <div className="msg-row bot">
+                  <div className="bot-av">A</div>
+                  <div className="typing-dots"><span /><span /><span /></div>
                 </div>
               )}
-              
-              {msg.citations && msg.citations.length > 0 && (
-                <div className="citation-container">
-                  <div className="citation-header">📚 Sources:</div>
-                  {msg.citations.map((cite, idx) => (
-                    <div key={idx} className="source-card">
-                      <div className="source-title">{cite.title}</div>
-                      <div className="source-preview">{cite.content_preview}</div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            
-            <div className="message-timestamp">
-              {new Date(msg.timestamp).toLocaleTimeString([], { 
-                hour: '2-digit', 
-                minute: '2-digit' 
-              })}
-            </div>
-          </div>
-        ))}
-        
-        {isTyping && (
-          <div className="typing-indicator">
-            <div className="typing-dots">
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-            <span className="typing-text">AstraBot is thinking...</span>
-          </div>
-        )}
-        
-        <div ref={messagesEndRef} />
-      </div>
-
-      <div className="chat-input-area">
-        <button 
-          className="voice-input-btn" 
-          title="Voice Input (Coming Soon)"
-          disabled
-        >
-          🎤
-        </button>
-        <input 
-          type="text" 
-          placeholder="Ask about space, planets, stars, galaxies..." 
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-          disabled={isTyping || apiStatus !== 'connected'}
-        />
-        <button 
-          className="send-btn" 
-          onClick={handleSend}
-          disabled={!input.trim() || isTyping || apiStatus !== 'connected'}
-        >
-          {isTyping ? '...' : 'Send'}
-        </button>
-      </div>
-
-      {apiStatus === 'error' && (
-        <div className="api-error-banner">
-      ⚠️ RAG API is not running. Start it with: <code>venv/bin/uvicorn src.app.api:app --reload --port 8001</code>
+            </>
+          )}
+          <div ref={messagesEndRef} />
         </div>
-      )}
+
+        {/* Input bar */}
+        <div className="chat-bar">
+          <div className="chat-bar-inner">
+            <textarea
+              ref={inputRef}
+              rows={1}
+              className="chat-input"
+              placeholder="Ask about space, stars, galaxies…"
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={handleKey}
+              disabled={isTyping || apiStatus !== 'connected'}
+              onInput={e => {
+                e.target.style.height = 'auto';
+                e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+              }}
+            />
+            <button
+              className="chat-send-btn"
+              onClick={handleSend}
+              disabled={!input.trim() || isTyping || apiStatus !== 'connected'}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13" />
+                <polygon points="22 2 15 22 11 13 2 9 22 2" />
+              </svg>
+            </button>
+          </div>
+          <div className={`chat-bar-hint ${apiStatus === 'error' ? 'error' : ''}`}>
+            {apiStatus === 'error'
+              ? '⚠ API offline — run: uvicorn src.app.api:app --reload --port 8001'
+              : 'Enter to send · Shift+Enter for new line'}
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 };
 
-export default chat;
+export default Chat;
