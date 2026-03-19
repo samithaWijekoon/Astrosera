@@ -496,8 +496,8 @@ const Member6 = () => {
                                     {!hasMoreNews && displayedNews.length > 6 && (
                                         <div className="end-of-feed">
                                             <span className="end-icon">✨</span>
-                                            <p>You've reached the end of cosmic news</p>
-                                            <p className="end-subtitle">Check back later for more updates!</p>
+                                            <p>You've explored all the latest cosmic updates</p>
+                                            <p className="end-subtitle">New stories arrive daily — check back soon!</p>
                                         </div>
                                     )}
                                 </>
@@ -631,7 +631,7 @@ const Member6 = () => {
                                     rel="noopener noreferrer"
                                     className="action-btn primary"
                                 >
-                                    Read on NASA →
+                                    Read Full Article on Source →
                                 </a>
                             </div>
                         </div>
