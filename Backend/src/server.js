@@ -28,6 +28,9 @@ app.use(rateLimit({ windowMs: 60 * 1000, max: 100 }));
 app.get('/api/health', (_, res) => res.json({ status: 'ok', ts: new Date() }));
 app.use('/api/asteroids', asteroidRoutes);
 app.use('/api/alerts', alertRoutes);
+app.use('/api/news', newsRoutes);
+app.use('/api/apod', apodRoutes);
+app.use('/api/media', mediaRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`)
