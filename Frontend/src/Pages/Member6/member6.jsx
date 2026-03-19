@@ -39,7 +39,7 @@ const Member6 = () => {
         { id: 'missions', name: 'Missions', icon: '🚀' },
         { id: 'discoveries', name: 'Discoveries', icon: '🔭' },
         { id: 'spaceweather', name: 'Space Weather', icon: '☀️' },
-        { id: 'technology', name: 'Technology', icon: '🛰️' },
+        { id: 'technology', name: 'Space Tech', icon: '🛰️' },
         { id: 'planets', name: 'Planets', icon: '🪐' }
     ];
 
@@ -316,13 +316,13 @@ const Member6 = () => {
                     className={`tab-btn ${activeTab === 'news' ? 'active' : ''}`}
                     onClick={() => setActiveTab('news')}
                 >
-                    📰 News Feed
+                    📰 Latest News
                 </button>
                 <button
                     className={`tab-btn ${activeTab === 'gallery' ? 'active' : ''}`}
                     onClick={() => setActiveTab('gallery')}
                 >
-                    🖼 Media Gallery
+                    🖼️ Space Media Gallery
                 </button>
             </div>
 
