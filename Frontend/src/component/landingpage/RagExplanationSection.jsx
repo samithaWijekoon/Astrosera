@@ -1,9 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FaRobot, FaUser, FaDatabase } from "react-icons/fa";
 import { FiSend, FiExternalLink, FiLayers } from "react-icons/fi";
 import { BiAnalyse } from "react-icons/bi";
 
 const RagExplanationSection = () => {
+    const [searchQuery, setSearchQuery] = useState("");
+    const navigate = useNavigate();
+
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            navigate('/chat', { state: { autoQuery: searchQuery } });
+        }
+    };
+    
     return (
         // Main Container with Background Image
         <div
@@ -70,16 +81,18 @@ const RagExplanationSection = () => {
                         </div>
 
                         {/* Input Field */}
-                        <div className="relative">
+                        <form onSubmit={handleSearchSubmit} className="relative w-full">
                             <input
                                 type="text"
                                 placeholder="Ask anything about astronomy..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
                                 className="w-full bg-black/40 border border-white/10 rounded-full py-3 pl-5 pr-12 text-gray-300 text-sm focus:outline-none focus:border-purple-500/50 transition backdrop-blur-sm focus:bg-black/60"
                             />
-                            <button className="absolute right-1.5 top-1/2 transform -translate-y-1/2 bg-purple-600/80 hover:bg-purple-600 p-2 rounded-full transition hover:scale-110">
+                            <button type="submit" className="absolute right-1.5 top-1/2 transform -translate-y-1/2 bg-purple-600/80 hover:bg-purple-600 p-2 rounded-full transition hover:scale-110">
                                 <FiSend className="text-white text-sm" />
                             </button>
-                        </div>
+                        </form>
                     </div>
 
                     {/* Stats Cards */}

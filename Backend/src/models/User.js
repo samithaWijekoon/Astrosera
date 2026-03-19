@@ -5,12 +5,12 @@ const userSchema = new mongoose.Schema(
     {
         username: { type: String, required: true, unique: true },
         email: { type: String, required: true, unique: true },
-        password: { 
-            type: String, 
+        password: {
+            type: String,
             required: true,
             validate: {
-                validator: function(v) {
-                    // Skip validation if it's an already hashed password (starts with $2a$, $2b$, etc.)
+                validator: function (v) {
+                    // Skip validation if it's an already hashed password
                     if (v && v.startsWith('$2')) return true;
                     return /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/.test(v);
                 },
@@ -26,33 +26,37 @@ const userSchema = new mongoose.Schema(
         avatarInitials: { type: String },
         streakCount: { type: Number, default: 0 },
         lastQuizDate: { type: Date },
-        activeDates: { type: [Date], default: [] },
+        // --- UNION MERGE: Keeping both sets of fields ---
+        activeDates: { type: [Date], default: [] }, // From Friend
+        isVerified: { type: Boolean, default: false }, // From Main
+        otpCode: { type: String, default: null },      // From Main
     },
     { timestamps: true }
 );
 
 // Method to compare passwords
 userSchema.methods.matchPassword = async function (enteredPassword) {
-    // Check if the stored password was hashed previously (starts with bcrypt's $2 identifier)
     if (this.password && this.password.startsWith('$2')) {
         return await bcrypt.compare(enteredPassword, this.password);
     }
-    // Fallback for older users who have plain text passwords in the database
     return enteredPassword === this.password;
 };
 
 // Fixed Pre-save Middleware
-userSchema.pre('save', async function () {
-    // 1. Hash password if it is new or changed
+userSchema.pre('save', async function (next) {
     if (this.isModified('password')) {
-        const salt = await bcrypt.genSalt(10);
-        this.password = await bcrypt.hash(this.password, salt);
+        try {
+            const salt = await bcrypt.genSalt(10);
+            this.password = await bcrypt.hash(this.password, salt);
+        } catch (error) {
+            return next(error);
+        }
     }
 
-    // 2. Set initials for Member 04 Leaderboard if not present
     if (this.username && !this.avatarInitials) {
         this.avatarInitials = this.username.slice(0, 2).toUpperCase();
     }
+    next();
 });
 
 const User = mongoose.model('User', userSchema);

@@ -64,7 +64,15 @@ export const AuthProvider = ({ children }) => {
                 navigate('/');
                 return { success: true };
             } else {
-                return { success: false, message: data.message || "Invalid credentials" };
+                const errorMessage = data.message || data.detail || "Invalid credentials";
+                
+                // If the user's email is not verified (HTTP 403)
+                if (response.status === 403 && errorMessage.toLowerCase().includes("not verified")) {
+                    navigate(`/verify-email?email=${encodeURIComponent(email)}`);
+                    return { success: false, message: "Email not verified. Redirecting..." };
+                }
+
+                return { success: false, message: errorMessage };
             }
         } catch (error) {
             console.error("Login error:", error);
@@ -116,15 +124,11 @@ export const AuthProvider = ({ children }) => {
             const data = await response.json();
 
             if (response.ok) {
-                setUser(data);
-                localStorage.setItem('user', JSON.stringify(data));
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('userId', data._id);
-
-                navigate('/');
+                // Return success so Signup.jsx can navigate, or we can navigate here:
+                navigate(`/verify-email?email=${encodeURIComponent(email)}`);
                 return { success: true };
             } else {
-                return { success: false, message: data.message };
+                return { success: false, message: data.message || data.detail || 'Signup failed' };
             }
         } catch (error) {
             console.error("Signup error:", error);

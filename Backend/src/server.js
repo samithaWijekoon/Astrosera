@@ -1,5 +1,5 @@
 const app        = require('./app');
-require('dotenv').config();
+require('dotenv').config({ override: true });
 const rateLimit  = require('express-rate-limit');
 const cors       = require('cors');
 
