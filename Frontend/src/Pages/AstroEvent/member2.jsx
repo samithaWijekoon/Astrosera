@@ -41,7 +41,7 @@ function PlanetCard({ planet, isSelected, onClick }) {
   const data = PLANET_DATA[planet.id];
   return (
     <button onClick={onClick}
-      className={`relative flex flex-col items-center p-4 rounded-xl border transition-all duration-300 cursor-pointer w-full bg-white/5 backdrop-blur-lg border-white/10 hover:border-purple-500/50 ${
+      className={`relative flex flex-col items-center p-4 rounded-xl border transition-all duration-300 cursor-pointer w-full bg-black/60 backdrop-blur-lg border-white/10 hover:border-purple-500/50 ${
         isSelected ? 'shadow-[0_0_15px_rgba(168,85,247,0.3)] bg-purple-900/30 border-purple-500/80' : ''
       }`}>
       <div className="rounded-full mb-3 flex-shrink-0" style={{
@@ -53,8 +53,8 @@ function PlanetCard({ planet, isSelected, onClick }) {
       {planet.id === 'saturn' && (
         <div className="absolute" style={{ top: '22px', left: '50%', transform: 'translateX(-50%)', width: '90px', height: '12px', border: `2px solid #e4d19155`, borderRadius: '50%', pointerEvents: 'none' }} />
       )}
-      <p className="text-white text-xs font-semibold uppercase tracking-wider">{planet.name}</p>
-      <p className="text-gray-500 text-xs mt-0.5">{fmtNum(data.distFromSun)} M km</p>
+      <p className="text-white text-sm font-semibold uppercase tracking-wider">{planet.name}</p>
+      <p className="text-gray-500 text-sm mt-0.5">{fmtNum(data.distFromSun)} M km</p>
     </button>
   );
 }
@@ -80,7 +80,7 @@ function PlanetDetail({ planet }) {
     ['Discovery Year',   data.discoveryDate],
   ];
   return (
-    <div className="bg-white/5 backdrop-blur-lg border border-white/10 hover:border-purple-500/50 transition-colors duration-500 rounded-xl p-6 mt-6 shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
+    <div className="bg-black/60 backdrop-blur-lg border border-white/10 hover:border-purple-500/50 transition-colors duration-500 rounded-xl p-6 mt-6 shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
       <div className="flex items-center gap-4 mb-6">
         <div className="rounded-full flex-shrink-0" style={{
           width: 52, height: 52,
@@ -90,7 +90,7 @@ function PlanetDetail({ planet }) {
         }} />
         <div>
           <h2 className="text-white text-2xl font-bold">{planet.name}</h2>
-          <p className="text-gray-500 text-xs uppercase tracking-widest">Solar System Planet</p>
+          <p className="text-gray-500 text-sm uppercase tracking-widest">Solar System Planet</p>
         </div>
       </div>
       <PlanetOrbitalViz planet={planet} />
@@ -98,18 +98,18 @@ function PlanetDetail({ planet }) {
       <div className="space-y-0 mb-5">
         {rows.map(([k, v]) => (
           <div key={k} className="flex justify-between py-2 border-b border-gray-800/60 last:border-0">
-            <span className="text-gray-500 text-xs uppercase tracking-wide">{k}</span>
-            <span className="text-gray-200 text-xs font-mono text-right max-w-[55%]">{v}</span>
+            <span className="text-gray-500 text-sm uppercase tracking-wide">{k}</span>
+            <span className="text-gray-200 text-sm font-mono text-right max-w-[55%]">{v}</span>
           </div>
         ))}
       </div>
-      <p className="text-xs text-gray-500 uppercase tracking-widest mb-3">Moons ({data.moons.length === 0 ? 'None' : data.moons.length})</p>
+      <p className="text-sm text-gray-500 uppercase tracking-widest mb-3">Moons ({data.moons.length === 0 ? 'None' : data.moons.length})</p>
       {data.moons.length === 0 ? (
-        <p className="text-gray-600 text-xs">No natural satellites</p>
+        <p className="text-gray-600 text-sm">No natural satellites</p>
       ) : (
         <div className="flex flex-wrap gap-2">
           {data.moons.map(m => (
-            <span key={m} className="text-xs px-2 py-1 rounded border border-purple-900/50 text-purple-300 bg-purple-900/20">{m}</span>
+            <span key={m} className="text-sm px-2 py-1 rounded border border-purple-900/50 text-purple-300 bg-purple-900/20">{m}</span>
           ))}
         </div>
       )}
@@ -130,12 +130,12 @@ function PlanetsTab() {
         }} />
         <div>
           <p className="text-yellow-300 font-semibold">The Sun</p>
-          <p className="text-gray-400 text-xs">Radius: 695,700 km · Mass: 1.989 × 10³⁰ kg · Surface Temp: 5,778 K · Age: ~4.6 billion years</p>
+          <p className="text-gray-400 text-sm">Radius: 695,700 km · Mass: 1.989 × 10³⁰ kg · Surface Temp: 5,778 K · Age: ~4.6 billion years</p>
         </div>
       </div>
 
       {/* Planet grid */}
-      <p className="text-gray-500 text-xs uppercase tracking-widest mb-4">Select a Planet</p>
+      <p className="text-gray-500 text-sm uppercase tracking-widest mb-4">Select a Planet</p>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-2">
         {PLANETS.map(p => (
           <PlanetCard key={p.id} planet={p} isSelected={selected?.id === p.id} onClick={() => setSelected(p)} />
@@ -145,8 +145,8 @@ function PlanetsTab() {
       {selected && <PlanetDetail planet={selected} />}
 
       {/* Quick facts */}
-      <div className="bg-white/5 backdrop-blur-lg border border-white/10 hover:border-purple-500/50 transition-colors duration-500 rounded-xl p-5 mt-6 shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
-        <p className="text-xs text-gray-500 uppercase tracking-widest mb-4">Quick Facts</p>
+      <div className="bg-black/60 backdrop-blur-lg border border-white/10 hover:border-purple-500/50 transition-colors duration-500 rounded-xl p-5 mt-6 shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
+        <p className="text-sm text-gray-500 uppercase tracking-widest mb-4">Quick Facts</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           {[
             { label: 'Largest Planet',  value: 'Jupiter', sub: '69,911 km radius' },
@@ -157,9 +157,9 @@ function PlanetsTab() {
             { label: 'Longest Day',     value: 'Venus',   sub: '243 Earth days'   },
           ].map(f => (
             <div key={f.label} className="bg-black/30 rounded-lg p-3">
-              <p className="text-gray-500 text-xs">{f.label}</p>
-              <p className="text-purple-400 font-semibold text-sm mt-1">{f.value}</p>
-              <p className="text-gray-600 text-xs">{f.sub}</p>
+              <p className="text-gray-500 text-sm">{f.label}</p>
+              <p className="text-purple-400 font-semibold text-base mt-1">{f.value}</p>
+              <p className="text-gray-600 text-sm">{f.sub}</p>
             </div>
           ))}
         </div>
@@ -318,7 +318,7 @@ export default function Member2() {
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
             Space <span className="text-purple-400">Explorer</span>
           </h1>
-          <p className="text-gray-400 text-sm">Near-Earth objects & Solar System planets · Powered by NASA</p>
+          <p className="text-gray-400 text-base">Near-Earth objects & Solar System planets · Powered by NASA</p>
         </div>
 
       {/* Tabs */}
@@ -329,7 +329,7 @@ export default function Member2() {
             { key: 'planets',   label: '🪐 Planets'      },
           ].map(t => (
             <button key={t.key} onClick={() => setTab(t.key)}
-              className={`px-5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+              className={`px-5 py-2 rounded-lg text-base font-medium transition-all duration-200 ${
                 tab === t.key
                   ? 'bg-purple-600 text-white shadow-lg'
                   : 'text-gray-400 hover:text-white'
@@ -352,24 +352,24 @@ export default function Member2() {
         <>
           {/* Email bar */}
           <div className="max-w-7xl mx-auto mb-6 flex items-center gap-3 flex-wrap">
-            <span className="text-gray-500 text-xs uppercase tracking-widest">Observer Email:</span>
+            <span className="text-gray-500 text-sm uppercase tracking-widest">Observer Email:</span>
             {editEmail ? (
               <div className="flex gap-2">
                 <input type="email" value={draftEmail} onChange={e => setDraftEmail(e.target.value)}
                   placeholder="your@email.com"
-                  className="bg-gray-900 border border-gray-700 text-white text-xs px-3 py-1.5 rounded focus:outline-none focus:border-purple-500" />
+                  className="bg-gray-900 border border-gray-700 text-white text-sm px-3 py-1.5 rounded focus:outline-none focus:border-purple-500" />
                 <button onClick={() => { saveEmail(draftEmail); setEditEmail(false); }}
-                  className="text-xs px-3 py-1.5 bg-purple-600 text-white rounded hover:bg-purple-700">Save</button>
+                  className="text-sm px-3 py-1.5 bg-purple-600 text-white rounded hover:bg-purple-700">Save</button>
                 <button onClick={() => setEditEmail(false)}
-                  className="text-xs px-3 py-1.5 border border-gray-700 text-gray-400 rounded hover:border-gray-500">Cancel</button>
+                  className="text-sm px-3 py-1.5 border border-gray-700 text-gray-400 rounded hover:border-gray-500">Cancel</button>
               </div>
             ) : (
               <button onClick={() => { setDraftEmail(email); setEditEmail(true); }}
-                className="text-xs px-3 py-1.5 border border-gray-700 rounded text-purple-400 hover:border-purple-600 transition-colors">
+                className="text-sm px-3 py-1.5 border border-gray-700 rounded text-purple-400 hover:border-purple-600 transition-colors">
                 {email || '+ Set email for alerts'}
               </button>
             )}
-            <Link to="/asteroid-alerts" className="text-xs px-3 py-1.5 border border-purple-800 text-purple-400 rounded hover:bg-purple-900/30 transition-colors ml-auto">
+            <Link to="/asteroid-alerts" className="text-sm px-3 py-1.5 border border-purple-800 text-purple-400 rounded hover:bg-purple-900/30 transition-colors ml-auto">
               My Alerts →
             </Link>
           </div>
@@ -382,11 +382,11 @@ export default function Member2() {
               { label: 'Closest Approach',      value: loading ? '—' : stats.closest,   sub: 'lunar distances',     color: 'text-purple-400' },
               { label: 'Max Velocity',          value: loading ? '—' : stats.fastest,   sub: 'km/s fastest object', color: 'text-white' },
             ].map(s => (
-              <div key={s.label} className="bg-white/5 backdrop-blur-lg border border-white/10 hover:border-purple-500/50 transition-all duration-300 rounded-xl p-4 relative overflow-hidden group shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
+              <div key={s.label} className="bg-black/60 backdrop-blur-lg border border-white/10 hover:border-purple-500/50 transition-all duration-300 rounded-xl p-4 relative overflow-hidden group shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
                 <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-600 to-transparent opacity-50 group-hover:opacity-100 transition-opacity" />
-                <p className="text-gray-500 text-xs uppercase tracking-widest mb-2">{s.label}</p>
+                <p className="text-gray-500 text-sm uppercase tracking-widest mb-2">{s.label}</p>
                 <p className={`text-3xl font-bold ${s.color}`}>{s.value}</p>
-                <p className="text-gray-600 text-xs mt-1">{s.sub}</p>
+                <p className="text-gray-600 text-sm mt-1">{s.sub}</p>
               </div>
             ))}
           </div>
@@ -394,27 +394,27 @@ export default function Member2() {
           {/* Controls */}
           <div className="max-w-7xl mx-auto flex gap-3 mb-6 flex-wrap items-center">
             <select value={sortBy} onChange={e => setSortBy(e.target.value)}
-              className="bg-gray-900 border border-gray-700 text-gray-300 text-xs px-3 py-2 rounded focus:outline-none focus:border-purple-500">
+              className="bg-gray-900 border border-gray-700 text-gray-300 text-sm px-3 py-2 rounded focus:outline-none focus:border-purple-500">
               <option value="date">Sort: Date</option>
               <option value="distance">Sort: Closest</option>
               <option value="size">Sort: Largest</option>
               <option value="velocity">Sort: Fastest</option>
             </select>
             <button onClick={() => setHazardOnly(h => !h)}
-              className={`text-xs px-3 py-2 rounded border transition-colors ${
+              className={`text-sm px-3 py-2 rounded border transition-colors ${
                 hazardOnly ? 'border-red-500 text-red-400 bg-red-500/10' : 'border-gray-700 text-gray-400 hover:border-gray-500'
               }`}>
               ⚠ {hazardOnly ? 'Hazardous Only' : 'All Objects'}
             </button>
             <button onClick={load}
-              className="text-xs px-3 py-2 rounded border border-purple-700 text-purple-400 hover:bg-purple-700/20 transition-colors">
+              className="text-sm px-3 py-2 rounded border border-purple-700 text-purple-400 hover:bg-purple-700/20 transition-colors">
               ↻ Refresh
             </button>
           </div>
 
           {/* Error */}
           {error && (
-            <div className="max-w-7xl mx-auto mb-6 bg-red-900/20 border border-red-800/40 rounded-lg px-4 py-3 text-red-400 text-sm">
+            <div className="max-w-7xl mx-auto mb-6 bg-red-900/20 border border-red-800/40 rounded-lg px-4 py-3 text-red-400 text-base">
               ⚠ {error}
             </div>
           )}
@@ -425,19 +425,19 @@ export default function Member2() {
               {loading ? (
                 <div className="flex flex-col items-center justify-center py-24 gap-4 text-gray-500">
                   <div className="w-10 h-10 border-2 border-gray-700 border-t-purple-500 rounded-full animate-spin" />
-                  <span className="text-xs uppercase tracking-widest">Fetching telemetry...</span>
+                  <span className="text-sm uppercase tracking-widest">Fetching telemetry...</span>
                 </div>
               ) : displayed.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-24 gap-4 text-gray-500">
                   <span className="text-5xl">🔭</span>
-                  <span className="text-xs uppercase tracking-widest">No objects found</span>
+                  <span className="text-sm uppercase tracking-widest">No objects found</span>
                 </div>
               ) : (
-                <table className="w-full text-sm">
+                <table className="w-full text-base">
                   <thead>
                     <tr className="border-b border-gray-800">
                       {['Designation', 'Date', 'Velocity', 'Size', 'Threat', 'Alert'].map(h => (
-                        <th key={h} className="text-left text-xs text-gray-500 uppercase tracking-widest pb-3 px-3 font-normal whitespace-nowrap">{h}</th>
+                        <th key={h} className="text-left text-sm text-gray-500 uppercase tracking-widest pb-3 px-3 font-normal whitespace-nowrap">{h}</th>
                       ))}
                     </tr>
                   </thead>
@@ -453,23 +453,23 @@ export default function Member2() {
                           onClick={() => setSelected(s => s?.id === neo.id ? null : neo)}
                           className={`cursor-pointer border-b border-gray-900 transition-colors ${isSelected ? 'bg-purple-900/20' : 'hover:bg-gray-900/60'}`}>
                           <td className="px-3 py-3">
-                            <div className={`font-mono text-xs font-semibold ${neo.isHazardous ? 'text-red-400' : 'text-gray-200'}`}>{neo.name}</div>
-                            {isNamed && <div className="text-yellow-500/60 text-xs italic mt-0.5">{cleanName}</div>}
-                            <div className="text-gray-600 text-xs mt-0.5">ID: {neo.id}</div>
+                            <div className={`font-mono text-sm font-semibold ${neo.isHazardous ? 'text-red-400' : 'text-gray-200'}`}>{neo.name}</div>
+                            {isNamed && <div className="text-yellow-500/60 text-sm italic mt-0.5">{cleanName}</div>}
+                            <div className="text-gray-600 text-sm mt-0.5">ID: {neo.id}</div>
                           </td>
-                          <td className="px-3 py-3 text-yellow-400 text-xs whitespace-nowrap">{neo.approachDate}</td>
-                          <td className="px-3 py-3 text-gray-300 text-xs whitespace-nowrap">
+                          <td className="px-3 py-3 text-yellow-400 text-sm whitespace-nowrap">{neo.approachDate}</td>
+                          <td className="px-3 py-3 text-gray-300 text-sm whitespace-nowrap">
                             {(neo.velocityKph / 3600).toFixed(2)} km/s
                           </td>
                           <td className="px-3 py-3">
                             <div className="flex items-center gap-2">
                               <div className={`h-1 rounded-full ${neo.isHazardous ? 'bg-red-500' : 'bg-purple-500'}`}
                                 style={{ width: Math.max(sizeRel * 60, 4) + 'px' }} />
-                              <span className="text-gray-500 text-xs">{fmtDiam(neo.diamMinKm, neo.diamMaxKm)}</span>
+                              <span className="text-gray-500 text-sm">{fmtDiam(neo.diamMinKm, neo.diamMaxKm)}</span>
                             </div>
                           </td>
                           <td className="px-3 py-3">
-                            <span className="text-xs px-2 py-0.5 rounded border" style={{ color: threat.color, borderColor: threat.color + '55', background: threat.color + '15' }}>
+                            <span className="text-sm px-2 py-0.5 rounded border" style={{ color: threat.color, borderColor: threat.color + '55', background: threat.color + '15' }}>
                               {threat.label}
                             </span>
                           </td>
