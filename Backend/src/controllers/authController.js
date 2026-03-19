@@ -89,6 +89,33 @@ const verifyOtp = async (req, res) => {
     }
 };
 
+// @desc    Resend OTP for an unverified user
+// @route   POST /api/auth/resend-otp
+const resendOtp = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        if (user.isVerified) {
+            return res.status(400).json({ message: 'User is already verified' });
+        }
+
+        const newOtp = generateOtp();
+        user.otpCode = newOtp;
+        await user.save(); // Note: password is not modified, so pre-save hook won't re-hash it
+
+        sendOtpEmail(email, newOtp);
+
+        res.status(200).json({ message: 'A new verification code has been sent to your email.' });
+    } catch (error) {
+        console.error("Resend OTP Error:", error.message);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
 // @desc    Authenticate a user
 // @route   POST /api/auth/login
 const loginUser = async (req, res) => {
@@ -238,6 +265,7 @@ const googleAuth = async (req, res) => {
 module.exports = {
     registerUser,
     verifyOtp,
+    resendOtp,
     loginUser,
     googleAuth,
     getMe,

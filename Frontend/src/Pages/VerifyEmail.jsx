@@ -6,6 +6,7 @@ const VerifyEmail = () => {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [email, setEmail] = useState('');
+    const [isResending, setIsResending] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -56,6 +57,36 @@ const VerifyEmail = () => {
         }
     };
 
+    const handleResend = async () => {
+        if (!email) {
+            return setError('No email address found to resend the code.');
+        }
+        
+        setIsResending(true);
+        setError('');
+        setSuccess('');
+
+        try {
+            const response = await fetch(`${backendurl}/api/auth/resend-otp`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setSuccess('A new verification code has been sent to your email.');
+            } else {
+                setError(data.message || 'Failed to resend code. Please try again.');
+            }
+        } catch (err) {
+            setError('Server error while resending code.');
+        } finally {
+            setIsResending(false);
+        }
+    };
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-black bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900/20 via-black to-black font-outfit py-12">
             <div className="w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-[0_0_50px_rgba(168,85,247,0.1)]">
@@ -102,8 +133,15 @@ const VerifyEmail = () => {
                     
                     <div className="mt-8 text-center text-gray-400 text-sm">
                         Didn't receive the code?{' '}
-                        <button type="button" className="text-purple-400 hover:text-purple-300 font-medium transition-colors" onClick={() => alert("Resend feature not implemented yet.")}>
-                            Resend Code
+                        <button 
+                            type="button" 
+                            className={`font-medium transition-colors ${
+                                isResending ? 'text-gray-500 cursor-not-allowed' : 'text-purple-400 hover:text-purple-300'
+                            }`}
+                            onClick={handleResend}
+                            disabled={isResending}
+                        >
+                            {isResending ? 'Sending...' : 'Resend Code'}
                         </button>
                     </div>
                 </form>
