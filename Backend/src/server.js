@@ -1,11 +1,14 @@
-const app        = require('./app');
+const app = require('./app');
 require('dotenv').config({ override: true });
-const rateLimit  = require('express-rate-limit');
-const cors       = require('cors');
+const rateLimit = require('express-rate-limit');
+const cors = require('cors');
 
 const asteroidRoutes = require('./routes/asteroids');
-const alertRoutes    = require('./routes/alerts');
-const { startCron }  = require('./services/notificationServices');
+const alertRoutes = require('./routes/alerts');
+const newsRoutes = require('./routes/newsRoutes');
+const apodRoutes = require('./routes/apodRoutes');
+const mediaRoutes = require('./routes/mediaRoutes');
+const { startCron } = require('./services/notificationServices');
 
 const PORT = process.env.PORT || 5000;
 
@@ -24,7 +27,10 @@ app.use(rateLimit({ windowMs: 60 * 1000, max: 100 }));
 
 app.get('/api/health', (_, res) => res.json({ status: 'ok', ts: new Date() }));
 app.use('/api/asteroids', asteroidRoutes);
-app.use('/api/alerts',    alertRoutes);
+app.use('/api/alerts', alertRoutes);
+app.use('/api/news', newsRoutes);
+app.use('/api/apod', apodRoutes);
+app.use('/api/media', mediaRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`)
