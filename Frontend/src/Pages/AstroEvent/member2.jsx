@@ -251,7 +251,7 @@ export default function Member2() {
   }), [asteroids]);
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-[#020617] via-[#0f172a] to-[#020617] font-outfit overflow-hidden">
+    <div className="relative min-h-screen bg-gradient-to-b from-[#020617] via-[#0f172a] to-[#020617] font-outfit overflow-hidden [text-shadow:_0_0_10px_rgba(255,255,255,0.3)]">
       
       {/* Stars Background Layer */}
       <div 
@@ -275,6 +275,38 @@ export default function Member2() {
           />
         ))}
       </div>
+
+      {/* Shooting Stars Layer */}
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes shootingStar {
+          0% { transform: translateX(0) translateY(0) rotate(-45deg); opacity: 1; }
+          100% { transform: translateX(-150vw) translateY(150vh) rotate(-45deg); opacity: 0; }
+        }
+        .shooting-star {
+          position: absolute;
+          width: 150px;
+          height: 2px;
+          background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,1));
+          animation: shootingStar 4s linear infinite;
+          opacity: 0;
+          z-index: 0;
+          pointer-events: none;
+        }
+        .shooting-star::after {
+          content: '';
+          position: absolute;
+          top: -3px;
+          right: 0;
+          width: 8px;
+          height: 8px;
+          background: white;
+          border-radius: 50%;
+          box-shadow: 0 0 15px 3px rgba(255, 255, 255, 0.8);
+        }
+      `}} />
+      <div className="shooting-star" style={{ top: '-10%', right: '10%', animationDelay: '1s' }}></div>
+      <div className="shooting-star" style={{ top: '20%', right: '-20%', animationDelay: '5s', animationDuration: '3s' }}></div>
+      <div className="shooting-star" style={{ top: '-20%', right: '40%', animationDelay: '8s', animationDuration: '5s' }}></div>
 
       {/* Nebula Orbs */}
       <div className="absolute top-[10%] left-[10%] w-[30rem] h-[30rem] bg-purple-600/20 rounded-full blur-[100px] pointer-events-none z-0 animate-pulse"></div>
