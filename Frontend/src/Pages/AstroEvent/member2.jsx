@@ -231,15 +231,22 @@ export default function Member2() {
   }), [asteroids]);
 
   return (
-    <div className="min-h-screen bg-black pt-24 pb-16 px-6 md:px-12 font-outfit">
+    <div className="relative min-h-screen bg-gradient-to-b from-[#020617] via-[#0f172a] to-[#020617] font-outfit">
+      
+      {/* Stars Background Layer */}
+      <div 
+        className="absolute inset-0 pointer-events-none opacity-40 z-0" 
+        style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='15' cy='15' r='1' fill='%23ffffff'/%3E%3Ccircle cx='75' cy='45' r='1.5' fill='%23ffffff'/%3E%3Ccircle cx='45' cy='85' r='0.8' fill='%23ffffff'/%3E%3Ccircle cx='85' cy='10' r='1' fill='%23ffffff'/%3E%3C/svg%3E\")" }}
+      ></div>
 
-      {/* Page Header */}
-      <div className="max-w-7xl mx-auto mb-6">
-        <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-          Space <span className="text-purple-400">Explorer</span>
-        </h1>
-        <p className="text-gray-400 text-sm">Near-Earth objects & Solar System planets · Powered by NASA</p>
-      </div>
+      <div className="relative z-10 pt-24 pb-16 px-6 md:px-12">
+        {/* Page Header */}
+        <div className="max-w-7xl mx-auto mb-6">
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+            Space <span className="text-purple-400">Explorer</span>
+          </h1>
+          <p className="text-gray-400 text-sm">Near-Earth objects & Solar System planets · Powered by NASA</p>
+        </div>
 
       {/* Tabs */}
       <div className="max-w-7xl mx-auto mb-8">
@@ -407,6 +414,7 @@ export default function Member2() {
           </div>
         </>
       )}
+      </div>
     </div>
   );
 }
