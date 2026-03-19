@@ -39,7 +39,7 @@ const Member6 = () => {
         { id: 'missions', name: 'Missions', icon: '🚀' },
         { id: 'discoveries', name: 'Discoveries', icon: '🔭' },
         { id: 'spaceweather', name: 'Space Weather', icon: '☀️' },
-        { id: 'technology', name: 'Technology', icon: '🛰️' },
+        { id: 'technology', name: 'Space Tech', icon: '🛰️' },
         { id: 'planets', name: 'Planets', icon: '🪐' }
     ];
 
@@ -263,7 +263,7 @@ const Member6 = () => {
                     <span className="search-icon-left">🔭</span>
                     <input
                         type="text"
-                        placeholder="Explore the cosmos — search news, galaxies, missions..."
+                        placeholder="Search the universe — discover news, galaxies, missions & more..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(searchTerm); }}
@@ -290,7 +290,7 @@ const Member6 = () => {
                         <div className="apod-image-wrapper">
                             <img src={displayApod.img} alt={displayApod.title} className="apod-image" />
                             <div className="apod-image-overlay">
-                                <span className="badge">🌟 Astronomy Picture of the Day</span>
+                                <span className="badge">🌟 Daily Astronomy Spotlight</span>
                             </div>
                         </div>
                         <div className="apod-content">
@@ -302,7 +302,7 @@ const Member6 = () => {
                             <div className="apod-footer">
                                 <span className="apod-credit">📷 {displayApod.photographer}</span>
                                 <a href={displayApod.url} target="_blank" rel="noopener noreferrer" className="apod-link">
-                                    View Full Resolution →
+                                    View HD Image →
                                 </a>
                             </div>
                         </div>
@@ -316,13 +316,13 @@ const Member6 = () => {
                     className={`tab-btn ${activeTab === 'news' ? 'active' : ''}`}
                     onClick={() => setActiveTab('news')}
                 >
-                    📰 News Feed
+                    📰 Latest News
                 </button>
                 <button
                     className={`tab-btn ${activeTab === 'gallery' ? 'active' : ''}`}
                     onClick={() => setActiveTab('gallery')}
                 >
-                    🖼 Media Gallery
+                    🖼️ Space Media Gallery
                 </button>
             </div>
 
@@ -354,6 +354,7 @@ const Member6 = () => {
                                 <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
                                     <option value="date">Latest First</option>
                                     <option value="relevance">Most Relevant</option>
+                                    <option value="trending">Trending</option>
                                 </select>
                             </div>
                         </div>
@@ -484,7 +485,7 @@ const Member6 = () => {
                                     {loading && (
                                         <div className="loading-indicator">
                                             <div className="spinner"></div>
-                                            <p>Loading more cosmic news...</p>
+                                            <p>Fetching the latest cosmic stories...</p>
                                         </div>
                                     )}
 
@@ -495,21 +496,21 @@ const Member6 = () => {
                                     {!hasMoreNews && displayedNews.length > 6 && (
                                         <div className="end-of-feed">
                                             <span className="end-icon">✨</span>
-                                            <p>You've reached the end of cosmic news</p>
-                                            <p className="end-subtitle">Check back later for more updates!</p>
+                                            <p>You've explored all the latest cosmic updates</p>
+                                            <p className="end-subtitle">New stories arrive daily — check back soon!</p>
                                         </div>
                                     )}
                                 </>
                             ) : loading ? (
                                 <div className="loading-indicator" style={{ gridColumn: '1 / -1', marginTop: '40px' }}>
                                     <div className="spinner"></div>
-                                    <p>Searching the cosmos...</p>
+                                    <p>Scanning the cosmos for stories...</p>
                                 </div>
                             ) : (
                                 <div className="empty-state">
                                     <span className="empty-icon">🔭</span>
-                                    <h3>No cosmic news found</h3>
-                                    <p>Try adjusting your search or filters</p>
+                                    <h3>No cosmic news found yet</h3>
+                                    <p>Try adjusting your search or filters to explore more</p>
                                 </div>
                             )}
                         </div>
@@ -630,7 +631,7 @@ const Member6 = () => {
                                     rel="noopener noreferrer"
                                     className="action-btn primary"
                                 >
-                                    Read on NASA →
+                                    Read Full Article on Source →
                                 </a>
                             </div>
                         </div>

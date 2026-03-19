@@ -89,19 +89,19 @@ const NewsFeedSection = () => {
 
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="mb-12 text-center md:text-left">
-                    <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">📰 Galactic News Feed</h2>
+                    <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">📰 Cosmic News Hub</h2>
                     <p className="text-gray-400 max-w-2xl text-lg">
-                        Stay updated on the latest cosmic discoveries, rocket launches, and space weather events directly from NASA and other major astronomy sources.
+                        Your gateway to the latest cosmic discoveries, rocket launches, and space weather events — curated from NASA and leading astronomy sources worldwide.
                     </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {newsData.map(item => (
-                        <article 
-                            key={item.id} 
+                        <article
+                            key={item.id}
                             className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-3xl overflow-hidden hover:scale-[1.02] transition-all duration-300 hover:shadow-[0_0_20px_rgba(168,85,247,0.3)] flex flex-col group"
                         >
-                            <div 
+                            <div
                                 className="h-48 w-full relative overflow-hidden cursor-pointer"
                                 onClick={() => setSelectedArticle(item)}
                             >
@@ -117,7 +117,7 @@ const NewsFeedSection = () => {
                                     <span className="text-purple-400/80 text-xs">⏱ {item.readingTime} min</span>
                                 </div>
 
-                                <h3 
+                                <h3
                                     className="text-xl font-bold text-white tracking-tight mb-3 line-clamp-2 cursor-pointer hover:text-purple-400 transition-colors"
                                     onClick={() => setSelectedArticle(item)}
                                 >
@@ -129,7 +129,7 @@ const NewsFeedSection = () => {
                                 </p>
 
                                 <div className="flex justify-between items-center mt-auto pt-4 border-t border-white/10">
-                                    <button 
+                                    <button
                                         className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-6 py-2 rounded-full text-sm font-bold transition-all duration-300 shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_25px_rgba(168,85,247,0.5)] transform hover:-translate-y-0.5"
                                         onClick={() => setSelectedArticle(item)}
                                     >
