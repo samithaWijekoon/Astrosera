@@ -143,6 +143,19 @@ const Chat = () => {
 
   const showWelcome = messages.length === 0;
 
+  const renderMessageText = (text) => {
+    if (!text) return { __html: '' };
+    // Simple Markdown-like to HTML converter
+    let html = text
+      .replace(/^### (.*)/gm, '<h3 style="margin-top: 1rem; margin-bottom: 0.5rem; color: #4dc9ff;">$1</h3>') // Headers
+      .replace(/<span style="color: (.*?)">### (.*?)<\/span>/g, '<h3 style="margin-top: 1rem; margin-bottom: 0.5rem; color: $1;">$2</h3>') // Colorized Headers
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold
+      .replace(/^- (.*)/gm, '<li style="margin-left: 1.5rem; margin-bottom: 0.25rem;">$1</li>') // Lists
+      .replace(/\n/g, '<br />'); // Newlines
+
+    return { __html: html };
+  };
+
   return (
     <div className="chat-root">
       <StarCanvas />
@@ -184,7 +197,10 @@ const Chat = () => {
                 <div key={msg.id} className={`msg-row ${msg.sender}`}>
                   {msg.sender === 'bot' && <div className="bot-av">A</div>}
                   <div className="msg-body">
-                    <div className={`msg-text ${msg.isError ? 'error' : ''}`}>{msg.text}</div>
+                    <div 
+                      className={`msg-text ${msg.isError ? 'error' : ''}`}
+                      dangerouslySetInnerHTML={renderMessageText(msg.text)}
+                    />
                     {msg.citations && msg.citations.length > 0 && (
                       <div className="msg-sources">
                         <div className="sources-label">Sources</div>
