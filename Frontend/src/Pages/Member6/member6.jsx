@@ -290,7 +290,7 @@ const Member6 = () => {
                         <div className="apod-image-wrapper">
                             <img src={displayApod.img} alt={displayApod.title} className="apod-image" />
                             <div className="apod-image-overlay">
-                                <span className="badge">🌟 Astronomy Picture of the Day</span>
+                                <span className="badge">🌟 Daily Astronomy Spotlight</span>
                             </div>
                         </div>
                         <div className="apod-content">
@@ -354,6 +354,7 @@ const Member6 = () => {
                                 <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
                                     <option value="date">Latest First</option>
                                     <option value="relevance">Most Relevant</option>
+                                    <option value="trending">Trending</option>
                                 </select>
                             </div>
                         </div>
