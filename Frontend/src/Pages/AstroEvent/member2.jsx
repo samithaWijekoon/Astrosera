@@ -44,15 +44,17 @@ function PlanetCard({ planet, isSelected, onClick }) {
       className={`relative flex flex-col items-center p-4 rounded-xl border transition-all duration-300 cursor-pointer w-full bg-black/60 backdrop-blur-lg border-white/10 hover:border-purple-500/50 ${
         isSelected ? 'shadow-[0_0_15px_rgba(168,85,247,0.3)] bg-purple-900/30 border-purple-500/80' : ''
       }`}>
-      <div className="rounded-full mb-3 flex-shrink-0" style={{
-        width: Math.max(planet.size, 32) + 'px', height: Math.max(planet.size, 32) + 'px',
-        background: `radial-gradient(circle at 35% 35%, ${planet.color}cc, ${planet.color}44)`,
-        boxShadow: isSelected ? `0 0 20px ${planet.glow}66` : `0 0 8px ${planet.glow}33`,
-        border: `1px solid ${planet.color}44`,
-      }} />
-      {planet.id === 'saturn' && (
-        <div className="absolute" style={{ top: '22px', left: '50%', transform: 'translateX(-50%)', width: '90px', height: '12px', border: `2px solid #e4d19155`, borderRadius: '50%', pointerEvents: 'none' }} />
-      )}
+      <div className="relative flex items-center justify-center mb-3">
+        <div className="rounded-full flex-shrink-0" style={{
+          width: Math.max(planet.size, 32) + 'px', height: Math.max(planet.size, 32) + 'px',
+          background: `radial-gradient(circle at 35% 35%, ${planet.color}cc, ${planet.color}44)`,
+          boxShadow: isSelected ? `0 0 20px ${planet.glow}66` : `0 0 8px ${planet.glow}33`,
+          border: `1px solid ${planet.color}44`,
+        }} />
+        {planet.id === 'saturn' && (
+          <div className="absolute w-[140%] h-[35%] rounded-full border-[2px] border-[#e4d191aa] pointer-events-none" style={{ transform: 'rotate(-20deg)' }} />
+        )}
+      </div>
       <p className="text-white text-sm font-semibold uppercase tracking-wider">{planet.name}</p>
       <p className="text-gray-500 text-sm mt-0.5">{fmtNum(data.distFromSun)} M km</p>
     </button>
@@ -82,12 +84,17 @@ function PlanetDetail({ planet }) {
   return (
     <div className="bg-black/60 backdrop-blur-lg border border-white/10 hover:border-purple-500/50 transition-colors duration-500 rounded-xl p-6 mt-6 shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
       <div className="flex items-center gap-4 mb-6">
-        <div className="rounded-full flex-shrink-0" style={{
-          width: 52, height: 52,
-          background: `radial-gradient(circle at 35% 35%, ${planet.color}cc, ${planet.color}44)`,
-          boxShadow: `0 0 24px ${planet.glow}55`,
-          border: `1px solid ${planet.color}44`,
-        }} />
+        <div className="relative flex items-center justify-center">
+          <div className="rounded-full flex-shrink-0" style={{
+            width: 52, height: 52,
+            background: `radial-gradient(circle at 35% 35%, ${planet.color}cc, ${planet.color}44)`,
+            boxShadow: `0 0 24px ${planet.glow}55`,
+            border: `1px solid ${planet.color}44`,
+          }} />
+          {planet.id === 'saturn' && (
+            <div className="absolute w-[140%] h-[35%] rounded-full border-[3px] border-[#e4d191aa] pointer-events-none" style={{ transform: 'rotate(-20deg)' }} />
+          )}
+        </div>
         <div>
           <h2 className="text-white text-2xl font-bold">{planet.name}</h2>
           <p className="text-gray-500 text-sm uppercase tracking-widest">Solar System Planet</p>
@@ -251,11 +258,11 @@ export default function Member2() {
   }), [asteroids]);
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-[#020617] via-[#0f172a] to-[#020617] font-outfit overflow-hidden [text-shadow:_0_0_10px_rgba(255,255,255,0.3)]">
+    <div className="relative min-h-screen bg-[#010308] font-outfit overflow-hidden">
       
       {/* Stars Background Layer */}
       <div 
-        className="absolute inset-0 pointer-events-none opacity-40 z-0" 
+        className="absolute inset-0 pointer-events-none opacity-20 z-0" 
         style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='15' cy='15' r='1' fill='%23ffffff'/%3E%3Ccircle cx='75' cy='45' r='1.5' fill='%23ffffff'/%3E%3Ccircle cx='45' cy='85' r='0.8' fill='%23ffffff'/%3E%3Ccircle cx='85' cy='10' r='1' fill='%23ffffff'/%3E%3C/svg%3E\")" }}
       ></div>
 
@@ -264,7 +271,7 @@ export default function Member2() {
         {particles.map(p => (
           <div
             key={p.id}
-            className="absolute bg-white rounded-full opacity-60 transition-transform duration-1000 ease-out shadow-[0_0_8px_rgba(255,255,255,0.8)]"
+            className="absolute bg-white rounded-full opacity-25 transition-transform duration-1000 ease-out"
             style={{
               left: p.left,
               top: p.top,
@@ -308,9 +315,9 @@ export default function Member2() {
       <div className="shooting-star" style={{ top: '20%', right: '-20%', animationDelay: '5s', animationDuration: '3s' }}></div>
       <div className="shooting-star" style={{ top: '-20%', right: '40%', animationDelay: '8s', animationDuration: '5s' }}></div>
 
-      {/* Nebula Orbs */}
-      <div className="absolute top-[10%] left-[10%] w-[30rem] h-[30rem] bg-purple-600/20 rounded-full blur-[100px] pointer-events-none z-0 animate-pulse"></div>
-      <div className="absolute top-[50%] right-[5%] w-[40rem] h-[40rem] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none z-0 animate-pulse" style={{ animationDelay: '2s', animationDuration: '4s' }}></div>
+      {/* Nebula Orbs – subtler to keep text readable */}
+      <div className="absolute top-[10%] left-[10%] w-[30rem] h-[30rem] bg-purple-700/10 rounded-full blur-[120px] pointer-events-none z-0 animate-pulse"></div>
+      <div className="absolute top-[50%] right-[5%] w-[40rem] h-[40rem] bg-blue-700/10 rounded-full blur-[140px] pointer-events-none z-0 animate-pulse" style={{ animationDelay: '2s', animationDuration: '4s' }}></div>
 
       <div className="relative z-10 pt-24 pb-16 px-6 md:px-12">
         {/* Page Header */}
@@ -318,7 +325,7 @@ export default function Member2() {
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
             Space <span className="text-purple-400">Explorer</span>
           </h1>
-          <p className="text-gray-400 text-base">Near-Earth objects & Solar System planets · Powered by NASA</p>
+          <p className="text-gray-300 text-base">Near-Earth objects & Solar System planets · Powered by NASA</p>
         </div>
 
       {/* Tabs */}
@@ -384,9 +391,9 @@ export default function Member2() {
             ].map(s => (
               <div key={s.label} className="bg-black/60 backdrop-blur-lg border border-white/10 hover:border-purple-500/50 transition-all duration-300 rounded-xl p-4 relative overflow-hidden group shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
                 <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-600 to-transparent opacity-50 group-hover:opacity-100 transition-opacity" />
-                <p className="text-gray-500 text-sm uppercase tracking-widest mb-2">{s.label}</p>
+                <p className="text-gray-400 text-sm uppercase tracking-widest mb-2">{s.label}</p>
                 <p className={`text-3xl font-bold ${s.color}`}>{s.value}</p>
-                <p className="text-gray-600 text-sm mt-1">{s.sub}</p>
+                <p className="text-gray-500 text-sm mt-1">{s.sub}</p>
               </div>
             ))}
           </div>
@@ -421,7 +428,7 @@ export default function Member2() {
 
           {/* Table + Detail */}
           <div className={`max-w-7xl mx-auto grid gap-6 ${selected ? 'grid-cols-1 lg:grid-cols-[1fr_360px]' : 'grid-cols-1'}`}>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto bg-black/50 backdrop-blur-md border border-white/8 rounded-xl p-4">
               {loading ? (
                 <div className="flex flex-col items-center justify-center py-24 gap-4 text-gray-500">
                   <div className="w-10 h-10 border-2 border-gray-700 border-t-purple-500 rounded-full animate-spin" />
