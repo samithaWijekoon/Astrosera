@@ -78,6 +78,13 @@ body {
   margin: 0;
 }
 
+.header-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  margin-right: 0.25rem;
+}
+
 .clear-chat-btn {
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -97,6 +104,7 @@ body {
 /* Chat Area */
 .chat-window {
   flex: 1;
+  min-height: 0;
   position: relative;
   z-index: 5;
   overflow-y: auto;
@@ -121,7 +129,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-top: 10vh;
+  margin-top: 5vh;
   width: 100%;
 }
 
@@ -334,7 +342,9 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 0 1rem 1rem;
+  margin: 0 1rem 1.5rem;
+  flex-shrink: 0;
+  width: 100%;
 }
 
 .input-bar {

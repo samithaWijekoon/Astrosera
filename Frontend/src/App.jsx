@@ -1,5 +1,5 @@
 import React from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import Navbar from './component/Navbar'
 import Footer from './component/Footer'
 import Home from './Pages/Home'
@@ -16,6 +16,9 @@ import Member3 from './Pages/Member03/member3'
 import VerifyEmail from './Pages/VerifyEmail'
 
 const App = () => {
+  const location = useLocation();
+  const hideFooter = location.pathname === '/chat';
+
   return (
     <>
       <Navbar />
@@ -41,7 +44,7 @@ const App = () => {
         {/* Auth Verification */}
         <Route path="/verify-email" element={<VerifyEmail />} />
       </Routes>
-      <Footer />
+      {!hideFooter && <Footer />}
     </>
   )
 }

@@ -270,9 +270,12 @@ const chat = () => {
 
       <header className="chat-header">
         <div className="header-left">
+          <img src="/logo.png" alt="Astrosera Logo" className="header-logo" />
           <div className="status-dot"></div>
-          <h1 className="app-title">AstraBot</h1>
-          <span className="app-subtitle">astronomy AI</span>
+          <div>
+            <h1 className="app-title">Astrosera</h1>
+            <span className="app-subtitle">Online • Astronomy AI</span>
+          </div>
         </div>
         <button onClick={clearChat} className="clear-chat-btn">
           Clear chat
@@ -288,7 +291,7 @@ const chat = () => {
               </svg>
             </div>
             <h2 className="welcome-title">Ask me about space</h2>
-            <p className="welcome-subtitle">AstraBot is ready to explore the cosmos with you.</p>
+            <p className="welcome-subtitle">Astrosera is ready to explore the cosmos with you.</p>
             <div className="quick-prompts">
               {['Universe', 'Black holes', 'Mars', 'Stars', 'Dark matter'].map(p => (
                 <button key={p} className="prompt-chip" onClick={() => handleQuickPrompt(p)}>{p} ✨</button>
@@ -317,21 +320,9 @@ const chat = () => {
               </div>
             ))}
 
-            {isTyping && (
-              <div className="message-row bot">
-                <div className="bot-avatar-wrapper">
-                  <div className="bot-avatar">A</div>
-                </div>
-                <div className="message-content">
-                  <div className="typing-indicator">
-                    <span></span><span></span><span></span>
-                  </div>
-                </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} style={{ height: '1px' }} />
           </div>
         )}
+        <div ref={messagesEndRef} style={{ height: '1px' }} />
       </div>
 
       <div className="input-container-wrapper">
@@ -362,7 +353,7 @@ const chat = () => {
           </button>
         </div>
         <div className="input-hint">
-          AstraBot can make mistakes. Verify important information.
+          Astrosera can make mistakes. Verify important information.
         </div>
       </div>
     </div>
