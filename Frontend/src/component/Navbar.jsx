@@ -10,12 +10,55 @@ const Navbar = () => {
     const { user, logout } = useContext(AuthContext);
     const mobileRef = useRef(null);
 
+    // PWA States
+    const [isOffline, setIsOffline] = useState(!navigator.onLine);
+    const [isInstallable, setIsInstallable] = useState(false);
+    const [deferredPrompt, setDeferredPrompt] = useState(null);
+
     /* Shrink nav on scroll (Apple-style) */
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY > 10);
         window.addEventListener('scroll', onScroll, { passive: true });
         return () => window.removeEventListener('scroll', onScroll);
     }, []);
+
+    /* Handle PWA Offline and Install Events */
+    useEffect(() => {
+        const handleOnline = () => setIsOffline(false);
+        const handleOffline = () => setIsOffline(true);
+        window.addEventListener('online', handleOnline);
+        window.addEventListener('offline', handleOffline);
+
+        const handleBeforeInstallPrompt = (e) => {
+            e.preventDefault();
+            setDeferredPrompt(e);
+            setIsInstallable(true);
+        };
+        window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+        const handleAppInstalled = () => {
+            setIsInstallable(false);
+            setDeferredPrompt(null);
+        };
+        window.addEventListener('appinstalled', handleAppInstalled);
+
+        return () => {
+            window.removeEventListener('online', handleOnline);
+            window.removeEventListener('offline', handleOffline);
+            window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+            window.removeEventListener('appinstalled', handleAppInstalled);
+        };
+    }, []);
+
+    const handleInstallClick = async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+            setIsInstallable(false);
+        }
+        setDeferredPrompt(null);
+    };
 
     /* Close mobile menu on route change */
     useEffect(() => { setIsOpen(false); }, [location.pathname]);
@@ -94,6 +137,29 @@ const Navbar = () => {
 
                     {/* ── Right side ────────────────────────────── */}
                     <div className="flex items-center gap-3">
+                        
+                        {/* PWA State Indicators */}
+                        {isOffline && (
+                            <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-red-500/10 border border-red-500/20 mr-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+                                <span className="text-[11px] font-medium text-red-400">Offline</span>
+                            </div>
+                        )}
+                        
+                        {isInstallable && (
+                            <button
+                                onClick={handleInstallClick}
+                                className="hidden md:flex items-center px-3 md:px-4 py-1.5 rounded-xl text-[12px] font-bold text-white transition-all duration-300 mr-2 md:mr-1 hover:scale-105"
+                                style={{
+                                    background: 'linear-gradient(135deg, rgba(124,58,237,0.8), rgba(79,70,229,0.8))',
+                                    boxShadow: '0 0 12px rgba(124,58,237,0.4)',
+                                    border: '1px solid rgba(255,255,255,0.1)'
+                                }}
+                            >
+                                Install App
+                            </button>
+                        )}
+
                         {user ? (
                             <div className="hidden md:flex items-center gap-3">
                                 {/* Avatar + username */}
