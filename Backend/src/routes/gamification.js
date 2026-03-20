@@ -242,9 +242,9 @@ router.post('/record-interaction', async (req, res) => {
         if (isQuiz && quizScore) {
             await User.findByIdAndUpdate(userId, {
                 $inc: { totalScore: quizScore },
-                $set: { 
+                $set: {
                     streakCount: stats.currentStreak,
-                    lastQuizDate: today 
+                    lastQuizDate: today
                 },
                 ...(isNewDay ? { $push: { activeDates: today } } : {}),
             });

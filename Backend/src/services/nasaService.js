@@ -1,12 +1,16 @@
-require('dotenv').config();
+// dotenv is loaded by server.js — do not call require('dotenv').config() here
 const axios = require('axios');
 const fs    = require('fs');
 const path  = require('path');
 
 const BASE = 'https://api.nasa.gov/neo/rest/v1';
-const KEY  = process.env.NASA_API_KEY || 'DEMO_KEY';
-
-console.log(`[NASA] API key loaded: ${KEY === 'DEMO_KEY' ? '⚠ DEMO_KEY (rate limited!)' : '✅ Real key: ' + KEY.substring(0, 8) + '...'}`);
+// Read key lazily so dotenv in server.js has time to load it
+const getKey = () => process.env.NASA_API_KEY || 'DEMO_KEY';
+const logKey = () => {
+  const k = getKey();
+  console.log(`[NASA] API key loaded: ${k === 'DEMO_KEY' ? '⚠ DEMO_KEY (rate limited!)' : '✅ Real key: ' + k.substring(0, 8) + '...'}`);
+};
+setTimeout(logKey, 100); // log after dotenv finishes
 
 // ── Disk cache (survives backend restarts) ─────────────────────────────────
 const CACHE_DIR  = path.join(__dirname, '..', 'data');
@@ -67,7 +71,7 @@ async function getFeed(startDate, endDate) {
   const key   = `feed_${start}_${end}`;
   const hit   = getCached(key);
   if (hit) return hit;
-  const data  = await fetchWithRetry(`${BASE}/feed`, { start_date: start, end_date: end, api_key: KEY });
+  const data  = await fetchWithRetry(`${BASE}/feed`, { start_date: start, end_date: end, api_key: getKey() });
   setCache(key, data);
   return data;
 }
@@ -76,7 +80,7 @@ async function getAsteroidById(id) {
   const key  = `neo_${id}`;
   const hit  = getCached(key);
   if (hit) return hit;
-  const data = await fetchWithRetry(`${BASE}/neo/${id}`, { api_key: KEY });
+  const data = await fetchWithRetry(`${BASE}/neo/${id}`, { api_key: getKey() });
   setCache(key, data);
   return data;
 }
@@ -85,7 +89,7 @@ async function browse(page = 0, size = 20) {
   const key  = `browse_${page}_${size}`;
   const hit  = getCached(key);
   if (hit) return hit;
-  const data = await fetchWithRetry(`${BASE}/neo/browse`, { page, size, api_key: KEY });
+  const data = await fetchWithRetry(`${BASE}/neo/browse`, { page, size, api_key: getKey() });
   setCache(key, data);
   return data;
 }

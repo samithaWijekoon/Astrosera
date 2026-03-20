@@ -26,7 +26,6 @@ const Hero = () => {
             />
             {/* Overlay for better readability */}
             <div className="absolute top-0 left-0 w-full h-full bg-black/60 backdrop-blur-sm z-5"></div>
-
             {/* Navigation removed - moved to Navbar.jsx */}
 
             {/* Hero Content */}
