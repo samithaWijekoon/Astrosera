@@ -305,7 +305,9 @@ const chat = () => {
               <div key={msg.id} className={`message-row ${msg.sender}`}>
                 {msg.sender === 'bot' && (
                   <div className="bot-avatar-wrapper">
-                    <div className="bot-avatar">A</div>
+                    <div className="bot-avatar">
+                      <img src="/images/bot-avatar.png" alt="Astrosera" className="bot-avatar-img" />
+                    </div>
                   </div>
                 )}
                 <div className={`message-content ${msg.isError ? 'error' : ''}`}>
@@ -324,7 +326,9 @@ const chat = () => {
             {isTyping && (
               <div className="message-row bot">
                 <div className="bot-avatar-wrapper">
-                  <div className="bot-avatar">A</div>
+                  <div className="bot-avatar">
+                    <img src="/images/bot-avatar.png" alt="Astrosera" className="bot-avatar-img" />
+                  </div>
                 </div>
                 <div className="message-content">
                   <div className="message-box typing-box">
