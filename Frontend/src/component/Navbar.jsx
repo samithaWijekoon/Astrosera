@@ -4,8 +4,8 @@ import { HiMenu, HiX } from 'react-icons/hi';
 import AuthContext from '../context/AuthContext';
 
 const Navbar = () => {
-    const [isOpen,    setIsOpen]    = useState(false);
-    const [scrolled,  setScrolled]  = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
     const location = useLocation();
     const { user, logout } = useContext(AuthContext);
     const mobileRef = useRef(null);
@@ -21,12 +21,12 @@ const Navbar = () => {
     useEffect(() => { setIsOpen(false); }, [location.pathname]);
 
     const navLinks = [
-        { name: 'Home',         path: '/'            },
-        { name: 'Chat',         path: '/chat'         },
-        { name: 'Events',       path: '/events'       },
-        { name: 'Quiz',         path: '/quiz'         },
+        { name: 'Home', path: '/' },
+        { name: 'Chat', path: '/chat' },
+        { name: 'Events', path: '/events' },
+        { name: 'Quiz', path: '/quiz' },
         { name: 'Achievements', path: '/achievements' },
-        { name: 'News',         path: '/news'         },
+        { name: 'News', path: '/news' },
     ];
     if (user?.role === 'admin') navLinks.push({ name: 'Analytics', path: '/admin' });
 
@@ -41,8 +41,8 @@ const Navbar = () => {
                     background: scrolled
                         ? 'rgba(5, 5, 15, 0.78)'
                         : 'rgba(5, 5, 15, 0.60)',
-                    backdropFilter:         'saturate(180%) blur(28px)',
-                    WebkitBackdropFilter:   'saturate(180%) blur(28px)',
+                    backdropFilter: 'saturate(180%) blur(28px)',
+                    WebkitBackdropFilter: 'saturate(180%) blur(28px)',
                     borderBottom: '1px solid rgba(255,255,255,0.09)',
                     boxShadow: scrolled
                         ? '0 1px 0 rgba(255,255,255,0.05) inset, 0 8px 32px rgba(0,0,0,0.4)'
@@ -53,7 +53,7 @@ const Navbar = () => {
 
                     {/* ── Logo ──────────────────────────────────── */}
                     <Link to="/" className="flex items-center gap-2.5 shrink-0 focus:outline-none group">
-                        <img src="/logo.png" alt="Astrosera" className="h-8 w-auto transition-transform duration-300 group-hover:scale-105" />
+                        <img src="/logo.png" alt="Astrosera" className="h-8 md:h-10 w-auto transition-transform duration-300 group-hover:scale-105" />
                     </Link>
 
                     {/* ── Desktop links (centred) ────────────────── */}
@@ -73,12 +73,12 @@ const Navbar = () => {
                                 }}
                                 onMouseEnter={e => {
                                     if (!isActive(link.path))
-                                        e.currentTarget.style.color    = '#fff';
-                                        e.currentTarget.style.background = 'rgba(255,255,255,0.07)';
+                                        e.currentTarget.style.color = '#fff';
+                                    e.currentTarget.style.background = 'rgba(255,255,255,0.07)';
                                 }}
                                 onMouseLeave={e => {
                                     if (!isActive(link.path)) {
-                                        e.currentTarget.style.color     = 'rgba(255,255,255,0.65)';
+                                        e.currentTarget.style.color = 'rgba(255,255,255,0.65)';
                                         e.currentTarget.style.background = 'transparent';
                                     }
                                 }}
@@ -99,12 +99,12 @@ const Navbar = () => {
                                 {/* Avatar + username */}
                                 <Link to="/profile"
                                     className="flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all duration-200 focus:outline-none"
-                                    style={{ background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.09)' }}
+                                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)' }}
                                     onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
                                     onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
                                 >
                                     <span className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0"
-                                        style={{ background:'linear-gradient(135deg, #7c3aed, #4f46e5)' }}>
+                                        style={{ background: 'linear-gradient(135deg, #7c3aed, #4f46e5)' }}>
                                         {user.avatarInitials || user.username?.[0]?.toUpperCase()}
                                     </span>
                                     <span className="text-[13px] font-medium text-white/80">{user.username}</span>
@@ -113,9 +113,9 @@ const Navbar = () => {
                                 {/* Logout */}
                                 <button onClick={logout}
                                     className="px-4 py-1.5 rounded-xl text-[13px] font-semibold text-white/80 transition-all duration-200 focus:outline-none active:scale-95"
-                                    style={{ background:'rgba(239,68,68,0.12)', border:'1px solid rgba(239,68,68,0.2)' }}
-                                    onMouseEnter={e => { e.currentTarget.style.background='rgba(239,68,68,0.22)'; e.currentTarget.style.color='#fff'; }}
-                                    onMouseLeave={e => { e.currentTarget.style.background='rgba(239,68,68,0.12)'; e.currentTarget.style.color='rgba(255,255,255,0.8)'; }}
+                                    style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.2)' }}
+                                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.22)'; e.currentTarget.style.color = '#fff'; }}
+                                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.12)'; e.currentTarget.style.color = 'rgba(255,255,255,0.8)'; }}
                                 >
                                     Sign Out
                                 </button>
@@ -128,9 +128,9 @@ const Navbar = () => {
                                 </Link>
                                 <Link to="/signup"
                                     className="px-4 py-1.5 rounded-xl text-[13px] font-semibold text-white transition-all duration-200 active:scale-95 focus:outline-none"
-                                    style={{ background:'linear-gradient(135deg, #7c3aed, #4f46e5)', boxShadow:'0 0 16px rgba(124,58,237,0.35)' }}
-                                    onMouseEnter={e => e.currentTarget.style.boxShadow='0 0 24px rgba(124,58,237,0.55)'}
-                                    onMouseLeave={e => e.currentTarget.style.boxShadow='0 0 16px rgba(124,58,237,0.35)'}
+                                    style={{ background: 'linear-gradient(135deg, #7c3aed, #4f46e5)', boxShadow: '0 0 16px rgba(124,58,237,0.35)' }}
+                                    onMouseEnter={e => e.currentTarget.style.boxShadow = '0 0 24px rgba(124,58,237,0.55)'}
+                                    onMouseLeave={e => e.currentTarget.style.boxShadow = '0 0 16px rgba(124,58,237,0.35)'}
                                 >
                                     Get Started
                                 </Link>
@@ -141,11 +141,11 @@ const Navbar = () => {
                         <button
                             onClick={() => setIsOpen(o => !o)}
                             className="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 active:scale-90 focus:outline-none"
-                            style={{ background:'rgba(255,255,255,0.07)', border:'1px solid rgba(255,255,255,0.1)' }}
+                            style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}
                             aria-label="Toggle menu"
                         >
                             {isOpen
-                                ? <HiX  className="text-white text-xl" />
+                                ? <HiX className="text-white text-xl" />
                                 : <HiMenu className="text-white text-xl" />}
                         </button>
                     </div>
@@ -208,16 +208,16 @@ const Navbar = () => {
                                 <>
                                     <Link to="/profile" onClick={() => setIsOpen(false)}
                                         className="flex items-center gap-3 px-4 py-3 rounded-xl"
-                                        style={{ background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.06)' }}>
+                                        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
                                         <span className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white"
-                                            style={{ background:'linear-gradient(135deg, #7c3aed, #4f46e5)' }}>
+                                            style={{ background: 'linear-gradient(135deg, #7c3aed, #4f46e5)' }}>
                                             {user.avatarInitials || user.username?.[0]?.toUpperCase()}
                                         </span>
                                         <span className="text-sm font-medium text-white/80">{user.username}</span>
                                     </Link>
                                     <button onClick={() => { logout(); setIsOpen(false); }}
                                         className="w-full px-4 py-3 rounded-xl text-sm font-semibold text-red-400 transition-all active:scale-[0.98] focus:outline-none text-left"
-                                        style={{ background:'rgba(239,68,68,0.08)', border:'1px solid rgba(239,68,68,0.15)' }}>
+                                        style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.15)' }}>
                                         Sign Out
                                     </button>
                                 </>
@@ -225,12 +225,12 @@ const Navbar = () => {
                                 <>
                                     <Link to="/login" onClick={() => setIsOpen(false)}
                                         className="px-4 py-3 rounded-xl text-sm font-medium text-white/70 text-center"
-                                        style={{ background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.06)' }}>
+                                        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
                                         Sign In
                                     </Link>
                                     <Link to="/signup" onClick={() => setIsOpen(false)}
                                         className="px-4 py-3 rounded-xl text-sm font-bold text-white text-center active:scale-[0.98]"
-                                        style={{ background:'linear-gradient(135deg, #7c3aed, #4f46e5)', boxShadow:'0 0 18px rgba(124,58,237,0.3)' }}>
+                                        style={{ background: 'linear-gradient(135deg, #7c3aed, #4f46e5)', boxShadow: '0 0 18px rgba(124,58,237,0.3)' }}>
                                         Get Started
                                     </Link>
                                 </>
