@@ -27,6 +27,26 @@ const Hero = () => {
             {/* Overlay for better readability */}
             <div className="absolute top-0 left-0 w-full h-full bg-black/60 backdrop-blur-sm z-5"></div>
 
+            {/* Astronaut floating in front of video */}
+            <div className="absolute right-4 md:right-16 bottom-12 md:bottom-16 z-10 pointer-events-none" style={{ animation: 'astronautFloat 6s ease-in-out infinite' }}>
+                <img
+                    src="/images/astronout.png"
+                    alt="Astronaut"
+                    className="w-40 md:w-64 lg:w-80 drop-shadow-[0_0_40px_rgba(168,85,247,0.5)]"
+                />
+            </div>
+
+            {/* Floating animation keyframes */}
+            <style>{`
+                @keyframes astronautFloat {
+                    0%   { transform: translateY(0px) rotate(0deg); }
+                    25%  { transform: translateY(-14px) rotate(2deg); }
+                    50%  { transform: translateY(-8px) rotate(0deg); }
+                    75%  { transform: translateY(-18px) rotate(-2deg); }
+                    100% { transform: translateY(0px) rotate(0deg); }
+                }
+            `}</style>
+
             {/* Navigation removed - moved to Navbar.jsx */}
 
             {/* Hero Content */}
