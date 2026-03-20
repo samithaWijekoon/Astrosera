@@ -16,7 +16,9 @@ const renderFormattedText = (text) => {
         let headerLevel = null;
         let lineContent = line;
 
-        if (line.startsWith('### ')) {
+        if (line.startsWith('#### ')) {
+          isHeader = true; headerLevel = 4; lineContent = line.substring(5);
+        } else if (line.startsWith('### ')) {
           isHeader = true; headerLevel = 3; lineContent = line.substring(4);
         } else if (line.startsWith('## ')) {
           isHeader = true; headerLevel = 2; lineContent = line.substring(3);
@@ -53,7 +55,6 @@ const renderFormattedText = (text) => {
         if (isList) {
           return (
             <div key={blockIndex} className="markdown-list-item">
-              <span className="list-bullet">•</span>
               <span>{renderedInline}</span>
             </div>
           );
@@ -320,6 +321,22 @@ const chat = () => {
               </div>
             ))}
 
+            {isTyping && (
+              <div className="message-row bot">
+                <div className="bot-avatar-wrapper">
+                  <div className="bot-avatar">A</div>
+                </div>
+                <div className="message-content">
+                  <div className="message-box typing-box">
+                    <div className="typing-indicator">
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
         <div ref={messagesEndRef} style={{ height: '1px' }} />
