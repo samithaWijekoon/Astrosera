@@ -34,6 +34,32 @@ function currentAngle(planetId) {
   return (deg * Math.PI) / 180;
 }
 
+// Draw Saturn's iconic ring system on canvas
+function drawSaturnRings(ctx, px, py, dotSize, alpha = 1) {
+  const TILT = Math.PI / 6; // 30-degree tilt for visual clarity
+  const ringW = dotSize * 3.0;
+  const ringH = dotSize * 0.8;
+
+  // Outer ring (slightly translucent)
+  ctx.save();
+  ctx.globalAlpha = 0.55 * alpha;
+  ctx.beginPath();
+  ctx.ellipse(px, py, ringW * 1.2, ringH * 1.2, TILT, 0, Math.PI * 2);
+  ctx.strokeStyle = '#c8b060';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Inner bright ring
+  ctx.globalAlpha = 0.80 * alpha;
+  ctx.beginPath();
+  ctx.ellipse(px, py, ringW, ringH, TILT, 0, Math.PI * 2);
+  ctx.strokeStyle = '#e4d191';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  ctx.restore();
+}
+
 export default function PlanetOrbitalViz({ planet }) {
   const canvasRef = useRef();
 
@@ -46,32 +72,45 @@ export default function PlanetOrbitalViz({ planet }) {
 
     ctx.clearRect(0, 0, W, H);
 
+    // Dark background with subtle radial glow at center
+    ctx.fillStyle = 'rgba(2,6,23,0.9)';
+    ctx.fillRect(0, 0, W, H);
+    const bgGlow = ctx.createRadialGradient(cx, cy, 0, cx, cy, W * 0.45);
+    bgGlow.addColorStop(0, 'rgba(80,40,180,0.08)');
+    bgGlow.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = bgGlow;
+    ctx.fillRect(0, 0, W, H);
+
     const o = ORBITAL[planet.id];
     if (!o) return;
 
-    // Figure out which planets to show (inner or outer system)
     const isOuter = ['jupiter','saturn','uranus','neptune'].includes(planet.id);
     const planetsToShow = isOuter
       ? ['jupiter','saturn','uranus','neptune']
       : ['mercury','venus','earth','mars'];
 
-    // Scale: map the largest orbit radius to fit canvas
+    // Scale with more breathing room for outer system
     const maxR = Math.max(...planetsToShow.map(p => ORBITAL[p].radius));
-    const padding = 28;
+    const padding = isOuter ? 40 : 32;
     const scale = (Math.min(W, H) / 2 - padding) / maxR;
 
-    // Sun
-    const sunSize = isOuter ? 5 : 8;
-    const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, sunSize);
-    gradient.addColorStop(0, '#fff9c4');
-    gradient.addColorStop(0.4, '#f59e0b');
-    gradient.addColorStop(1, '#f59e0b00');
+    // Sun glow
+    const sunSize = isOuter ? 6 : 10;
+    const sunGlow = ctx.createRadialGradient(cx, cy, 0, cx, cy, sunSize * 3);
+    sunGlow.addColorStop(0, '#fffde7');
+    sunGlow.addColorStop(0.3, '#f59e0b');
+    sunGlow.addColorStop(1, 'rgba(245,158,11,0)');
+    ctx.beginPath();
+    ctx.arc(cx, cy, sunSize * 3, 0, Math.PI * 2);
+    ctx.fillStyle = sunGlow;
+    ctx.fill();
     ctx.beginPath();
     ctx.arc(cx, cy, sunSize, 0, Math.PI * 2);
-    ctx.fillStyle = gradient;
+    ctx.fillStyle = '#fff9c4';
     ctx.fill();
 
-    // Draw all planet orbits + dots
+    // Collect planet positions for drawing
+    const planetPositions = [];
     planetsToShow.forEach(pid => {
       const po = ORBITAL[pid];
       const orbitR = po.radius * scale;
@@ -79,53 +118,92 @@ export default function PlanetOrbitalViz({ planet }) {
       const px = cx + orbitR * Math.cos(angle);
       const py = cy + orbitR * Math.sin(angle);
       const isSelected = pid === planet.id;
+      planetPositions.push({ pid, po, orbitR, angle, px, py, isSelected });
+    });
 
-      // Orbit ring
+    // Draw orbit rings first
+    planetPositions.forEach(({ pid, po, orbitR, isSelected }) => {
       ctx.beginPath();
       ctx.arc(cx, cy, orbitR, 0, Math.PI * 2);
-      ctx.strokeStyle = isSelected ? po.color + '55' : '#ffffff11';
+      ctx.strokeStyle = isSelected ? po.color + '44' : '#ffffff18';
       ctx.lineWidth = isSelected ? 1.5 : 0.8;
-      ctx.setLineDash(isSelected ? [] : [2, 4]);
+      ctx.setLineDash(isSelected ? [] : [3, 5]);
       ctx.stroke();
       ctx.setLineDash([]);
+    });
 
-      // Planet dot
-      const dotSize = isSelected ? (isOuter ? 7 : 6) : (isOuter ? 4 : 3);
+    // Draw planets: Saturn rings (back half) first, then planet body, then rings (front half)
+    planetPositions.forEach(({ pid, po, px, py, isSelected }) => {
+      const dotSize = isSelected
+        ? (isOuter ? 9 : 7)
+        : (isOuter ? 5 : 4);
+
+      if (pid === 'saturn') {
+        // Draw back half of rings (behind planet body)
+        ctx.save();
+        ctx.beginPath();
+        ctx.ellipse(px, py, dotSize * 3.0, dotSize * 0.9, Math.PI / 6, Math.PI, Math.PI * 2);
+        ctx.strokeStyle = '#e4d191cc';
+        ctx.lineWidth = isSelected ? 3 : 2;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.ellipse(px, py, dotSize * 3.6, dotSize * 1.0, Math.PI / 6, Math.PI, Math.PI * 2);
+        ctx.strokeStyle = '#c8b06066';
+        ctx.lineWidth = isSelected ? 2 : 1.5;
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Planet body with glow
+      const grd = ctx.createRadialGradient(px - dotSize * 0.3, py - dotSize * 0.3, 0, px, py, dotSize);
+      grd.addColorStop(0, po.color + 'ff');
+      grd.addColorStop(1, po.color + '88');
       ctx.beginPath();
       ctx.arc(px, py, dotSize, 0, Math.PI * 2);
-      ctx.fillStyle = po.color;
-      ctx.shadowBlur = isSelected ? 14 : 4;
+      ctx.shadowBlur = isSelected ? 18 : 8;
       ctx.shadowColor = po.color;
+      ctx.fillStyle = grd;
       ctx.fill();
       ctx.shadowBlur = 0;
 
-      // Saturn rings
       if (pid === 'saturn') {
+        // Draw front half of rings (in front of planet body)
+        ctx.save();
         ctx.beginPath();
-        ctx.ellipse(px, py, dotSize * 2.2, dotSize * 0.7, angle + 0.4, 0, Math.PI * 2);
-        ctx.strokeStyle = '#e4d19188';
-        ctx.lineWidth = 1.5;
+        ctx.ellipse(px, py, dotSize * 3.0, dotSize * 0.9, Math.PI / 6, 0, Math.PI);
+        ctx.strokeStyle = '#e4d191cc';
+        ctx.lineWidth = isSelected ? 3 : 2;
         ctx.stroke();
+        ctx.beginPath();
+        ctx.ellipse(px, py, dotSize * 3.6, dotSize * 1.0, Math.PI / 6, 0, Math.PI);
+        ctx.strokeStyle = '#c8b06066';
+        ctx.lineWidth = isSelected ? 2 : 1.5;
+        ctx.stroke();
+        ctx.restore();
       }
 
       // Label for selected planet
       if (isSelected) {
         ctx.fillStyle = po.color;
-        ctx.font = `bold 9px monospace`;
+        ctx.font = `bold ${isOuter ? 11 : 10}px monospace`;
         ctx.textAlign = 'center';
-        ctx.fillText(planet.name.toUpperCase(), px, py - dotSize - 6);
+        const labelY = py - dotSize - (pid === 'saturn' ? dotSize * 1.2 : 0) - 8;
+        ctx.fillText(planet.name.toUpperCase(), px, labelY);
       }
     });
 
   }, [planet]);
 
+  const isOuter = ['jupiter','saturn','uranus','neptune'].includes(planet.id);
+
   return (
-    <div className="my-4">
-      <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">Current Orbital Position</p>
-      <canvas ref={canvasRef} width={220} height={220} className="block mx-auto" />
-      <p className="text-gray-600 text-xs text-center mt-1">
-        {['jupiter','saturn','uranus','neptune'].includes(planet.id) ? 'Outer Solar System' : 'Inner Solar System'}
-        {' · '}Real-time position
+    <div className="my-4 bg-[#020617]/80 rounded-xl p-3 border border-white/5">
+      <p className="text-sm text-gray-400 uppercase tracking-widest mb-3 text-center">Current Orbital Position</p>
+      <canvas ref={canvasRef} width={320} height={320} className="block mx-auto rounded-lg" />
+      <p className="text-gray-400 text-sm text-center mt-3 font-medium">
+        {isOuter ? 'Outer Solar System' : 'Inner Solar System'}
+        <span className="text-gray-600 mx-2">·</span>
+        <span className="text-purple-400">Real-time position</span>
       </p>
     </div>
   );

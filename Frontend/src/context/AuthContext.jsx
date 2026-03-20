@@ -124,7 +124,10 @@ export const AuthProvider = ({ children }) => {
             const data = await response.json();
 
             if (response.ok) {
-                // Return success so Signup.jsx can navigate, or we can navigate here:
+                // Temporarily store the password so VerifyEmail can auto-login after OTP
+                sessionStorage.setItem('pending_otp_email', email);
+                sessionStorage.setItem('pending_otp_password', password);
+                // Return success so AuthContext can navigate
                 navigate(`/verify-email?email=${encodeURIComponent(email)}`);
                 return { success: true };
             } else {
