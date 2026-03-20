@@ -2,19 +2,12 @@ const express = require('express');
 const router = express.Router();
 const UserStats = require('../models/UserStats');
 const User = require('../models/User');
-const mongoose = require('mongoose');
 
-const getFrontendUri = () => (process.env.FRONTEND_URI || '').replace(/\/$/, '');
-const badgeImage = (file) => {
-    const base = getFrontendUri();
-    // Use root-relative paths (/images/...) by default for better compatibility in dev
-    // but prepend FRONTEND_URI if it's explicitly set and absolute.
-    return base && base.startsWith('http') ? `${base}/images/badges/${file}` : `/images/badges/${file}`;
-};
+const FRONTEND_URI = (process.env.FRONTEND_URI || '').replace(/\/$/, '');
+const badgeImage = (file) => `${FRONTEND_URI || ''}/images/badges/${file}`;
 
 // ─── Static badge blueprints (UI metadata only — earned state comes from DB) ──
-// Wrapped in a function so URLs are generated lazily after dotenv loads
-const getBadgeBlueprints = () => ({
+const BADGE_BLUEPRINTS = {
     combo: [
         { id: 'cb1', image: badgeImage('cb1.png'), name: 'Stable Orbit', desc: 'Keep going, 3-day streak achieved.', color: '#a855f7' },
         { id: 'cb2', image: badgeImage('cb2.png'), name: 'Twin Stars', desc: 'Steady streak, 6 days strong.', color: '#9333ea' },
@@ -51,8 +44,7 @@ const getBadgeBlueprints = () => ({
         { id: 'td9', image: badgeImage('td9.png'), name: 'Supernova Legend', desc: '9 months, shining brighter than ever.', color: '#9333ea' },
         { id: 'td10', image: badgeImage('td10.png'), name: 'Celestial Immortal', desc: '1 year, ultimate streak master.', color: '#c084fc' },
     ],
-});
-
+};
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -81,11 +73,6 @@ function fmt(date) {
 router.get('/dashboard/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
-
-        // Guard against invalid ObjectId to prevent MongoDB CastError
-        if (!mongoose.isValidObjectId(userId)) {
-            return res.status(400).json({ success: false, error: 'Invalid user ID' });
-        }
 
         const [user, stats, topUsers] = await Promise.all([
             User.findById(userId).select('username avatarInitials totalScore activeDates'),
@@ -136,11 +123,10 @@ router.get('/dashboard/:userId', async (req, res) => {
                 : { ...t, earned: false, started: '—', ended: '—' };
         });
 
-        const blueprints = getBadgeBlueprints();
         const categories = [
-            { title: 'Combo Badges', badges: merge(blueprints.combo) },
-            { title: 'Mission Master', badges: merge(blueprints.mission) },
-            { title: 'Total Days', badges: merge(blueprints.totalDays) },
+            { title: 'Combo Badges', badges: merge(BADGE_BLUEPRINTS.combo) },
+            { title: 'Mission Master', badges: merge(BADGE_BLUEPRINTS.mission) },
+            { title: 'Total Days', badges: merge(BADGE_BLUEPRINTS.totalDays) },
         ];
 
         return res.json({
@@ -256,9 +242,9 @@ router.post('/record-interaction', async (req, res) => {
         if (isQuiz && quizScore) {
             await User.findByIdAndUpdate(userId, {
                 $inc: { totalScore: quizScore },
-                $set: { 
+                $set: {
                     streakCount: stats.currentStreak,
-                    lastQuizDate: today 
+                    lastQuizDate: today
                 },
                 ...(isNewDay ? { $push: { activeDates: today } } : {}),
             });
