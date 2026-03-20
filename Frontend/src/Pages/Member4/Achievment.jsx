@@ -21,39 +21,75 @@ const StarCanvas = () => {
     window.addEventListener('resize', resize);
     resize();
 
-    const stars = Array.from({ length: 180 }).map(() => ({
+    // Regular stars
+    const stars = Array.from({ length: 280 }).map(() => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
-      radius: Math.random() * 1.5 + 0.5,
-      speedY: Math.random() * 0.3 + 0.1,
+      radius: Math.random() * 1.8 + 0.3,
+      speedY: Math.random() * 0.15 + 0.05,
       opacity: Math.random(),
-      fadeSpeed: Math.random() * 0.02 + 0.005,
-      fadingOut: Math.random() > 0.5
+      fadeSpeed: Math.random() * 0.008 + 0.002,
+      fadingOut: Math.random() > 0.5,
+      hue: Math.random() > 0.85 ? `rgba(180,200,255,` : Math.random() > 0.7 ? `rgba(255,240,200,` : `rgba(255,255,255,`
     }));
+
+    // Occasional shooting stars
+    const shootingStars = [];
+    const spawnShootingStar = () => {
+      shootingStars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height * 0.5,
+        len: Math.random() * 80 + 40,
+        speed: Math.random() * 6 + 4,
+        angle: Math.PI / 4,
+        opacity: 1,
+        decay: Math.random() * 0.03 + 0.02,
+      });
+    };
+    const shootingInterval = setInterval(() => {
+      if (Math.random() > 0.6) spawnShootingStar();
+    }, 2000);
 
     const render = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+      // Draw stars
       stars.forEach(star => {
         star.y -= star.speedY;
         if (star.y < 0) {
           star.y = canvas.height;
           star.x = Math.random() * canvas.width;
         }
-
-        if (star.fadingOut) {
-          star.opacity -= star.fadeSpeed;
-          if (star.opacity <= 0.1) star.fadingOut = false;
-        } else {
-          star.opacity += star.fadeSpeed;
-          if (star.opacity >= 1) star.fadingOut = true;
-        }
+        star.fadingOut ? (star.opacity -= star.fadeSpeed) : (star.opacity += star.fadeSpeed);
+        if (star.opacity <= 0.05) star.fadingOut = false;
+        if (star.opacity >= 0.95) star.fadingOut = true;
 
         ctx.beginPath();
         ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
+        ctx.fillStyle = `${star.hue}${Math.max(0.05, star.opacity)})`;
         ctx.fill();
       });
+
+      // Draw shooting stars
+      for (let i = shootingStars.length - 1; i >= 0; i--) {
+        const s = shootingStars[i];
+        s.x += Math.cos(s.angle) * s.speed;
+        s.y += Math.sin(s.angle) * s.speed;
+        s.opacity -= s.decay;
+        if (s.opacity <= 0) { shootingStars.splice(i, 1); continue; }
+        ctx.save();
+        ctx.globalAlpha = s.opacity;
+        const grad = ctx.createLinearGradient(s.x, s.y, s.x - Math.cos(s.angle) * s.len, s.y - Math.sin(s.angle) * s.len);
+        grad.addColorStop(0, 'rgba(255,255,255,1)');
+        grad.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(s.x, s.y);
+        ctx.lineTo(s.x - Math.cos(s.angle) * s.len, s.y - Math.sin(s.angle) * s.len);
+        ctx.stroke();
+        ctx.restore();
+      }
 
       animationFrameId = requestAnimationFrame(render);
     };
@@ -62,10 +98,11 @@ const StarCanvas = () => {
     return () => {
       window.removeEventListener('resize', resize);
       cancelAnimationFrame(animationFrameId);
+      clearInterval(shootingInterval);
     };
   }, []);
 
-  return <canvas ref={canvasRef} className="fixed top-0 left-0 w-full h-full object-cover z-0 pointer-events-none mix-blend-screen opacity-50" />;
+  return <canvas ref={canvasRef} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0, pointerEvents: 'none' }} />;
 };
 
 // ─── Format date helper ───────────────────────────────────────────────────────
