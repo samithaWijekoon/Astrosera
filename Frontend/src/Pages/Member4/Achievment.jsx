@@ -5,6 +5,69 @@ import AuthContext from '../../context/AuthContext';
 
 const API = 'http://localhost:5001/api';
 
+const StarCanvas = () => {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let animationFrameId;
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    window.addEventListener('resize', resize);
+    resize();
+
+    const stars = Array.from({ length: 180 }).map(() => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      radius: Math.random() * 1.5 + 0.5,
+      speedY: Math.random() * 0.3 + 0.1,
+      opacity: Math.random(),
+      fadeSpeed: Math.random() * 0.02 + 0.005,
+      fadingOut: Math.random() > 0.5
+    }));
+
+    const render = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      stars.forEach(star => {
+        star.y -= star.speedY;
+        if (star.y < 0) {
+          star.y = canvas.height;
+          star.x = Math.random() * canvas.width;
+        }
+
+        if (star.fadingOut) {
+          star.opacity -= star.fadeSpeed;
+          if (star.opacity <= 0.1) star.fadingOut = false;
+        } else {
+          star.opacity += star.fadeSpeed;
+          if (star.opacity >= 1) star.fadingOut = true;
+        }
+
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
+        ctx.fill();
+      });
+
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    render();
+    return () => {
+      window.removeEventListener('resize', resize);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} className="fixed top-0 left-0 w-full h-full object-cover z-0 pointer-events-none mix-blend-screen opacity-50" />;
+};
+
 // ─── Format date helper ───────────────────────────────────────────────────────
 function fmt(d) {
   if (!d || d === '—') return '—';
@@ -456,7 +519,7 @@ const Member4 = () => {
   if (loading) {
     return (
       <div className="relative min-h-screen bg-black overflow-hidden flex items-center justify-center">
-        <video className="fixed top-0 left-0 w-full h-full object-cover z-0 pointer-events-none opacity-40 mix-blend-screen" src="/videos/back.mp4" autoPlay loop muted playsInline />
+        <StarCanvas />
         <div className="fixed inset-0 bg-gradient-to-b from-black/80 via-[#0d0a1a]/90 to-black z-0 pointer-events-none" />
         <div className="relative z-10 flex flex-col items-center gap-6">
           <div className="w-16 h-16 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin shadow-[0_0_20px_rgba(168,85,247,0.5)]"></div>
@@ -471,7 +534,7 @@ const Member4 = () => {
   if (error) {
     return (
       <div className="relative min-h-screen bg-black overflow-hidden flex items-center justify-center">
-        <video className="fixed top-0 left-0 w-full h-full object-cover z-0 pointer-events-none opacity-40 mix-blend-screen" src="/videos/back.mp4" autoPlay loop muted playsInline />
+        <StarCanvas />
         <div className="fixed inset-0 bg-gradient-to-b from-black/80 via-[#0d0a1a]/90 to-black z-0 pointer-events-none" />
         <div className="relative z-10 bg-red-900/20 backdrop-blur-xl border border-red-500/30 rounded-3xl p-10 max-w-lg text-center shadow-[0_0_40px_rgba(239,68,68,0.2)]">
           <div className="text-6xl mb-6 drop-shadow-[0_0_20px_rgba(239,68,68,0.8)]">⚠️</div>
@@ -493,8 +556,8 @@ const Member4 = () => {
         }
       `}</style>
 
-      {/* ─── BACKGROUND VIDEO ─── */}
-      <video className="fixed top-0 left-0 w-full h-full object-cover z-0 pointer-events-none opacity-40 mix-blend-screen" src="/videos/back.mp4" autoPlay loop muted playsInline />
+      {/* ─── BACKGROUND STAR CANVAS ─── */}
+      <StarCanvas />
       <div className="fixed inset-0 bg-gradient-to-b from-black/80 via-[#0d0a1a]/90 to-black z-0 pointer-events-none" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-28">
