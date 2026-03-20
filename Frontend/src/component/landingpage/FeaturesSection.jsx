@@ -5,35 +5,14 @@ const FeaturesSection = () => {
     return (
         <section
             className="relative min-h-screen w-full overflow-hidden flex items-center justify-center py-20"
-            style={{ backgroundColor: '#0a0a0a' }}
+            style={{
+                backgroundColor: '#0a0a0a',
+                backgroundImage: "url('/images/img2.png')",
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat'
+            }}
         >
-
-            {/* Dark starfield overlay */}
-            <div className="absolute inset-0 bg-gradient-radial from-transparent via-black/20 to-black/60 z-0 pointer-events-none" />
-
-            {/* Astronaut image — in front of background, behind text */}
-            <style>{`
-                @keyframes astronautFloat {
-                    0%   { transform: translateY(0px) rotate(0deg); }
-                    25%  { transform: translateY(-16px) rotate(2.5deg); }
-                    50%  { transform: translateY(-8px) rotate(0deg); }
-                    75%  { transform: translateY(-20px) rotate(-2.5deg); }
-                    100% { transform: translateY(0px) rotate(0deg); }
-                }
-            `}</style>
-            <img
-                src="/images/astronout.png"
-                alt="Astronaut"
-                className="absolute inset-0 m-auto pointer-events-none select-none"
-                style={{
-                    zIndex: 1,
-                    width: 'clamp(280px, 40vw, 580px)',
-                    maxHeight: '80vh',
-                    objectFit: 'contain',
-                    animation: 'astronautFloat 7s ease-in-out infinite',
-                    filter: 'drop-shadow(0 0 40px rgba(168, 85, 247, 0.3))'
-                }}
-            />
 
             {/* Grid Container for Content */}
             <div className="relative z-20 w-full max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center h-full font-outfit">
