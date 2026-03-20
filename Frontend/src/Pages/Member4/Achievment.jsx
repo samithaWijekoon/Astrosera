@@ -415,13 +415,19 @@ const Member4 = () => {
         const dashData = await dashRes.json();
         const lbData = await lbRes.json();
 
-        if (!dashData.success) {
+        // If user has no stats yet (new user / user not found), still show leaderboard
+        if (dashData.success) {
+          setUserData(dashData.user || null);
+          setCategories(dashData.categories || []);
+          setActiveDays(dashData.activeDaysThisMonth || []);
+        } else if (dashRes.status === 404 || dashData.error === 'User not found') {
+          // New user with no stats — show empty state but don't block
+          setUserData(null);
+          setCategories([]);
+          setActiveDays([]);
+        } else {
           throw new Error(dashData.error || 'Failed to load dashboard');
         }
-
-        setUserData(dashData.user || null);
-        setCategories(dashData.categories || []);
-        setActiveDays(dashData.activeDaysThisMonth || []);
 
         // Prefer dedicated leaderboard API; fallback to dashboard payload
         if (lbData?.success && Array.isArray(lbData.leaderboard)) {
@@ -431,7 +437,11 @@ const Member4 = () => {
         }
       } catch (e) {
         console.error(e);
-        setError('Could not load achievements. Make sure the backend is running.');
+        if (e.message?.includes('fetch') || e.message?.includes('Failed to fetch')) {
+          setError('Cannot connect to the server. Make sure the backend is running on port 5001.');
+        } else {
+          setError(e.message || 'Could not load achievements. Please try again.');
+        }
       } finally {
         setLoading(false);
       }

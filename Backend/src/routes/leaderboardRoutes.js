@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const UserStats = require('../models/UserStats');
+const mongoose = require('mongoose');
 
 /**
  * GET /api/leaderboard
@@ -11,6 +12,8 @@ const UserStats = require('../models/UserStats');
 router.get('/', async (req, res) => {
     try {
         const { userId } = req.query;
+        // Validate userId is a proper ObjectId to avoid CastError
+        const validUserId = userId && mongoose.isValidObjectId(userId) ? userId : null;
 
         // Fetch top 10 by score
         const topUsers = await User.find()
@@ -31,16 +34,16 @@ router.get('/', async (req, res) => {
             avatar: u.avatarInitials || (u.username ? u.username.slice(0, 2).toUpperCase() : '??'),
             score: u.totalScore || 0,
             streak: streakMap[u._id.toString()] || 0,
-            isUser: userId ? u._id.toString() === userId : false,
+            isUser: validUserId ? u._id.toString() === validUserId : false,
         }));
 
         // Optional: include current user rank even if not in top 10
         let currentUser = null;
-        if (userId && !leaderboard.some(e => e.isUser)) {
-            const me = await User.findById(userId).select('username avatarInitials totalScore _id');
+        if (validUserId && !leaderboard.some(e => e.isUser)) {
+            const me = await User.findById(validUserId).select('username avatarInitials totalScore _id');
             if (me) {
                 const [myStats, higherCount] = await Promise.all([
-                    UserStats.findOne({ userId }).select('currentStreak'),
+                    UserStats.findOne({ userId: validUserId }).select('currentStreak'),
                     User.countDocuments({ totalScore: { $gt: me.totalScore || 0 } }),
                 ]);
 

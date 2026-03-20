@@ -1,3 +1,4 @@
+require('dotenv').config({ override: true });
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
@@ -8,7 +9,6 @@ const gamificationRoutes = require('./routes/gamification');
 const analyticsRoutes = require('./routes/analyticsRoutes');
 const quizRoutes = require('./routes/quizRoutes');
 const fileUpload = require('express-fileupload');
-require('dotenv').config({ override: true });
 
 // Initialize Database
 connectDB();
