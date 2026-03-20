@@ -699,32 +699,41 @@ const Member4 = () => {
                   <SectionHeader title="Global Leaderboard" />
                 </div>
 
-                <div className="lb-content-row flex flex-col h-full">
-                  {myEntry && (
-                    <div className="flex-shrink-0 mb-4 pb-4 border-b border-white/10">
-                      <div className="flex items-center gap-3 p-3 rounded-2xl bg-gradient-to-r from-purple-900/60 to-cyan-900/40 border border-purple-400 shadowing-[0_0_20px_rgba(168,85,247,0.5)] ring-2 ring-inset ring-purple-500/30">
-                        <div className="w-8 text-center font-mono font-bold text-purple-300">
-                          <span className="text-sm">#{myEntry.rank}</span>
-                        </div>
-                        <div className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold uppercase shadow-inner bg-gradient-to-br from-purple-400 to-cyan-400 text-white border-2 border-white/50 shadow-[0_0_15px_rgba(168,85,247,0.8)]">
-                          {myEntry.avatar}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="font-bold truncate text-lg text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">YOU ({myEntry.name})</div>
-                          <div className="text-[11px] text-gray-300 uppercase tracking-widest font-outfit mt-0.5">
-                            <span className="text-orange-400 glow font-bold text-sm">🔥 {myEntry.streak}</span> DAY STREAK
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-end gap-1.5 min-w-[80px]">
-                          <div className="font-mono font-bold text-lg text-cyan-300 drop-shadow-[0_0_12px_rgba(34,211,238,0.9)]">
-                            {myEntry.score.toLocaleString()}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                <div className="lb-content-row">
+                  <div className="flex-1 overflow-y-auto pr-3 space-y-2 scrollbar-hide" ref={leaderboardRef} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', maxHeight: '420px' }}>
 
-                  <div className="flex-1 overflow-y-auto pr-3 space-y-2 scrollbar-hide relative" ref={leaderboardRef} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', maxHeight: '360px' }}>
+                    {/* Always show user's entry at the very top */}
+                    {myEntry && (
+                      <>
+                        <div className="flex items-center gap-3 p-3 rounded-2xl bg-gradient-to-r from-purple-900/60 to-cyan-900/40 border border-purple-400/60 shadow-[0_0_20px_rgba(168,85,247,0.4)] ring-1 ring-inset ring-purple-500/20">
+                          <div className="w-8 text-center font-mono font-bold text-purple-300">
+                            <span className="text-sm">#{myEntry.rank}</span>
+                          </div>
+                          <div className="w-11 h-11 rounded-full flex items-center justify-center text-base font-bold uppercase bg-gradient-to-br from-purple-400 to-cyan-400 text-white border-2 border-white/40 shadow-[0_0_12px_rgba(168,85,247,0.7)]">
+                            {myEntry.avatar}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="font-bold truncate text-base text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.5)]">YOU · {myEntry.name}</div>
+                            <div className="text-[10px] text-gray-300 uppercase tracking-widest font-outfit mt-0.5">
+                              <span className="text-orange-400 font-bold">🔥 {myEntry.streak}</span> DAY STREAK
+                            </div>
+                          </div>
+                          <div className="flex flex-col items-end gap-1 min-w-[80px]">
+                            <div className="font-mono font-bold text-base text-cyan-300 drop-shadow-[0_0_10px_rgba(34,211,238,0.8)]">
+                              {myEntry.score.toLocaleString()}
+                            </div>
+                          </div>
+                        </div>
+                        {leaderboard.length > 0 && (
+                          <div className="flex items-center gap-3 py-1">
+                            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+                            <span className="text-[10px] text-gray-500 uppercase tracking-widest font-mono">Rankings</span>
+                            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+                          </div>
+                        )}
+                      </>
+                    )}
+
                     {leaderboard.length === 0 ? (
                       <div className="text-gray-500 text-center py-12 font-mono text-sm border border-dashed border-gray-700 rounded-2xl bg-black/20">
                         <div className="text-3xl mb-3 opacity-50">📡</div>
