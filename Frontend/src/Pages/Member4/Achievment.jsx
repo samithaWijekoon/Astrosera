@@ -390,6 +390,7 @@ const Member4 = () => {
   const [userData, setUserData] = useState(null);
   const [categories, setCategories] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
+  const [currentUserRank, setCurrentUserRank] = useState(null);
   const [activeDays, setActiveDays] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -426,8 +427,10 @@ const Member4 = () => {
         // Prefer dedicated leaderboard API; fallback to dashboard payload
         if (lbData?.success && Array.isArray(lbData.leaderboard)) {
           setLeaderboard(lbData.leaderboard);
+          setCurrentUserRank(lbData.currentUser || null);
         } else {
           setLeaderboard(dashData.leaderboard || []);
+          setCurrentUserRank(dashData.currentUser || null);
         }
       } catch (e) {
         console.error(e);
@@ -445,7 +448,7 @@ const Member4 = () => {
   const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
   const firstDayOfWeek = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
   const monthName = now.toLocaleString('default', { month: 'long', year: 'numeric' });
-  const myEntry = leaderboard.find(e => e.isUser);
+  const myEntry = currentUserRank || leaderboard.find(e => e.isUser);
 
   const maxScore = leaderboard.length > 0 ? Math.max(...leaderboard.map(d => d.score)) : 1;
 
@@ -633,8 +636,32 @@ const Member4 = () => {
                   <SectionHeader title="Global Leaderboard" />
                 </div>
 
-                <div className="lb-content-row">
-                  <div className="flex-1 overflow-y-auto pr-3 space-y-2 scrollbar-hide" ref={leaderboardRef} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', maxHeight: '420px' }}>
+                <div className="lb-content-row flex flex-col h-full">
+                  {myEntry && (
+                    <div className="flex-shrink-0 mb-4 pb-4 border-b border-white/10">
+                      <div className="flex items-center gap-3 p-3 rounded-2xl bg-gradient-to-r from-purple-900/60 to-cyan-900/40 border border-purple-400 shadowing-[0_0_20px_rgba(168,85,247,0.5)] ring-2 ring-inset ring-purple-500/30">
+                        <div className="w-8 text-center font-mono font-bold text-purple-300">
+                          <span className="text-sm">#{myEntry.rank}</span>
+                        </div>
+                        <div className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold uppercase shadow-inner bg-gradient-to-br from-purple-400 to-cyan-400 text-white border-2 border-white/50 shadow-[0_0_15px_rgba(168,85,247,0.8)]">
+                          {myEntry.avatar}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="font-bold truncate text-lg text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">YOU ({myEntry.name})</div>
+                          <div className="text-[11px] text-gray-300 uppercase tracking-widest font-outfit mt-0.5">
+                            <span className="text-orange-400 glow font-bold text-sm">🔥 {myEntry.streak}</span> DAY STREAK
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end gap-1.5 min-w-[80px]">
+                          <div className="font-mono font-bold text-lg text-cyan-300 drop-shadow-[0_0_12px_rgba(34,211,238,0.9)]">
+                            {myEntry.score.toLocaleString()}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex-1 overflow-y-auto pr-3 space-y-2 scrollbar-hide relative" ref={leaderboardRef} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', maxHeight: '360px' }}>
                     {leaderboard.length === 0 ? (
                       <div className="text-gray-500 text-center py-12 font-mono text-sm border border-dashed border-gray-700 rounded-2xl bg-black/20">
                         <div className="text-3xl mb-3 opacity-50">📡</div>
