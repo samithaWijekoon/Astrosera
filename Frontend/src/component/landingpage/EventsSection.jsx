@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FiCalendar, FiClock, FiMapPin, FiNavigation, FiEye, FiBell } from "react-icons/fi";
+import { FiCalendar, FiClock, FiMapPin, FiNavigation, FiEye, FiBell, FiMail, FiCheckCircle } from "react-icons/fi";
 import { IoRocketOutline, IoPlanetOutline } from "react-icons/io5";
 import { BiRadar } from "react-icons/bi";
 import { BsToggleOn, BsToggleOff } from "react-icons/bs";
@@ -12,9 +12,63 @@ const EventsSection = () => {
         fifteenMinutes: true,
         dailyDigest: false,
     });
+    const [userEmail, setUserEmail] = useState('');
+    const [isEmailSaved, setIsEmailSaved] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
-    const toggleReminder = (key) => {
-        setReminders(prev => ({ ...prev, [key]: !prev[key] }));
+    // Dynamic backend URL
+    const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+
+    const handleSaveEmail = () => {
+        if (!userEmail || !userEmail.includes('@')) return;
+        setIsSaving(true);
+        // Simulate a tiny delay for UX
+        setTimeout(() => {
+            setIsEmailSaved(true);
+            setIsSaving(false);
+        }, 500);
+    };
+
+    const sendReminderEmail = async (eventName, reminderType, scheduledTime = '') => {
+        if (!userEmail || !isEmailSaved) {
+            alert('Please enter and save your email address in the Smart Reminders widget first.');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE}/alerts/event-reminder`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: userEmail,
+                    eventName,
+                    reminderType,
+                    scheduledTime
+                })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                alert(`Reminder set! An email confirmation has been sent to ${userEmail}`);
+            } else {
+                alert(`Failed to set reminder: ${data.error}`);
+            }
+        } catch (error) {
+            console.error('Error dispatching reminder:', error);
+            alert('Something went wrong connecting to the notification server.');
+        }
+    };
+
+    const toggleReminder = (key, label) => {
+        const isTurningOn = !reminders[key];
+        setReminders(prev => ({ ...prev, [key]: isTurningOn }));
+        
+        // If they are turning it on, dispatch an email confirmation immediately
+        if (isTurningOn && isEmailSaved) {
+            sendReminderEmail('All Subscribed Events', label);
+        } else if (isTurningOn && !isEmailSaved) {
+            alert('Please add your email to receive this reminder.');
+            setReminders(prev => ({ ...prev, [key]: false }));
+        }
     };
 
     return (
@@ -59,14 +113,14 @@ const EventsSection = () => {
                         </div>
 
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs text-gray-400 mb-5">
-                            <div className="flex items-center"><FiCalendar className="mr-2 text-gray-500" /> Nov 24, 2024</div>
+                            <div className="flex items-center"><FiCalendar className="mr-2 text-gray-500" /> Nov 24, 2026</div>
                             <div className="flex items-center"><FiClock className="mr-2 text-gray-500" /> 6:30 PM EST</div>
                             <div className="flex items-center"><FiNavigation className="mr-2 text-gray-500" /> Southeast</div>
                             <div className="flex items-center"><span className="text-gray-500 mr-2">Elevation:</span> 45°</div>
                         </div>
 
                         <div className="flex space-x-3">
-                            <button className="bg-orange-600 hover:bg-orange-700 text-white px-5 py-2 rounded-full text-xs font-medium transition cursor-pointer hover:shadow-lg hover:shadow-orange-600/30">Set Reminder</button>
+                            <button onClick={() => sendReminderEmail('SpaceX Starship Flight 7', 'Specific Event', 'Nov 24, 2026 at 6:30 PM EST')} className="bg-orange-600 hover:bg-orange-700 text-white px-5 py-2 rounded-full text-xs font-medium transition cursor-pointer hover:shadow-lg hover:shadow-orange-600/30">Set Reminder</button>
                             <button className="bg-transparent hover:bg-white/5 text-gray-300 px-5 py-2 rounded-full text-xs font-medium border border-gray-700 transition cursor-pointer">View Details</button>
                         </div>
                     </div>
@@ -90,14 +144,14 @@ const EventsSection = () => {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs text-gray-400 mb-5">
-                            <div className="flex items-center"><FiCalendar className="mr-2 text-gray-500" /> Dec 13-14, 2024</div>
+                            <div className="flex items-center"><FiCalendar className="mr-2 text-gray-500" /> Dec 13-14, 2026</div>
                             <div className="flex items-center whitespace-nowrap"><FiClock className="mr-2 text-gray-500" /> 11:00 PM - 4:00 AM</div>
                             <div className="flex items-center"><FiNavigation className="mr-2 text-gray-500" /> Northeast</div>
                             <div className="flex items-center"><span className="text-gray-500 mr-2">Elevation:</span> 70°</div>
                         </div>
 
                         <div className="flex space-x-3">
-                            <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full text-xs font-medium transition cursor-pointer hover:shadow-lg hover:shadow-blue-600/30">Set Reminder</button>
+                            <button onClick={() => sendReminderEmail('Geminids Meteor Shower Peak', 'Specific Event', 'Dec 13-14, 2026 at 11:00 PM')} className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full text-xs font-medium transition cursor-pointer hover:shadow-lg hover:shadow-blue-600/30">Set Reminder</button>
                             <button className="bg-transparent hover:bg-white/5 text-gray-300 px-5 py-2 rounded-full text-xs font-medium border border-gray-700 transition cursor-pointer">View Details</button>
                         </div>
                     </div>
@@ -127,7 +181,7 @@ const EventsSection = () => {
                         </div>
 
                         <div className="flex space-x-3">
-                            <button className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-full text-xs font-medium transition cursor-pointer hover:shadow-lg hover:shadow-purple-600/30">Set Reminder</button>
+                            <button onClick={() => sendReminderEmail('ISS Pass Overhead', 'Specific Event', 'Today at 8:45 PM EST')} className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-full text-xs font-medium transition cursor-pointer hover:shadow-lg hover:shadow-purple-600/30">Set Reminder</button>
                             <button className="bg-transparent hover:bg-white/5 text-gray-300 px-5 py-2 rounded-full text-xs font-medium border border-gray-700 transition cursor-pointer">View Details</button>
                         </div>
                     </div>
@@ -173,22 +227,54 @@ const EventsSection = () => {
                             </div>
                             <h3 className="text-white font-bold text-base">Smart Reminders</h3>
                         </div>
+
+                        {/* Email Input Placeholder section */}
+                        <div className="mb-6 pb-6 border-b border-gray-800">
+                            <label className="text-xs text-gray-400 mb-2 block">Alert Email Address</label>
+                            <div className="flex gap-2">
+                                <div className="relative flex-grow">
+                                    <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                                    <input 
+                                        type="email" 
+                                        value={userEmail}
+                                        onChange={(e) => {
+                                            setUserEmail(e.target.value);
+                                            setIsEmailSaved(false);
+                                        }}
+                                        placeholder="astronaut@astrosera.com"
+                                        className="w-full bg-black/50 border border-gray-700 rounded-lg py-2 pl-9 pr-3 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors placeholder-gray-600"
+                                    />
+                                </div>
+                                <button 
+                                    onClick={handleSaveEmail}
+                                    disabled={!userEmail || !userEmail.includes('@') || isSaving || isEmailSaved}
+                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center justify-center min-w-[80px] ${
+                                        isEmailSaved 
+                                            ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
+                                            : 'bg-blue-600 hover:bg-blue-700 text-white disabled:bg-gray-800 disabled:text-gray-500'
+                                    }`}
+                                >
+                                    {isSaving ? '...' : isEmailSaved ? <FiCheckCircle /> : 'Save'}
+                                </button>
+                            </div>
+                        </div>
+
                         <div className="space-y-3">
                             <div className="flex justify-between items-center">
                                 <span className="text-gray-300 text-xs">1 hour before</span>
-                                <button onClick={() => toggleReminder('oneHour')} className="text-xl focus:outline-none cursor-pointer">
+                                <button onClick={() => toggleReminder('oneHour', '1 Hour Before')} className="text-xl focus:outline-none cursor-pointer">
                                     {reminders.oneHour ? <BsToggleOn className="text-blue-500" /> : <BsToggleOff className="text-gray-600" />}
                                 </button>
                             </div>
                             <div className="flex justify-between items-center">
                                 <span className="text-gray-300 text-xs">15 minutes before</span>
-                                <button onClick={() => toggleReminder('fifteenMinutes')} className="text-xl focus:outline-none cursor-pointer">
+                                <button onClick={() => toggleReminder('fifteenMinutes', '15 Minutes Before')} className="text-xl focus:outline-none cursor-pointer">
                                     {reminders.fifteenMinutes ? <BsToggleOn className="text-blue-500" /> : <BsToggleOff className="text-gray-600" />}
                                 </button>
                             </div>
                             <div className="flex justify-between items-center">
                                 <span className="text-gray-300 text-xs">Daily digest</span>
-                                <button onClick={() => toggleReminder('dailyDigest')} className="text-xl focus:outline-none cursor-pointer">
+                                <button onClick={() => toggleReminder('dailyDigest', 'Daily Digest')} className="text-xl focus:outline-none cursor-pointer">
                                     {reminders.dailyDigest ? <BsToggleOn className="text-blue-500" /> : <BsToggleOff className="text-gray-600" />}
                                 </button>
                             </div>
