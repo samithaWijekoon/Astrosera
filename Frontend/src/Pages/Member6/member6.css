@@ -424,33 +424,6 @@
     font-size: 1.1rem;
 }
 
-.sort-controls {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.sort-controls label {
-    color: #aaa;
-    font-size: 0.9rem;
-    font-weight: 600;
-}
-
-.sort-controls select {
-    background: rgba(30, 30, 50, 0.8);
-    border: 1px solid rgba(139, 92, 246, 0.3);
-    color: #fff;
-    padding: 8px 15px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    outline: none;
-}
-
-.sort-controls select:hover {
-    border-color: #8b5cf6;
-}
-
 /* Trending Section */
 .trending-section {
     max-width: 1400px;
