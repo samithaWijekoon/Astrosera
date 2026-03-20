@@ -349,14 +349,6 @@ const Member6 = () => {
                                 ))}
                             </div>
 
-                            <div className="sort-controls">
-                                <label>Sort by:</label>
-                                <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-                                    <option value="date">Latest First</option>
-                                    <option value="relevance">Most Relevant</option>
-                                    <option value="trending">Trending</option>
-                                </select>
-                            </div>
                         </div>
 
                         {searchTerm && (
