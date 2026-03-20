@@ -78,6 +78,13 @@ body {
   margin: 0;
 }
 
+.header-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  margin-right: 0.25rem;
+}
+
 .clear-chat-btn {
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -97,6 +104,7 @@ body {
 /* Chat Area */
 .chat-window {
   flex: 1;
+  min-height: 0;
   position: relative;
   z-index: 5;
   overflow-y: auto;
@@ -121,7 +129,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-top: 10vh;
+  margin-top: 5vh;
   width: 100%;
 }
 
@@ -212,6 +220,13 @@ body {
   font-weight: 600;
   font-size: 0.9rem;
   color: #6ee7b7;
+  overflow: hidden;
+}
+
+.bot-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .message-content {
@@ -253,27 +268,37 @@ body {
 }
 
 /* Typing Indicator */
+.typing-box {
+  background: rgba(110, 231, 183, 0.05) !important;
+  border: 1px solid rgba(110, 231, 183, 0.2) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 60px !important;
+  height: 38px !important;
+}
+
 .typing-indicator {
   display: flex;
   align-items: center;
   gap: 4px;
-  height: 24px;
 }
 
 .typing-indicator span {
-  width: 5px;
-  height: 5px;
-  background-color: rgba(255, 255, 255, 0.4);
+  width: 6px;
+  height: 6px;
+  background-color: #6ee7b7;
   border-radius: 50%;
   animation: typing 1.4s infinite ease-in-out both;
+  opacity: 0.6;
 }
 
 .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
 .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
 
 @keyframes typing {
-  0%, 80%, 100% { transform: scale(0); }
-  40% { transform: scale(1); }
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.3; }
+  40% { transform: translateY(-4px); opacity: 1; }
 }
 
 /* Markdown Highlight formatting */
@@ -291,9 +316,10 @@ body {
 
 .markdown-header:first-child { margin-top: 0; }
 
-.markdown-content h1.markdown-header { font-size: 1.3rem; }
-.markdown-content h2.markdown-header { font-size: 1.15rem; }
-.markdown-content h3.markdown-header { font-size: 1.05rem; }
+.markdown-content h1.markdown-header { font-size: 1.4rem; color: #6ee7b7; }
+.markdown-content h2.markdown-header { font-size: 1.25rem; color: #34d399; }
+.markdown-content h3.markdown-header { font-size: 1.1rem; color: #a7f3d0; border-left: 3px solid #6ee7b7; padding-left: 10px; }
+.markdown-content h4.markdown-header { font-size: 1.0rem; color: #6ee7b7; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
 .markdown-list-item {
   display: flex;
@@ -315,16 +341,20 @@ body {
 
 .highlight-text {
   font-weight: 600;
-  color: #ffffff;
+  color: #6ee7b7;
+  background: rgba(110, 231, 183, 0.1);
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
 }
 
 .highlight-code {
-  background: rgba(255, 255, 255, 0.08);
-  padding: 0.1rem 0.35rem;
-  border-radius: 4px;
+  background: rgba(15, 23, 42, 0.6);
+  padding: 0.2rem 0.4rem;
+  border: 1px solid rgba(110, 231, 183, 0.2);
+  border-radius: 6px;
   font-family: 'Monaco', 'Courier New', monospace;
   font-size: 0.9em;
-  color: #6ee7b7;
+  color: #fbbf24;
 }
 
 /* Input Area */
@@ -334,7 +364,9 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 0 1rem 1rem;
+  margin: 0 1rem 1.5rem;
+  flex-shrink: 0;
+  width: 100%;
 }
 
 .input-bar {

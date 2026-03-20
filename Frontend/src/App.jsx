@@ -19,11 +19,15 @@ import VerifyEmail from './Pages/VerifyEmail'
 
 const App = () => {
   const location = useLocation();
+  
+  // Keep your friend's logic: Hide footer on the Chat page
+  const hideFooter = location.pathname === '/chat';
 
   return (
     <>
       <Navbar />
-      {/* AnimatePresence listens for route changes and plays exit → enter animations */}
+      
+      {/* Keep the Animation wrapper from Main */}
       <AnimatePresence mode="wait" initial={false}>
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<PageTransition><Home /></PageTransition>} />
@@ -44,11 +48,13 @@ const App = () => {
           {/* Member 03 - Quiz */}
           <Route path="/quiz" element={<PageTransition><Member3 /></PageTransition>} />
 
-          {/* Auth Verification */}
+          {/* Auth Verification - Wrapped in PageTransition for consistency */}
           <Route path="/verify-email" element={<PageTransition><VerifyEmail /></PageTransition>} />
         </Routes>
       </AnimatePresence>
-      <Footer />
+
+      {/* Conditional Footer: Show only if not on /chat */}
+      {!hideFooter && <Footer />}
     </>
   )
 }
