@@ -1,25 +1,28 @@
 import React from 'react';
-import { FiTwitter, FiGithub, FiLinkedin, FiMail } from "react-icons/fi";
+import { FiTwitter, FiGithub, FiLinkedin, FiMail, FiInstagram } from "react-icons/fi";
 import { IoRocketOutline } from "react-icons/io5";
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
-    // Data for footer links to keep code clean
+    // Data for footer links configured to the new requested destinations
     const footerSections = [
         {
             title: "Product",
-            links: ["Features", "Astra-Bot", "Daily Quiz", "Event Calendar", "Pricing"]
+            links: [
+                { name: "Home", url: "/", isExternal: false },
+                { name: "Features", url: "/", isExternal: false },
+                { name: "Astra-Bot", url: "/chat", isExternal: false },
+                { name: "Daily Quiz", url: "/quiz", isExternal: false },
+                { name: "Event Calendar", url: "/events", isExternal: false },
+                { name: "Pricing", url: "/#pricing", isExternal: false }
+            ]
         },
         {
-            title: "Company",
-            links: ["About Us", "Blog", "Careers", "Press Kit", "Contact"]
-        },
-        {
-            title: "Resources",
-            links: ["Documentation", "Help Center", "Community", "API", "Status"]
-        },
-        {
-            title: "Legal",
-            links: ["Privacy Policy", "Terms of Service", "Cookie Policy", "Data Security"]
+            title: "Connect",
+            links: [
+                { name: "Contact", url: "https://instagram.com/astrosera", isExternal: true },
+                { name: "Community", url: "https://instagram.com/astrosera", isExternal: true }
+            ]
         }
     ];
 
@@ -28,10 +31,10 @@ const Footer = () => {
             <div className="max-w-7xl mx-auto px-8 md:px-12">
 
                 {/* Main Footer Content */}
-                <div className="grid grid-cols-2 lg:grid-cols-6 gap-x-8 gap-y-12 mb-16">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12 mb-16">
 
                     {/* Brand Column (Spans 2 columns on lg screens) */}
-                    <div className="col-span-2 lg:col-span-2 pr-0 lg:pr-8">
+                    <div className="col-span-1 md:col-span-2 pr-0 lg:pr-8">
                         <div className="flex items-center text-white text-xl font-bold mb-6 tracking-wide">
                             <IoRocketOutline className="text-gray-200 mr-2" size={24} />
                             <span>Astrosera</span>
@@ -46,13 +49,7 @@ const Footer = () => {
                                 <FiTwitter size={20} />
                             </a>
                             <a href="#" className="text-gray-500 hover:text-white transition-colors duration-300">
-                                <FiGithub size={20} />
-                            </a>
-                            <a href="#" className="text-gray-500 hover:text-white transition-colors duration-300">
-                                <FiLinkedin size={20} />
-                            </a>
-                            <a href="#" className="text-gray-500 hover:text-white transition-colors duration-300">
-                                <FiMail size={20} />
+                                <FiInstagram size={20} />
                             </a>
                         </div>
                     </div>
@@ -64,9 +61,15 @@ const Footer = () => {
                             <ul className="space-y-4 text-sm font-medium">
                                 {section.links.map((link, i) => (
                                     <li key={i}>
-                                        <a href="#" className="text-gray-500 hover:text-gray-200 transition-colors duration-300 inline-block">
-                                            {link}
-                                        </a>
+                                        {link.isExternal || link.url.startsWith('/#') ? (
+                                            <a href={link.url} target={link.isExternal ? "_blank" : "_self"} rel={link.isExternal ? "noopener noreferrer" : ""} className="text-gray-500 hover:text-gray-200 transition-colors duration-300 inline-block">
+                                                {link.name}
+                                            </a>
+                                        ) : (
+                                            <Link to={link.url} className="text-gray-500 hover:text-gray-200 transition-colors duration-300 inline-block">
+                                                {link.name}
+                                            </Link>
+                                        )}
                                     </li>
                                 ))}
                             </ul>
@@ -76,15 +79,9 @@ const Footer = () => {
                 </div>
 
                 {/* Bottom Bar */}
-                <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center text-xs font-medium tracking-wide">
-                    <div className="mb-4 md:mb-0 text-gray-500">
-                        &copy; 2024 Astrosera. All rights reserved.
-                    </div>
-                    <div className="flex space-x-8">
-                        <a href="#" className="text-gray-500 hover:text-gray-200 transition-colors duration-300">Privacy Policy</a>
-                        <a href="#" className="text-gray-500 hover:text-gray-200 transition-colors duration-300">Terms of Use</a>
-                        <a href="#" className="text-gray-500 hover:text-gray-200 transition-colors duration-300">Legal</a>
-                        <a href="#" className="text-gray-500 hover:text-gray-200 transition-colors duration-300">Site Map</a>
+                <div className="border-t border-white/5 pt-8 flex flex-col items-center justify-center text-xs font-medium tracking-wide">
+                    <div className="text-gray-500 text-center">
+                        &copy; 2026 Astrosera. All rights reserved.
                     </div>
                 </div>
 
