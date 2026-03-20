@@ -105,7 +105,7 @@ function BadgeRow({ badges, onSelect, className = '' }) {
         >
           <ScannerEffect />
           <CircuitPattern />
-          {b.earned && <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-transparent pointer-events-none mix-blend-overlay"></div>}
+          {b.earned && <div className="absolute inset-0 border-2 border-purple-500/80 rounded-[inherit] shadow-[inset_0_0_20px_rgba(168,85,247,0.4)] pointer-events-none"></div>}
 
           <div className="relative z-10 flex flex-col items-center p-2">
             <span className={`badge-item__icon dance-slow transition-transform duration-500 ${b.earned ? 'group-hover:scale-110 drop-shadow-[0_0_20px_rgba(168,85,247,0.8)]' : ''}`}>
