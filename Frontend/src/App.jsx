@@ -4,6 +4,7 @@ import { AnimatePresence } from 'framer-motion'
 import Navbar from './component/Navbar'
 import Footer from './component/Footer'
 import PageTransition from './component/PageTransition'
+import ProtectedRoute from './component/ProtectedRoute'
 
 // ── Code-Split Page Imports ──────────────────────────────────────────────────
 // Each page is loaded lazily only when the user navigates to that route.
@@ -67,16 +68,16 @@ const App = () => {
             <Route path="/chat"          element={<PageTransition><Chat /></PageTransition>} />
             <Route path="/login"         element={<PageTransition><Login /></PageTransition>} />
             <Route path="/signup"        element={<PageTransition><Signup /></PageTransition>} />
-            <Route path="/profile"       element={<PageTransition><Profile /></PageTransition>} />
+            <Route path="/profile"       element={<PageTransition><ProtectedRoute><Profile /></ProtectedRoute></PageTransition>} />
 
             <Route path="/events"        element={<PageTransition><Member2 /></PageTransition>} />
             <Route path="/achievements"  element={<PageTransition><Member4 /></PageTransition>} />
             <Route path="/analytics"     element={<PageTransition><Home /></PageTransition>} />
             <Route path="/news"          element={<PageTransition><Member6 /></PageTransition>} />
-            <Route path="/asteroid-alerts" element={<PageTransition><AsteroidAlerts /></PageTransition>} />
+            <Route path="/asteroid-alerts" element={<PageTransition><ProtectedRoute><AsteroidAlerts /></ProtectedRoute></PageTransition>} />
 
             {/* Member 05 - Admin & Analytics Dashboard */}
-            <Route path="/admin"         element={<PageTransition><AdminDashboard /></PageTransition>} />
+            <Route path="/admin"         element={<PageTransition><ProtectedRoute><AdminDashboard /></ProtectedRoute></PageTransition>} />
 
             {/* Member 03 - Quiz */}
             <Route path="/quiz"          element={<PageTransition><Member3 /></PageTransition>} />

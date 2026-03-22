@@ -20,7 +20,7 @@ router.get('/status/:userId', protect, getQuizStatus);
 
 // Path: GET /api/quiz
 // Used to fetch all 100 questions for the Analytics Dashboard
-router.get('/', protect, getQuizzes);
+router.get('/', getQuizzes);
 
 // Path: DELETE /api/quiz/clear
 // Used to wipe the database if you need to re-upload the Excel sheet

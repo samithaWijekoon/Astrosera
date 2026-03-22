@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FiCalendar } from 'react-icons/fi';
 import { FiClock } from 'react-icons/fi';
 import { FiMapPin } from 'react-icons/fi';
@@ -15,6 +16,7 @@ import { BsToggleOff } from 'react-icons/bs';
 import { WiSolarEclipse } from 'react-icons/wi';
 
 const EventsSection = () => {
+    const navigate = useNavigate();
     // State for toggles in the Smart Reminders card
     const [reminders, setReminders] = useState({
         oneHour: true,
@@ -24,6 +26,17 @@ const EventsSection = () => {
     const [userEmail, setUserEmail] = useState('');
     const [isEmailSaved, setIsEmailSaved] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+
+    // Location Widget State
+    const [locationData, setLocationData] = useState({
+        city: 'New York, USA',
+        timezone: 'EST (UTC-5)',
+        coords: '40.7°N, 74.0°W',
+        sky: 'Clear Tonight'
+    });
+    const [isEditingLocation, setIsEditingLocation] = useState(false);
+    const [manualLocation, setManualLocation] = useState('');
+    const [isLocating, setIsLocating] = useState(false);
 
     // Dynamic backend URL
     const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
@@ -36,6 +49,62 @@ const EventsSection = () => {
             setIsEmailSaved(true);
             setIsSaving(false);
         }, 500);
+    };
+
+    const handleDetectLocation = () => {
+        setIsLocating(true);
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const { latitude, longitude } = position.coords;
+                    try {
+                        const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`);
+                        const data = await res.json();
+                        const city = data.city || data.locality || 'Detected City';
+                        const country = data.countryName || data.countryCode || 'Unknown';
+                        
+                        // Parse localized timezone
+                        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                        
+                        setLocationData({
+                            city: `${city}, ${country}`,
+                            timezone: tz,
+                            coords: `${Math.abs(latitude).toFixed(2)}°${latitude >= 0 ? 'N' : 'S'}, ${Math.abs(longitude).toFixed(2)}°${longitude >= 0 ? 'E' : 'W'}`,
+                            sky: 'Checking...' 
+                        });
+                        
+                        setTimeout(() => {
+                            setLocationData(prev => ({ ...prev, sky: 'Clear Tonight' }));
+                        }, 1200);
+                        
+                    } catch (error) {
+                        alert("Could not reverse geocode your location.");
+                    }
+                    setIsLocating(false);
+                    setIsEditingLocation(false);
+                },
+                (error) => {
+                    alert("Location access denied or unavailable. Please use manual entry.");
+                    setIsLocating(false);
+                }
+            );
+        } else {
+            alert("Geolocation is not supported by your browser.");
+            setIsLocating(false);
+        }
+    };
+
+    const handleManualSubmit = (e) => {
+        e.preventDefault();
+        if (!manualLocation.trim()) return;
+        
+        setLocationData({
+            city: manualLocation,
+            timezone: 'Local Time',
+            coords: 'Variable',
+            sky: 'Unknown'
+        });
+        setIsEditingLocation(false);
     };
 
     const sendReminderEmail = async (eventName, reminderType, scheduledTime = '') => {
@@ -129,8 +198,8 @@ const EventsSection = () => {
                         </div>
 
                         <div className="flex space-x-3">
-                            <button onClick={() => sendReminderEmail('SpaceX Starship Flight 7', 'Specific Event', 'Nov 24, 2026 at 6:30 PM EST')} className="bg-orange-600 hover:bg-orange-700 text-white px-5 py-2 rounded-full text-xs font-medium transition cursor-pointer hover:shadow-lg hover:shadow-orange-600/30">Set Reminder</button>
-                            <button className="bg-transparent hover:bg-white/5 text-gray-300 px-5 py-2 rounded-full text-xs font-medium border border-gray-700 transition cursor-pointer">View Details</button>
+                            <button onClick={() => navigate('/events')} className="bg-orange-600 hover:bg-orange-700 text-white px-5 py-2 rounded-full text-xs font-medium transition cursor-pointer hover:shadow-lg hover:shadow-orange-600/30">Set Reminder</button>
+                            <button onClick={() => navigate('/events')} className="bg-transparent hover:bg-white/5 text-gray-300 px-5 py-2 rounded-full text-xs font-medium border border-gray-700 transition cursor-pointer">View Details</button>
                         </div>
                     </div>
 
@@ -160,8 +229,8 @@ const EventsSection = () => {
                         </div>
 
                         <div className="flex space-x-3">
-                            <button onClick={() => sendReminderEmail('Geminids Meteor Shower Peak', 'Specific Event', 'Dec 13-14, 2026 at 11:00 PM')} className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full text-xs font-medium transition cursor-pointer hover:shadow-lg hover:shadow-blue-600/30">Set Reminder</button>
-                            <button className="bg-transparent hover:bg-white/5 text-gray-300 px-5 py-2 rounded-full text-xs font-medium border border-gray-700 transition cursor-pointer">View Details</button>
+                            <button onClick={() => navigate('/events')} className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full text-xs font-medium transition cursor-pointer hover:shadow-lg hover:shadow-blue-600/30">Set Reminder</button>
+                            <button onClick={() => navigate('/events')} className="bg-transparent hover:bg-white/5 text-gray-300 px-5 py-2 rounded-full text-xs font-medium border border-gray-700 transition cursor-pointer">View Details</button>
                         </div>
                     </div>
 
@@ -190,8 +259,8 @@ const EventsSection = () => {
                         </div>
 
                         <div className="flex space-x-3">
-                            <button onClick={() => sendReminderEmail('ISS Pass Overhead', 'Specific Event', 'Today at 8:45 PM EST')} className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-full text-xs font-medium transition cursor-pointer hover:shadow-lg hover:shadow-purple-600/30">Set Reminder</button>
-                            <button className="bg-transparent hover:bg-white/5 text-gray-300 px-5 py-2 rounded-full text-xs font-medium border border-gray-700 transition cursor-pointer">View Details</button>
+                            <button onClick={() => navigate('/events')} className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-full text-xs font-medium transition cursor-pointer hover:shadow-lg hover:shadow-purple-600/30">Set Reminder</button>
+                            <button onClick={() => navigate('/events')} className="bg-transparent hover:bg-white/5 text-gray-300 px-5 py-2 rounded-full text-xs font-medium border border-gray-700 transition cursor-pointer">View Details</button>
                         </div>
                     </div>
 
@@ -202,28 +271,61 @@ const EventsSection = () => {
                 <div className="space-y-8">
 
                     {/* Widget 1: Your Location */}
-                    <div className="bg-gray-900/40 border border-gray-800 rounded-3xl p-5 hover:border-gray-700 transition">
-                        <div className="flex items-center mb-5">
-                            <div className="bg-green-500/20 p-2.5 rounded-xl mr-3">
-                                <FiMapPin className="text-green-500 text-lg" />
+                    <div className="bg-gray-900/40 border border-gray-800 rounded-3xl p-5 hover:border-gray-700 transition relative overflow-hidden">
+                        {isEditingLocation && (
+                            <div className="absolute inset-0 z-20 bg-gray-900/95 backdrop-blur-md rounded-3xl p-5 flex flex-col justify-center animate-fade-in-up">
+                                <h3 className="text-white font-bold mb-3 text-sm">Update Location</h3>
+                                <button 
+                                    onClick={handleDetectLocation}
+                                    disabled={isLocating}
+                                    className="w-full bg-blue-600/20 text-blue-400 border border-blue-500/30 py-2 rounded-lg text-xs font-bold mb-3 hover:bg-blue-600/40 transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                                >
+                                    <FiNavigation /> {isLocating ? 'Detecting...' : 'Use Current Location'}
+                                </button>
+                                <div className="text-center text-gray-500 text-xs mb-3">OR</div>
+                                <form onSubmit={handleManualSubmit} className="flex gap-2">
+                                    <input 
+                                        type="text" 
+                                        value={manualLocation}
+                                        onChange={(e) => setManualLocation(e.target.value)}
+                                        placeholder="Enter city manually..."
+                                        className="flex-1 bg-black/50 border border-gray-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-green-500"
+                                    />
+                                    <button type="submit" disabled={!manualLocation.trim()} className="bg-green-600 hover:bg-green-700 disabled:bg-gray-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer">Set</button>
+                                </form>
+                                <button onClick={() => setIsEditingLocation(false)} className="absolute top-3 right-3 text-gray-500 hover:text-white transition cursor-pointer">✕</button>
                             </div>
-                            <div>
-                                <h3 className="text-white font-bold text-base">Your Location</h3>
-                                <p className="text-gray-400 text-xs">New York, USA</p>
+                        )}
+
+                        <div className="flex items-center justify-between mb-5">
+                            <div className="flex items-center">
+                                <div className="bg-green-500/20 p-2.5 rounded-xl mr-3">
+                                    <FiMapPin className="text-green-500 text-lg" />
+                                </div>
+                                <div>
+                                    <h3 className="text-white font-bold text-base">Your Location</h3>
+                                    <p className="text-gray-400 text-xs">{locationData.city}</p>
+                                </div>
                             </div>
+                            <button 
+                                onClick={() => { setIsEditingLocation(true); setManualLocation(''); }}
+                                className="text-xs text-gray-500 hover:text-green-400 border border-gray-700 hover:border-green-500/30 bg-black/30 px-2.5 py-1 rounded-lg transition cursor-pointer"
+                            >
+                                Edit
+                            </button>
                         </div>
                         <div className="space-y-3 text-xs">
                             <div className="flex justify-between">
                                 <span className="text-gray-500">Timezone</span>
-                                <span className="text-gray-300">EST (UTC-5)</span>
+                                <span className="text-gray-300">{locationData.timezone}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-gray-500">Coordinates</span>
-                                <span className="text-gray-300">40.7°N, 74.0°W</span>
+                                <span className="text-gray-300">{locationData.coords}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-gray-500">Sky Visibility</span>
-                                <span className="text-green-400 font-medium">Clear Tonight</span>
+                                <span className="text-green-400 font-medium">{locationData.sky}</span>
                             </div>
                         </div>
                     </div>

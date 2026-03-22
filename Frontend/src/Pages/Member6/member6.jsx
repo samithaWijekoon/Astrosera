@@ -1,9 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useUser } from '../../context/AuthContext';
+import SignInPromptModal from '../../component/SignInPromptModal';
 import './member6.css';
 
 const API_BASE = 'http://localhost:5001/api';
 
 const Member6 = () => {
+    const { user } = useUser();
+    const [showAuthModal, setShowAuthModal] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [activeTab, setActiveTab] = useState("news");
     const [visibleNews, setVisibleNews] = useState(6);
@@ -21,6 +25,16 @@ const Member6 = () => {
     const [hasMoreFromServer, setHasMoreFromServer] = useState(true);
     const observerTarget = useRef(null);
     const newsGridRef = useRef(null);
+
+    // 1-minute guest preview timeout
+    useEffect(() => {
+        if (!user) {
+            const timer = setTimeout(() => {
+                setShowAuthModal(true);
+            }, 60000);
+            return () => clearTimeout(timer);
+        }
+    }, [user]);
 
     const handleSearch = (value) => {
         if (value && newsGridRef.current) {
@@ -664,6 +678,13 @@ const Member6 = () => {
                     </div>
                 </div>
             )}
+
+            <SignInPromptModal
+                isOpen={showAuthModal}
+                onClose={() => setShowAuthModal(false)}
+                title="Subscriber Access"
+                message="Your free preview time has expired! Please sign in to your Astrosera account to continue exploring the latest news from the cosmos."
+            />
         </div>
     );
 };
