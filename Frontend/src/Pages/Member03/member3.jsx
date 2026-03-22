@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../../context/AuthContext';
+import SignInPromptModal from '../../component/SignInPromptModal';
 import './member3.css';
 
 const API = 'http://localhost:5001/api';
@@ -96,6 +98,8 @@ const SpaceScene = () => (
 /* COMPONENT */
 const Member3 = () => {
     const navigate = useNavigate();
+    const { user } = useUser();
+    const [showAuthModal, setShowAuthModal] = useState(false);
 
     const [phase, setPhase] = useState('loading');
     const [allQuestions, setAllQuestions] = useState([]);
@@ -153,6 +157,10 @@ const Member3 = () => {
 
     /*  Start mission */
     const startMission = () => {
+        if (!user) {
+            setShowAuthModal(true);
+            return;
+        }
         localStorage.removeItem('astrosera_quiz_state');
         setSavedState(null);
         const mapped = shuffle(allQuestions).slice(0, 10).map(q => ({
@@ -348,13 +356,19 @@ const Member3 = () => {
                         </button>
                     </div>
 
-                    {!userId && (
+                    {!user && (
                         <p className="mt-5 text-center text-xs text-amber-400/60">
                             Sign in to save your score and earn badges
                         </p>
                     )}
                 </div>
             </div>
+            <SignInPromptModal
+                isOpen={showAuthModal}
+                onClose={() => setShowAuthModal(false)}
+                title="Astronaut Access Required"
+                message="Please sign in to your command center to launch the Quiz Mission and track your scores."
+            />
         </div>
     );
 
