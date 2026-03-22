@@ -657,7 +657,7 @@ const Member6 = () => {
                                 controls
                                 autoPlay
                                 src={selectedVideo.videoUrl}
-                            >
+                             fetchpriority="high" preload="auto" playsInline muted loop>
                                 Your browser does not support the video tag.
                             </video>
                         </div>

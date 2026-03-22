@@ -18,7 +18,7 @@ const PricingSection = () => {
                 muted
                 playsInline
                 className="absolute top-0 left-0 min-w-full min-h-full object-cover z-0 opacity-60"
-            >
+             fetchpriority="high" preload="auto">
                 <source src="/videos/back1.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
             </video>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaCircle } from "react-icons/fa"; // Using font awesome for the simple bullet circles
+import { FaCircle } from 'react-icons/fa'; // Using font awesome for the simple bullet circles
 
 const FeaturesSection = () => {
     return (

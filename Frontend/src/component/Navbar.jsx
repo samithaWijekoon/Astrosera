@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { HiMenu, HiX } from 'react-icons/hi';
+import { HiMenu } from 'react-icons/hi';
+import { HiX } from 'react-icons/hi';
 import AuthContext from '../context/AuthContext';
 
 const Navbar = () => {

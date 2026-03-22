@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom'; // Make sure react-router-dom is installed
-import { IoIosRocket, IoMdCheckmarkCircleOutline } from "react-icons/io"; // Install react-icons
+import { IoIosRocket } from 'react-icons/io';
+import { IoMdCheckmarkCircleOutline } from 'react-icons/io'; // Install react-icons
 import AuthContext from '../../context/AuthContext'; // Import the AuthContext
 
 const Hero = () => {
@@ -23,7 +24,7 @@ const Hero = () => {
                 loop
                 muted
                 playsInline
-            />
+            fetchpriority="high" preload="auto" />
             {/* Overlay for better readability */}
             <div className="absolute top-0 left-0 w-full h-full bg-black/60 backdrop-blur-sm z-5"></div>
             {/* Navigation removed - moved to Navbar.jsx */}
