@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import * as THREE from 'three';
-import './Achievment.css';
 import AuthContext from '../../context/AuthContext';
+import SignInPromptModal from '../../component/SignInPromptModal';
+import './Achievment.css';
 
 const API = 'http://localhost:5001/api';
 
@@ -496,13 +497,26 @@ const Member4 = () => {
   const [error, setError] = useState(null);
   const [showCalendar, setShowCalendar] = useState(false);
   const [selectedBadge, setSelectedBadge] = useState(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const leaderboardRef = useRef(null);
 
   useEffect(() => {
     const userId = localStorage.getItem('userId');
     if (!userId) {
-      setError('Please log in to view your achievements.');
+      setCategories([
+        { title: 'Exploration Milestones', badges: [
+            { id: 'm1', name: 'First Steps', desc: 'Complete your first mission.', earned: false },
+            { id: 'm2', name: 'Orbit Pioneer', desc: 'Visit all planetary sectors.', earned: false },
+            { id: 'm3', name: 'Elite Commander', desc: 'Ascend to the global top 10.', earned: false }
+        ] },
+        { title: 'Total Days', badges: [
+            { id: 'd1', name: 'Rookie', desc: 'Log in 3 days in a row.', earned: false },
+            { id: 'd2', name: 'Veteran', desc: 'Log in 30 days in a row.', earned: false }
+        ] }
+      ]);
+      setLeaderboard([]);
       setLoading(false);
+      setTimeout(() => setShowAuthModal(true), 3000);
       return;
     }
 
@@ -829,6 +843,12 @@ const Member4 = () => {
         {/* ─── BADGE MODAL ─── */}
         <BadgeModal badge={selectedBadge} onClose={() => setSelectedBadge(null)} />
       </div>
+      <SignInPromptModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        title="Authentication Required"
+        message="Sign in to your Astrosera account to track your progress and unlock interactive badges."
+      />
     </div>
   );
 };
