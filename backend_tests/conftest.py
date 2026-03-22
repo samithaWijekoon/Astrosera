@@ -29,7 +29,7 @@ def rag_test_client():
     """
     Creates a FastAPI test client for the RAG system api.
     """
-    return TestClient(rag_app)
+    return TestClient(rag_app, raise_server_exceptions=False)
 
 @pytest.fixture
 def mock_db_collection():
@@ -57,9 +57,24 @@ def mock_rag_qa_service():
     Mocks the RAG question answering service to avoid calling actual LLMs (OpenAI) or Vector DBs (Pinecone).
     """
     with patch('RAG_System.src.app.api.answer_question') as mock_qa:
-        mock_qa.return_value = {
-            "answer": "This is a mocked RAG answer.",
-            "context": "This is mocked context from the vector database.",
-            "citations": {}
-        }
+        def side_effect(question):
+            approved_questions = [
+                "What is the Artemis mission?",
+                "What has the Curiosity rover found on Mars?",
+                "What is the Big Bang?",
+                "How does NASA use supercomputers?"
+            ]
+            if question in approved_questions:
+                return {
+                    "answer": f"Mocked answer for: {question}",
+                    "context": "Mocked context from vector database.",
+                    "citations": {}
+                }
+            return {
+                "answer": "This is a default mocked RAG answer.",
+                "context": "This is mocked context from the vector database.",
+                "citations": {}
+            }
+        
+        mock_qa.side_effect = side_effect
         yield mock_qa
