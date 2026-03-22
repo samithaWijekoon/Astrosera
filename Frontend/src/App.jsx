@@ -71,7 +71,7 @@ const App = () => {
             <Route path="/profile"       element={<PageTransition><ProtectedRoute><Profile /></ProtectedRoute></PageTransition>} />
 
             <Route path="/events"        element={<PageTransition><ProtectedRoute><Member2 /></ProtectedRoute></PageTransition>} />
-            <Route path="/achievements"  element={<PageTransition><Member4 /></PageTransition>} />
+            <Route path="/achievements"  element={<PageTransition><ProtectedRoute><Member4 /></ProtectedRoute></PageTransition>} />
             <Route path="/analytics"     element={<PageTransition><Home /></PageTransition>} />
             <Route path="/news"          element={<PageTransition><Member6 /></PageTransition>} />
             <Route path="/asteroid-alerts" element={<PageTransition><AsteroidAlerts /></PageTransition>} />
