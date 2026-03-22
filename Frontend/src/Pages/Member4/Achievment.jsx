@@ -6,6 +6,45 @@ import './Achievment.css';
 
 const API = 'http://localhost:5001/api';
 
+const MOCK_BADGE_BLUEPRINTS = {
+    combo: [
+        { id: 'cb1', image: '/images/badges/cb1.png', name: 'Stable Orbit', desc: 'Keep going, 3-day streak achieved.', color: '#a855f7' },
+        { id: 'cb2', image: '/images/badges/cb2.png', name: 'Twin Stars', desc: 'Steady streak, 6 days strong.', color: '#9333ea' },
+        { id: 'cb3', image: '/images/badges/cb3.png', name: 'Rising Constellation', desc: '9 days of consistency shining bright.', color: '#8b5cf6' },
+        { id: 'cb4', image: '/images/badges/cb4.png', name: 'Solar Pathfinder', desc: '12 days streak, blazing your path.', color: '#7e22ce' },
+        { id: 'cb5', image: '/images/badges/cb5.png', name: 'Galaxy Runner', desc: '15 days streak, reaching new heights.', color: '#c084fc' },
+        { id: 'cb6', image: '/images/badges/cb6.png', name: 'Nebula Voyager', desc: '18 days streak, exploring further.', color: '#d946ef' },
+        { id: 'cb7', image: '/images/badges/cb7.png', name: 'Orbit Master', desc: '21 days streak, mastery in progress.', color: '#a855f7' },
+        { id: 'cb8', image: '/images/badges/cb8.png', name: 'Cosmic Titan', desc: '24 days streak, strong and unstoppable.', color: '#9333ea' },
+        { id: 'cb9', image: '/images/badges/cb9.png', name: 'Supernova Force', desc: '27 days streak, bursting with power.', color: '#8b5cf6' },
+        { id: 'cb10', image: '/images/badges/cb10.png', name: 'Galactic Legend', desc: '30 days streak, ultimate achievement.', color: '#c084fc' },
+    ],
+    mission: [
+        { id: 'mm1', image: '/images/badges/mm1.png', name: 'Light Speed', desc: 'Finish a quiz under 2 minutes for the first time.', color: '#a855f7' },
+        { id: 'mm2', image: '/images/badges/mm2.png', name: 'Photon Mind', desc: 'Finish quizzes under 2 minutes 3 times.', color: '#9333ea' },
+        { id: 'mm3', image: '/images/badges/mm3.png', name: 'Nova Burst', desc: 'Finish quizzes under 2 minutes 5 times.', color: '#8b5cf6' },
+        { id: 'mm4', image: '/images/badges/mm4.png', name: 'Solar Flare', desc: 'Get full marks for the first time in a quiz.', color: '#7e22ce' },
+        { id: 'mm5', image: '/images/badges/mm5.png', name: 'Mission Legend', desc: 'Pass 5 times in quizzes without failing.', color: '#d946ef' },
+        { id: 'mm6', image: '/images/badges/mm6.png', name: 'Mission Commander', desc: 'Pass 10 times in quizzes without failing.', color: '#a855f7' },
+        { id: 'mm7', image: '/images/badges/mm7.png', name: 'Boss Mission', desc: 'Pass 20 times in quizzes without failing.', color: '#9333ea' },
+        { id: 'mm8', image: '/images/badges/mm8.png', name: 'Stable Signal', desc: 'Get the same score 3 times in a row.', color: '#c084fc' },
+        { id: 'mm9', image: '/images/badges/mm9.png', name: 'Twin Signal', desc: 'Get the same score for 2 consecutive days.', color: '#8b5cf6' },
+        { id: 'mm10', image: '/images/badges/mm10.png', name: 'Supernova Growth', desc: 'Get a new personal best in a quiz.', color: '#d946ef' },
+    ],
+    totalDays: [
+        { id: 'td1', image: '/images/badges/td1.png', name: 'Comet Spark', desc: '1 week of interaction, first milestone.', color: '#a855f7' },
+        { id: 'td2', image: '/images/badges/td2.png', name: 'Orbit Rookie', desc: '2 weeks, keeping the streak alive.', color: '#9333ea' },
+        { id: 'td3', image: '/images/badges/td3.png', name: 'Star Voyager', desc: '1 month of daily visits.', color: '#8b5cf6' },
+        { id: 'td4', image: '/images/badges/td4.png', name: 'Cosmic Trailblazer', desc: '1.5 months, strong streak.', color: '#7e22ce' },
+        { id: 'td5', image: '/images/badges/td5.png', name: 'Nebula Explorer', desc: '2 months, exploring consistently.', color: '#a855f7' },
+        { id: 'td6', image: '/images/badges/td6.png', name: 'Solar Navigator', desc: '3 months of daily dedication.', color: '#c084fc' },
+        { id: 'td7', image: '/images/badges/td7.png', name: 'Galaxy Runner', desc: '4 months, streaking through the stars.', color: '#d946ef' },
+        { id: 'td8', image: '/images/badges/td8.png', name: 'Stellar Commander', desc: 'Half a year, commanding the cosmos.', color: '#a855f7' },
+        { id: 'td9', image: '/images/badges/td9.png', name: 'Supernova Legend', desc: '9 months, shining brighter than ever.', color: '#9333ea' },
+        { id: 'td10', image: '/images/badges/td10.png', name: 'Celestial Immortal', desc: '1 year, ultimate streak master.', color: '#c084fc' },
+    ],
+};
+
 const StarCanvas = () => {
   const canvasRef = useRef(null);
 
@@ -504,19 +543,25 @@ const Member4 = () => {
     const userId = localStorage.getItem('userId');
     if (!userId) {
       setCategories([
-        { title: 'Exploration Milestones', badges: [
-            { id: 'm1', name: 'First Steps', desc: 'Complete your first mission.', earned: false },
-            { id: 'm2', name: 'Orbit Pioneer', desc: 'Visit all planetary sectors.', earned: false },
-            { id: 'm3', name: 'Elite Commander', desc: 'Ascend to the global top 10.', earned: false }
-        ] },
-        { title: 'Total Days', badges: [
-            { id: 'd1', name: 'Rookie', desc: 'Log in 3 days in a row.', earned: false },
-            { id: 'd2', name: 'Veteran', desc: 'Log in 30 days in a row.', earned: false }
-        ] }
+        { title: 'Combo Badges', badges: MOCK_BADGE_BLUEPRINTS.combo.map(b => ({ ...b, earned: false, started: '—', ended: '—' })) },
+        { title: 'Mission Master', badges: MOCK_BADGE_BLUEPRINTS.mission.map(b => ({ ...b, earned: false, started: '—', ended: '—' })) },
+        { title: 'Total Days', badges: MOCK_BADGE_BLUEPRINTS.totalDays.map(b => ({ ...b, earned: false, started: '—', ended: '—' })) },
       ]);
-      setLeaderboard([]);
-      setLoading(false);
-      setTimeout(() => setShowAuthModal(true), 3000);
+      
+      // Fetch public leaderboard to populate the UI visually
+      fetch(`${API}/leaderboard`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.success && data.leaderboard) {
+                setLeaderboard(data.leaderboard);
+            }
+        })
+        .catch(err => console.error(err))
+        .finally(() => {
+            setLoading(false);
+            setTimeout(() => setShowAuthModal(true), 3000);
+        });
+
       return;
     }
 
