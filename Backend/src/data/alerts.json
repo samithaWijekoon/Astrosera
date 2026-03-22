@@ -6,7 +6,7 @@
     "asteroidName": "(2008 MQ1)",
     "approachDate": "2026-Mar-21 03:26",
     "missDistKm": 62685677.31630987,
-    "status": "WATCHING",
+    "status": "PASSED",
     "createdAt": "2026-03-20T20:04:46.701Z"
   },
   {
@@ -16,7 +16,7 @@
     "asteroidName": "(2013 SK20)",
     "approachDate": "2026-Mar-21 18:40",
     "missDistKm": 11745827.438024664,
-    "status": "WATCHING",
+    "status": "PASSED",
     "createdAt": "2026-03-20T20:11:23.557Z"
   }
 ]
