@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useUser } from '../../context/AuthContext';
+import SignInPromptModal from '../../component/SignInPromptModal';
 import './chat.css';
 
 // API Configuration
@@ -140,6 +142,9 @@ const chat = () => {
   const location = useLocation();
   const hasSentAutoQuery = useRef(false);
 
+  const { user } = useUser();
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -199,6 +204,11 @@ const chat = () => {
   };
 
   const handleSend = async (overrideText) => {
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
+
     const textToSend = typeof overrideText === 'string' ? overrideText : input;
     if (!textToSend.trim()) return;
 
@@ -377,6 +387,12 @@ const chat = () => {
           Astrosera can make mistakes. Verify important information.
         </div>
       </div>
+      <SignInPromptModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        title="Command Clearance Required"
+        message="Ah, Commander! To interact with the Astrosera Database and submit live queries to the stars, you must be logged in to your comms terminal."
+      />
     </div>
   );
 };

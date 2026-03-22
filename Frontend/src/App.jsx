@@ -65,7 +65,7 @@ const App = () => {
         <AnimatePresence mode="wait" initial={false}>
           <Routes location={location} key={location.pathname}>
             <Route path="/"              element={<PageTransition><Home /></PageTransition>} />
-            <Route path="/chat"          element={<PageTransition><ProtectedRoute><Chat /></ProtectedRoute></PageTransition>} />
+            <Route path="/chat"          element={<PageTransition><Chat /></PageTransition>} />
             <Route path="/login"         element={<PageTransition><Login /></PageTransition>} />
             <Route path="/signup"        element={<PageTransition><Signup /></PageTransition>} />
             <Route path="/profile"       element={<PageTransition><ProtectedRoute><Profile /></ProtectedRoute></PageTransition>} />
