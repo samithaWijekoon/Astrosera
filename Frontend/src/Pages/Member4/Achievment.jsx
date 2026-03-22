@@ -2,8 +2,9 @@ import React, { useState, useRef, useEffect, useContext } from 'react';
 import * as THREE from 'three';
 import './Achievment.css';
 import AuthContext from '../../context/AuthContext';
+import { API_BASE_URL } from '../../config/apiConfig';
 
-const API = 'http://localhost:5001/api';
+const API = API_BASE_URL;
 
 // ─── Format date helper ───────────────────────────────────────────────────────
 function fmt(d) {

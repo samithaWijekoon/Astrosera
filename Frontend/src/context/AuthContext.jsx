@@ -1,10 +1,8 @@
 import { createContext, useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config/apiConfig';
 
 const AuthContext = createContext();
-
-// Port 5001 is required for your MacBook Air setup
-const backendurl = "http://localhost:5001"; // Use localhost instead of 127.0.0.1
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
@@ -42,7 +40,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            const response = await fetch(`${backendurl}/api/auth/login`, {
+            const response = await fetch(`${API_BASE_URL}/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -82,7 +80,7 @@ export const AuthProvider = ({ children }) => {
 
     const googleLogin = async (credential) => {
         try {
-            const response = await fetch(`${backendurl}/api/auth/google`, {
+            const response = await fetch(`${API_BASE_URL}/auth/google`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -113,7 +111,7 @@ export const AuthProvider = ({ children }) => {
 
     const signup = async (username, email, password) => {
         try {
-            const response = await fetch(`${backendurl}/api/auth/signup`, {
+            const response = await fetch(`${API_BASE_URL}/auth/signup`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

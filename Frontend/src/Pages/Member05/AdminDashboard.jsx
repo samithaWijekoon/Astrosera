@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ManageQuizzes from './ManageQuizzes'; // Your upload component
+import { API_BASE_URL } from '../../config/apiConfig';
 
 const AdminDashboard = () => {
     const [quizzes, setQuizzes] = useState([]);
@@ -9,7 +10,7 @@ const AdminDashboard = () => {
     const fetchQuizzes = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:5001/api/quiz', {
+            const res = await axios.get(`${API_BASE_URL}/quiz`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setQuizzes(res.data);
@@ -23,7 +24,7 @@ const AdminDashboard = () => {
         if (window.confirm("Are you sure? This will delete all 100 questions!")) {
             try {
                 const token = localStorage.getItem('token');
-                await axios.delete('http://localhost:5001/api/quiz/clear', {
+                await axios.delete(`${API_BASE_URL}/quiz/clear`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 alert("Database Cleared!");

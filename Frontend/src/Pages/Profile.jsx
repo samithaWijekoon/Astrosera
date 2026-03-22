@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
+import { API_BASE_URL } from '../../config/apiConfig';
 
 const AVATARS = [
     { id: 'astronaut1', url: '👨‍🚀', name: 'Astronaut 1' },
@@ -65,7 +66,7 @@ const Profile = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:5001/api/auth/profile', {
+            const response = await fetch(`${API_BASE_URL}/auth/profile`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
