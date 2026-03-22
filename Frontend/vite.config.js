@@ -19,7 +19,8 @@ export default defineConfig({
     setupFiles: './tests/setup.js',
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'html']
+      reporter: ['text', 'html'],
+      exclude: ['**/*.css', '**/*.scss', 'src/main.jsx', 'eslint.config.js']
     }
   }
 })

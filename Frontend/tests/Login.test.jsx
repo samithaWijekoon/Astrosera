@@ -9,9 +9,18 @@ vi.mock('react-router-dom', () => ({
   Link: ({ children, to }) => <a href={to}>{children}</a>,
 }));
 
-// Mock GoogleLogin
+// Mock GoogleLogin to call the passed handlers based on dataset attributes
 vi.mock('@react-oauth/google', () => ({
-  GoogleLogin: () => <button data-testid="google-btn">Google Login</button>,
+  GoogleLogin: ({ onSuccess, onError }) => (
+    <>
+      <button data-testid="google-success-btn" onClick={() => onSuccess({ credential: 'fake_token' })}>
+        Google Success
+      </button>
+      <button data-testid="google-error-btn" onClick={() => onError()}>
+        Google Error
+      </button>
+    </>
+  ),
 }));
 
 describe('Login Component', () => {
@@ -76,6 +85,38 @@ describe('Login Component', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Invalid credentials')).toBeInTheDocument();
+    });
+  });
+
+  it('handles Google Sign-In success', async () => {
+    mockGoogleLogin.mockResolvedValue({ success: true });
+    renderLogin();
+
+    fireEvent.click(screen.getByTestId('google-success-btn'));
+    
+    await waitFor(() => {
+        expect(mockGoogleLogin).toHaveBeenCalledWith('fake_token');
+    });
+  });
+
+  it('displays error on Google Sign-In backend verification failure', async () => {
+    mockGoogleLogin.mockResolvedValue({ success: false, message: 'Google Auth backend error' });
+    renderLogin();
+
+    fireEvent.click(screen.getByTestId('google-success-btn'));
+    
+    await waitFor(() => {
+        expect(screen.getByText('Google Auth backend error')).toBeInTheDocument();
+    });
+  });
+
+  it('displays error on Google Sign-In initialization failure', async () => {
+    renderLogin();
+
+    fireEvent.click(screen.getByTestId('google-error-btn'));
+    
+    await waitFor(() => {
+        expect(screen.getByText('Google Sign-In failed to initialize.')).toBeInTheDocument();
     });
   });
 });

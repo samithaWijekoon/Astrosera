@@ -9,7 +9,16 @@ vi.mock('react-router-dom', () => ({
 }));
 
 vi.mock('@react-oauth/google', () => ({
-  GoogleLogin: () => <button data-testid="google-btn">Google Login</button>,
+  GoogleLogin: ({ onSuccess, onError }) => (
+    <>
+      <button data-testid="google-success-btn" onClick={() => onSuccess({ credential: 'fake_token' })}>
+        Google Success
+      </button>
+      <button data-testid="google-error-btn" onClick={() => onError()}>
+        Google Error
+      </button>
+    </>
+  ),
 }));
 
 describe('Signup Component', () => {
@@ -73,6 +82,54 @@ describe('Signup Component', () => {
 
     await waitFor(() => {
       expect(mockSignup).toHaveBeenCalledWith('user123', 'u@example.com', 'ValidPass1!');
+    });
+  });
+
+  it('displays error on Signup failure', async () => {
+    mockSignup.mockResolvedValue({ success: false, message: 'Username taken' });
+    renderSignup();
+    
+    fireEvent.change(screen.getByPlaceholderText('Choose a username'), { target: { value: 'user123' } });
+    fireEvent.change(screen.getByPlaceholderText('Enter your email'), { target: { value: 'u@example.com' } });
+    fireEvent.change(screen.getByPlaceholderText('Create a password'), { target: { value: 'ValidPass1!' } });
+    fireEvent.change(screen.getByPlaceholderText('Confirm your password'), { target: { value: 'ValidPass1!' } });
+    
+    fireEvent.submit(screen.getByRole('button', { name: /sign up/i }).closest('form'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Username taken')).toBeInTheDocument();
+    });
+  });
+
+  it('handles Google Sign-In success', async () => {
+    mockGoogleLogin.mockResolvedValue({ success: true });
+    renderSignup();
+
+    fireEvent.click(screen.getByTestId('google-success-btn'));
+    
+    await waitFor(() => {
+        expect(mockGoogleLogin).toHaveBeenCalledWith('fake_token');
+    });
+  });
+
+  it('displays error on Google Sign-In backend verification failure', async () => {
+    mockGoogleLogin.mockResolvedValue({ success: false, message: 'Google Auth backend error' });
+    renderSignup();
+
+    fireEvent.click(screen.getByTestId('google-success-btn'));
+    
+    await waitFor(() => {
+        expect(screen.getByText('Google Auth backend error')).toBeInTheDocument();
+    });
+  });
+
+  it('displays error on Google Sign-In initialization failure', async () => {
+    renderSignup();
+
+    fireEvent.click(screen.getByTestId('google-error-btn'));
+    
+    await waitFor(() => {
+        expect(screen.getByText('Google Sign-In failed to initialize.')).toBeInTheDocument();
     });
   });
 });

@@ -119,4 +119,54 @@ describe('Chat Component', () => {
     });
   });
 
+  it('ignores empty, whitespace-only queries', async () => {
+    mockLocation.state = null;
+    global.fetch.mockImplementation((url) => {
+      return Promise.resolve({ ok: true });
+    });
+    renderComponent();
+
+    const textarea = screen.getByPlaceholderText(/Ask about space/i);
+    fireEvent.change(textarea, { target: { value: '   ' } });
+    
+    const buttons = screen.getAllByRole('button');
+    const sendButton = buttons[buttons.length - 1];
+    
+    fireEvent.click(sendButton);
+
+    // Should still be waiting on the welcome screen
+    await waitFor(() => {
+        expect(screen.getByText('Ask me about space')).toBeInTheDocument();
+    });
+  });
+
+  it('handles server errors during fetch gracefully', async () => {
+    mockLocation.state = null;
+    global.fetch.mockImplementation((url) => {
+      if (url.includes('/health')) return Promise.resolve({ ok: true });
+      if (url.includes('/qa')) {
+        return Promise.reject(new Error('Network error'));
+      }
+      return Promise.resolve({ ok: true });
+    });
+    renderComponent();
+
+    await waitFor(() => {
+      expect(screen.getByText('Ask me about space')).toBeInTheDocument();
+    });
+
+    const textarea = screen.getByPlaceholderText(/Ask about space/i);
+    fireEvent.change(textarea, { target: { value: 'How big is the Sun?' } });
+    
+    const buttons = screen.getAllByRole('button');
+    const sendButton = buttons[buttons.length - 1];
+    
+    fireEvent.click(sendButton);
+
+    // Expect the error UI response
+    await waitFor(() => {
+      expect(screen.getByText(/I apologize, but I'm having trouble connecting/i)).toBeInTheDocument();
+    });
+  });
+
 });
