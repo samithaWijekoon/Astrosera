@@ -4,6 +4,7 @@ import { AnimatePresence } from 'framer-motion'
 import Navbar from './component/Navbar'
 import Footer from './component/Footer'
 import PageTransition from './component/PageTransition'
+import ProtectedRoute from './component/ProtectedRoute'
 
 // ── Code-Split Page Imports ──────────────────────────────────────────────────
 // Each page is loaded lazily only when the user navigates to that route.
