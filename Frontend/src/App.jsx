@@ -68,7 +68,7 @@ const App = () => {
             <Route path="/chat"          element={<PageTransition><ProtectedRoute><Chat /></ProtectedRoute></PageTransition>} />
             <Route path="/login"         element={<PageTransition><Login /></PageTransition>} />
             <Route path="/signup"        element={<PageTransition><Signup /></PageTransition>} />
-            <Route path="/profile"       element={<PageTransition><Profile /></PageTransition>} />
+            <Route path="/profile"       element={<PageTransition><ProtectedRoute><Profile /></ProtectedRoute></PageTransition>} />
 
             <Route path="/events"        element={<PageTransition><Member2 /></PageTransition>} />
             <Route path="/achievements"  element={<PageTransition><Member4 /></PageTransition>} />
