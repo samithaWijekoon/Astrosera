@@ -80,7 +80,7 @@ const App = () => {
             <Route path="/admin"         element={<PageTransition><ProtectedRoute><AdminDashboard /></ProtectedRoute></PageTransition>} />
 
             {/* Member 03 - Quiz */}
-            <Route path="/quiz"          element={<PageTransition><Member3 /></PageTransition>} />
+            <Route path="/quiz"          element={<PageTransition><ProtectedRoute><Member3 /></ProtectedRoute></PageTransition>} />
 
             {/* Auth Verification */}
             <Route path="/verify-email"  element={<PageTransition><VerifyEmail /></PageTransition>} />
