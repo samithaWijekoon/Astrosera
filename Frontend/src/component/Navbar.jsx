@@ -97,7 +97,7 @@ const Navbar = () => {
 
                     {/* ── Logo ──────────────────────────────────── */}
                     <Link to="/" className="flex items-center gap-2.5 shrink-0 focus:outline-none group">
-                        <img src="/logo.png" alt="Astrosera" className="h-8 md:h-10 w-auto transition-transform duration-300 group-hover:scale-105" />
+                        <img src="/logo.png" alt="Astrosera" width="40" height="40" className="h-8 md:h-10 w-auto transition-transform duration-300 group-hover:scale-105" />
                     </Link>
 
                     {/* ── Desktop links (centred) ────────────────── */}
