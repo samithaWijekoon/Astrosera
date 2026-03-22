@@ -70,7 +70,7 @@ const App = () => {
             <Route path="/signup"        element={<PageTransition><Signup /></PageTransition>} />
             <Route path="/profile"       element={<PageTransition><ProtectedRoute><Profile /></ProtectedRoute></PageTransition>} />
 
-            <Route path="/events"        element={<PageTransition><Member2 /></PageTransition>} />
+            <Route path="/events"        element={<PageTransition><ProtectedRoute><Member2 /></ProtectedRoute></PageTransition>} />
             <Route path="/achievements"  element={<PageTransition><Member4 /></PageTransition>} />
             <Route path="/analytics"     element={<PageTransition><Home /></PageTransition>} />
             <Route path="/news"          element={<PageTransition><Member6 /></PageTransition>} />
