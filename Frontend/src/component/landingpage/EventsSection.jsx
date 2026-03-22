@@ -1,9 +1,18 @@
 import React, { useState } from 'react';
-import { FiCalendar, FiClock, FiMapPin, FiNavigation, FiEye, FiBell, FiMail, FiCheckCircle } from "react-icons/fi";
-import { IoRocketOutline, IoPlanetOutline } from "react-icons/io5";
-import { BiRadar } from "react-icons/bi";
-import { BsToggleOn, BsToggleOff } from "react-icons/bs";
-import { WiSolarEclipse } from "react-icons/wi";
+import { FiCalendar } from 'react-icons/fi';
+import { FiClock } from 'react-icons/fi';
+import { FiMapPin } from 'react-icons/fi';
+import { FiNavigation } from 'react-icons/fi';
+import { FiEye } from 'react-icons/fi';
+import { FiBell } from 'react-icons/fi';
+import { FiMail } from 'react-icons/fi';
+import { FiCheckCircle } from 'react-icons/fi';
+import { IoRocketOutline } from 'react-icons/io5';
+import { IoPlanetOutline } from 'react-icons/io5';
+import { BiRadar } from 'react-icons/bi';
+import { BsToggleOn } from 'react-icons/bs';
+import { BsToggleOff } from 'react-icons/bs';
+import { WiSolarEclipse } from 'react-icons/wi';
 
 const EventsSection = () => {
     // State for toggles in the Smart Reminders card
@@ -82,7 +91,7 @@ const EventsSection = () => {
                 muted
                 playsInline
                 className="absolute top-0 left-0 w-full h-full object-cover z-0 opacity-60"
-            >
+             fetchpriority="high" preload="auto">
                 <source src="/videos/back2.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
             </video>

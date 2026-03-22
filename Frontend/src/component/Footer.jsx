@@ -1,6 +1,8 @@
 import React from 'react';
-import { FiTwitter, FiInstagram, FiArrowRight } from "react-icons/fi";
-import { IoRocketOutline } from "react-icons/io5";
+import { FiTwitter } from 'react-icons/fi';
+import { FiInstagram } from 'react-icons/fi';
+import { FiArrowRight } from 'react-icons/fi';
+import { IoRocketOutline } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 
 const Footer = () => {
@@ -108,10 +110,10 @@ const Footer = () => {
                     
                     {/* Social Icons */}
                     <div className="flex space-x-4">
-                        <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-purple-600/20 hover:border-purple-500/50 transition-all duration-300">
+                        <a aria-label="Link" href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-purple-600/20 hover:border-purple-500/50 transition-all duration-300">
                             <FiTwitter size={18} />
                         </a>
-                        <a href="https://instagram.com/astrosera" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-pink-600/20 hover:border-pink-500/50 transition-all duration-300">
+                        <a aria-label="Link" href="https://instagram.com/astrosera" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-pink-600/20 hover:border-pink-500/50 transition-all duration-300">
                             <FiInstagram size={18} />
                         </a>
                     </div>

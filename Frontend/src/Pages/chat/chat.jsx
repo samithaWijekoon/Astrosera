@@ -271,7 +271,7 @@ const chat = () => {
 
       <header className="chat-header">
         <div className="header-left">
-          <img src="/logo.png" alt="Astrosera Logo" className="header-logo" />
+          <img src="/logo.png" alt="Astrosera Logo" width="40" height="40" className="header-logo" />
           <div className="status-dot"></div>
           <div>
             <h1 className="app-title">Astrosera</h1>

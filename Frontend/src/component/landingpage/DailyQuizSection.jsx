@@ -1,9 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaFire, FaTrophy, FaMedal, FaChartLine } from "react-icons/fa";
-import { IoMdCheckmarkCircle, IoMdCloseCircle } from "react-icons/io";
-import { HiLightBulb } from "react-icons/hi";
-import { BsStars } from "react-icons/bs";
+import { FaFire } from 'react-icons/fa';
+import { FaTrophy } from 'react-icons/fa';
+import { FaMedal } from 'react-icons/fa';
+import { FaChartLine } from 'react-icons/fa';
+import { IoMdCheckmarkCircle } from 'react-icons/io';
+import { IoMdCloseCircle } from 'react-icons/io';
+import { HiLightBulb } from 'react-icons/hi';
+import { BsStars } from 'react-icons/bs';
 import AuthContext from '../../context/AuthContext';
 
 const API_BASE = 'http://localhost:5001/api';
@@ -82,7 +86,7 @@ const DailyQuizSection = () => {
                 muted
                 playsInline
                 className="absolute top-0 left-0 w-full h-full object-cover z-0 opacity-60"
-            >
+             fetchpriority="high" preload="auto">
                 <source src="/videos/back2.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
             </video>

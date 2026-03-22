@@ -1,5 +1,7 @@
 import React from 'react';
-import { FiShield, FiDatabase, FiAward } from "react-icons/fi";
+import { FiShield } from 'react-icons/fi';
+import { FiDatabase } from 'react-icons/fi';
+import { FiAward } from 'react-icons/fi';
 
 const StatsSection = () => {
     const stats = [
@@ -40,7 +42,7 @@ const StatsSection = () => {
                 muted
                 playsInline
                 className="absolute top-0 left-0 w-full h-full object-cover z-0 opacity-60"
-            >
+             fetchpriority="high" preload="auto">
                 <source src="/videos/back2.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
             </video>

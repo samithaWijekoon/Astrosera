@@ -233,15 +233,20 @@ const googleAuth = async (req, res) => {
 
         if (!user) {
             // Create a new user since they don't exist
-            // Generate a random secure password for OAuth users because password is required in the schema
-            const randomPassword = require('crypto').randomBytes(16).toString('hex');
+            // Generate a random secure password for OAuth users that strictly satisfies the specific allowed special characters (@$!%*?&#)
+            const randomPassword = require('crypto').randomBytes(8).toString('hex') + 'Auth1@!';
             
             user = await User.create({
                 username: name.replace(/\s+/g, '') + Math.floor(Math.random() * 1000), // Create a unique username
                 email,
                 password: randomPassword,
                 avatarInitials: name.slice(0, 2).toUpperCase(),
+                isVerified: true, // Google users are implicitly verified
             });
+        } else if (!user.isVerified) {
+            // If they signed up through standard mail but didn't verify, mark as verified now
+            user.isVerified = true;
+            await user.save();
         }
 
         // Generate JWT token for Astrosera

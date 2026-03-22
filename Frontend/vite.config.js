@@ -12,5 +12,15 @@ export default defineConfig({
         changeOrigin: true,
       }
     }
+  },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './tests/setup.js',
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html'],
+      exclude: ['**/*.css', '**/*.scss', 'src/main.jsx', 'eslint.config.js']
+    }
   }
 })
