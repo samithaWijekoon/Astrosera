@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FiCalendar } from 'react-icons/fi';
 import { FiClock } from 'react-icons/fi';
 import { FiMapPin } from 'react-icons/fi';
@@ -15,6 +16,7 @@ import { BsToggleOff } from 'react-icons/bs';
 import { WiSolarEclipse } from 'react-icons/wi';
 
 const EventsSection = () => {
+    const navigate = useNavigate();
     // State for toggles in the Smart Reminders card
     const [reminders, setReminders] = useState({
         oneHour: true,
@@ -196,8 +198,8 @@ const EventsSection = () => {
                         </div>
 
                         <div className="flex space-x-3">
-                            <button onClick={() => sendReminderEmail('SpaceX Starship Flight 7', 'Specific Event', 'Nov 24, 2026 at 6:30 PM EST')} className="bg-orange-600 hover:bg-orange-700 text-white px-5 py-2 rounded-full text-xs font-medium transition cursor-pointer hover:shadow-lg hover:shadow-orange-600/30">Set Reminder</button>
-                            <button className="bg-transparent hover:bg-white/5 text-gray-300 px-5 py-2 rounded-full text-xs font-medium border border-gray-700 transition cursor-pointer">View Details</button>
+                            <button onClick={() => navigate('/events')} className="bg-orange-600 hover:bg-orange-700 text-white px-5 py-2 rounded-full text-xs font-medium transition cursor-pointer hover:shadow-lg hover:shadow-orange-600/30">Set Reminder</button>
+                            <button onClick={() => navigate('/events')} className="bg-transparent hover:bg-white/5 text-gray-300 px-5 py-2 rounded-full text-xs font-medium border border-gray-700 transition cursor-pointer">View Details</button>
                         </div>
                     </div>
 
@@ -227,8 +229,8 @@ const EventsSection = () => {
                         </div>
 
                         <div className="flex space-x-3">
-                            <button onClick={() => sendReminderEmail('Geminids Meteor Shower Peak', 'Specific Event', 'Dec 13-14, 2026 at 11:00 PM')} className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full text-xs font-medium transition cursor-pointer hover:shadow-lg hover:shadow-blue-600/30">Set Reminder</button>
-                            <button className="bg-transparent hover:bg-white/5 text-gray-300 px-5 py-2 rounded-full text-xs font-medium border border-gray-700 transition cursor-pointer">View Details</button>
+                            <button onClick={() => navigate('/events')} className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full text-xs font-medium transition cursor-pointer hover:shadow-lg hover:shadow-blue-600/30">Set Reminder</button>
+                            <button onClick={() => navigate('/events')} className="bg-transparent hover:bg-white/5 text-gray-300 px-5 py-2 rounded-full text-xs font-medium border border-gray-700 transition cursor-pointer">View Details</button>
                         </div>
                     </div>
 
@@ -257,8 +259,8 @@ const EventsSection = () => {
                         </div>
 
                         <div className="flex space-x-3">
-                            <button onClick={() => sendReminderEmail('ISS Pass Overhead', 'Specific Event', 'Today at 8:45 PM EST')} className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-full text-xs font-medium transition cursor-pointer hover:shadow-lg hover:shadow-purple-600/30">Set Reminder</button>
-                            <button className="bg-transparent hover:bg-white/5 text-gray-300 px-5 py-2 rounded-full text-xs font-medium border border-gray-700 transition cursor-pointer">View Details</button>
+                            <button onClick={() => navigate('/events')} className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-full text-xs font-medium transition cursor-pointer hover:shadow-lg hover:shadow-purple-600/30">Set Reminder</button>
+                            <button onClick={() => navigate('/events')} className="bg-transparent hover:bg-white/5 text-gray-300 px-5 py-2 rounded-full text-xs font-medium border border-gray-700 transition cursor-pointer">View Details</button>
                         </div>
                     </div>
 
