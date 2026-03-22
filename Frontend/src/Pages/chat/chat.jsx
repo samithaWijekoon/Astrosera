@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './chat.css';
+import { RAG_BASE_URL } from '../../config/apiConfig';
 
 // API Configuration
-const RAG_API_URL = 'http://localhost:8001';
-
+const RAG_API_URL = RAG_BASE_URL;
 
 const chat = () => {
   const [messages, setMessages] = useState([

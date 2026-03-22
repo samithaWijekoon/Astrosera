@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './member6.css';
+import { API_BASE_URL } from '../../config/apiConfig';
 
-const API_BASE = 'http://localhost:8001/api';
+const API_BASE = API_BASE_URL;
 
 const Member6 = () => {
     const [searchTerm, setSearchTerm] = useState("");

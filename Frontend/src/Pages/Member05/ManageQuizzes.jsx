@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../../config/apiConfig';
 
 const ManageQuizzes = () => {
     const [file, setFile] = useState(null);
@@ -18,7 +19,7 @@ const ManageQuizzes = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.post('http://localhost:5001/api/quiz/upload', formData, {
+            const response = await axios.post(`${API_BASE_URL}/quiz/upload`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}`
