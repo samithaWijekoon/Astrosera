@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './member3.css';
+import { API_BASE_URL } from '../../config/apiConfig';
 
-const API = 'http://localhost:5001/api';
+const API = API_BASE_URL;
 const QUIZ_TIME_LIMIT_MS = 120_000;
 
 /* Fisher-Yates */
