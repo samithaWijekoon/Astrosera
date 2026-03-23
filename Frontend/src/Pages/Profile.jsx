@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
-import { API_BASE_URL } from '../../config/apiConfig';
+import { API_BASE_URL } from '../config/apiConfig';
 
 const AVATARS = [
     { id: 'astronaut1', url: '👨‍🚀', name: 'Astronaut 1' },
