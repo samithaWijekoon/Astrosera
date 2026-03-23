@@ -1,19 +1,28 @@
+require('dotenv').config({ override: true });
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
-const connectDB = require('./config/db');
+const { connectDB } = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const leaderboardRoutes = require('./routes/leaderboardRoutes');
 const gamificationRoutes = require('./routes/gamification');
 const analyticsRoutes = require('./routes/analyticsRoutes');
 const quizRoutes = require('./routes/quizRoutes');
 const fileUpload = require('express-fileupload');
-require('dotenv').config();
 
 // Initialize Database
 connectDB();
 
 const app = express();
 
+app.use(express.json());
+
+// Serve badge images (and any other public assets in Frontend/public/images)
+app.use('/images', express.static(path.join(__dirname, '../../Frontend/public/images')));
+
+console.log('FRONTEND_URI:', process.env.FRONTEND_URI);
+
+// 1. CORS CONFIGURATION (Flexible for local development)
 // 1. CORS CONFIGURATION
 app.use(cors({
     origin: function (origin, callback) {

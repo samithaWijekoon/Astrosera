@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom'; // Make sure react-router-dom is installed
-import { IoIosRocket, IoMdCheckmarkCircleOutline } from "react-icons/io"; // Install react-icons
+import { IoIosRocket } from 'react-icons/io';
+import { IoMdCheckmarkCircleOutline } from 'react-icons/io'; // Install react-icons
 import AuthContext from '../../context/AuthContext'; // Import the AuthContext
 
 const Hero = () => {
@@ -23,10 +24,9 @@ const Hero = () => {
                 loop
                 muted
                 playsInline
-            />
+            fetchpriority="high" preload="auto" />
             {/* Overlay for better readability */}
-            <div className="absolute top-0 left-0 w-full h-full bg-black/50 z-10"></div>
-
+            <div className="absolute top-0 left-0 w-full h-full bg-black/60 backdrop-blur-sm z-5"></div>
             {/* Navigation removed - moved to Navbar.jsx */}
 
             {/* Hero Content */}
@@ -40,7 +40,7 @@ const Hero = () => {
                 </p>
                 <div className="flex space-x-4 mb-12 animate-fade-in-up delay-300">
                     {user ? (
-                        <button 
+                        <button
                             onClick={scrollToChat}
                             className="bg-purple-600/30 backdrop-blur-xl border border-white/10 hover:bg-purple-600/50 text-white font-bold py-3 px-8 rounded-full transition duration-300 shadow-lg shadow-purple-900/20 transform hover:scale-105"
                         >

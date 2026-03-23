@@ -3,7 +3,7 @@ This module defines three LangChain agents (Retrieval, Summarization,
 Verification) and thin node functions that LangGraph uses to invoke them.
 """
 from typing import List
-from langchain.agents import create_agent
+from langgraph.prebuilt import create_react_agent
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 from ..llm.factory import create_chat_model
 from .prompts import (
@@ -22,20 +22,20 @@ def _extract_last_ai_content(messages: List[object]) -> str:
     return ""
 
 # Define agents at module level for reuse
-retrieval_agent = create_agent(
+retrieval_agent = create_react_agent(
     model=create_chat_model(),
     tools=[retrieval_tool],
-    system_prompt=RETRIEVAL_SYSTEM_PROMPT,
+    prompt=RETRIEVAL_SYSTEM_PROMPT,
 )
-summarization_agent = create_agent(
+summarization_agent = create_react_agent(
     model=create_chat_model(),
     tools=[],
-    system_prompt=SUMMARIZATION_SYSTEM_PROMPT,
+    prompt=SUMMARIZATION_SYSTEM_PROMPT,
 )
-verification_agent = create_agent(
+verification_agent = create_react_agent(
     model=create_chat_model(),
     tools=[],
-    system_prompt=VERIFICATION_SYSTEM_PROMPT,
+    prompt=VERIFICATION_SYSTEM_PROMPT,
 )
 
 def retrieval_node(state: QAState) -> QAState:

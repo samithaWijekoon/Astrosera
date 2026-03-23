@@ -1,0 +1,42 @@
+[
+  {
+    "id": "48525eac-2b12-4d99-8ee7-0837a36a2c22",
+    "email": "samiyart543@gmai.com",
+    "asteroidId": "3414400",
+    "asteroidName": "(2008 MQ1)",
+    "approachDate": "2026-Mar-21 03:26",
+    "missDistKm": 62685677.31630987,
+    "status": "PASSED",
+    "createdAt": "2026-03-20T20:04:46.701Z"
+  },
+  {
+    "id": "7e986235-351a-4fcc-a4b8-5ff43eda2878",
+    "email": "samiyart543@gmai.com",
+    "asteroidId": "3648644",
+    "asteroidName": "(2013 SK20)",
+    "approachDate": "2026-Mar-21 18:40",
+    "missDistKm": 11745827.438024664,
+    "status": "PASSED",
+    "createdAt": "2026-03-20T20:11:23.557Z"
+  },
+  {
+    "id": "92253bff-232a-4a70-8a09-c68b3a2c5b6d",
+    "email": "samiyart543@gmail.com",
+    "asteroidId": "3546367",
+    "asteroidName": "(2010 RA91)",
+    "approachDate": "2026-Mar-22 01:13",
+    "missDistKm": 1795733.008527006,
+    "status": "PASSED",
+    "createdAt": "2026-03-22T06:53:43.402Z"
+  },
+  {
+    "id": "6f4515e5-b035-4e53-b9be-9aec85d03bd2",
+    "email": "samiyart543@gmail.com",
+    "asteroidId": "3836962",
+    "asteroidName": "(2018 YU)",
+    "approachDate": "2026-Mar-22 14:07",
+    "missDistKm": 21132883.50575859,
+    "status": "NOTIFIED",
+    "createdAt": "2026-03-22T07:01:59.732Z"
+  }
+]

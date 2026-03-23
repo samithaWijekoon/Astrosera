@@ -69,3 +69,18 @@
 .delay-300 {
   animation-delay: 300ms;
 }
+
+/* ── Scroll Reveal Animations ─────────────────────────────────────────────── */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(48px);
+  transition:
+    opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.scroll-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}

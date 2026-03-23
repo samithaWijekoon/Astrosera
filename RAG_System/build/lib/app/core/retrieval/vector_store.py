@@ -2,7 +2,7 @@
 
 from pathlib import Path
 from functools import lru_cache
-from typing import List
+from typing import List, Optional
 
 from pinecone import Pinecone
 from langchain_core.documents import Document
@@ -33,7 +33,7 @@ def _get_vector_store() -> PineconeVectorStore:
         embedding=embeddings,
     )
 
-def get_retriever(k: int | None = None):
+def get_retriever(k: Optional[int] = None):
     """Get a Pinecone retriever instance.
 
     Args:
@@ -50,7 +50,7 @@ def get_retriever(k: int | None = None):
     return vector_store.as_retriever(search_kwargs={"k": k})
 
 
-def retrieve(query: str, k: int | None = None) -> List[Document]:
+def retrieve(query: str, k: Optional[int] = None) -> List[Document]:
     """Retrieve documents from Pinecone for a given query.
 
     Args:

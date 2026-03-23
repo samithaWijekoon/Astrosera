@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../config/apiConfig';
 
@@ -7,7 +7,13 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [email, setEmail] = useState(() => localStorage.getItem('astrosera_email') || '');
     const navigate = useNavigate();
+
+    function saveEmail(e) {
+        setEmail(e);
+        localStorage.setItem('astrosera_email', e);
+    }
 
     useEffect(() => {
         // 1. Check for stored user on page load/refresh
@@ -56,7 +62,15 @@ export const AuthProvider = ({ children }) => {
                 navigate('/');
                 return { success: true };
             } else {
-                return { success: false, message: data.message || "Invalid credentials" };
+                const errorMessage = data.message || data.detail || "Invalid credentials";
+                
+                // If the user's email is not verified (HTTP 403)
+                if (response.status === 403 && errorMessage.toLowerCase().includes("not verified")) {
+                    navigate(`/verify-email?email=${encodeURIComponent(email)}`);
+                    return { success: false, message: "Email not verified. Redirecting..." };
+                }
+
+                return { success: false, message: errorMessage };
             }
         } catch (error) {
             console.error("Login error:", error);
@@ -108,15 +122,14 @@ export const AuthProvider = ({ children }) => {
             const data = await response.json();
 
             if (response.ok) {
-                setUser(data);
-                localStorage.setItem('user', JSON.stringify(data));
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('userId', data._id);
-
-                navigate('/');
+                // Temporarily store the password so VerifyEmail can auto-login after OTP
+                sessionStorage.setItem('pending_otp_email', email);
+                sessionStorage.setItem('pending_otp_password', password);
+                // Return success so AuthContext can navigate
+                navigate(`/verify-email?email=${encodeURIComponent(email)}`);
                 return { success: true };
             } else {
-                return { success: false, message: data.message };
+                return { success: false, message: data.message || data.detail || 'Signup failed' };
             }
         } catch (error) {
             console.error("Signup error:", error);
@@ -145,10 +158,13 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, signup, logout, googleLogin, updateUser, loading }}>
+        <AuthContext.Provider value={{ user, login, signup, logout, googleLogin, updateUser, loading, email, saveEmail }}>
             {children}
         </AuthContext.Provider>
     );
 };
+
+// ─── useUser hook (merged from UserContext) ───────────────────────────────────
+export function useUser() { return useContext(AuthContext); }
 
 export default AuthContext;

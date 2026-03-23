@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useUser } from '../../context/AuthContext';
+import SignInPromptModal from '../../component/SignInPromptModal';
 import './chat.css';
 import { RAG_BASE_URL } from '../../config/apiConfig';
 
@@ -6,30 +9,27 @@ import { RAG_BASE_URL } from '../../config/apiConfig';
 const RAG_API_URL = RAG_BASE_URL;
 
 const chat = () => {
-  const [messages, setMessages] = useState([
-    { 
-      id: 1, 
-      text: "Hello! I am AstraBot, your AI astronomy assistant. Ask me anything about the cosmos!", 
-      sender: 'bot',
-      timestamp: new Date().toISOString()
-    }
-  ]);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
-  const [apiStatus, setApiStatus] = useState('checking'); // checking, connected, error
-  const messagesEndRef = useRef(null);
+  const [apiStatus, setApiStatus] = useState('checking');
 
-  // Auto-scroll to bottom when new messages arrive
+  const messagesEndRef = useRef(null);
+  const textareaRef = useRef(null);
+  const location = useLocation();
+  const hasSentAutoQuery = useRef(false);
+
+  const { user } = useUser();
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, isTyping]);
 
-  // Check API health on mount
   useEffect(() => {
     checkApiHealth();
   }, []);
@@ -38,204 +38,238 @@ const chat = () => {
     try {
       const response = await fetch(`${RAG_API_URL}/health`);
       if (response.ok) {
-        const data = await response.json();
-        console.log('API Health:', data);
         setApiStatus('connected');
       } else {
         setApiStatus('error');
       }
     } catch (error) {
-      console.error('API Health Check Failed:', error);
       setApiStatus('error');
     }
   };
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
-    
-    // Check API status
-    if (apiStatus !== 'connected') {
-      alert('RAG API is not available. Please ensure the API is running on port 8000.');
+  useEffect(() => {
+    if (apiStatus === 'connected' && location.state?.autoQuery && !hasSentAutoQuery.current) {
+      hasSentAutoQuery.current = true;
+      const query = location.state.autoQuery;
+      setInput(query);
+      handleSend(query);
+      window.history.replaceState({}, document.title);
+    }
+  }, [apiStatus, location.state?.autoQuery]);
+
+  const autoResize = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px';
+    }
+  };
+
+  const handleInput = (e) => {
+    setInput(e.target.value);
+    autoResize();
+  };
+
+  const clearChat = () => {
+    setMessages([]);
+    setInput("");
+    if (textareaRef.current) textareaRef.current.style.height = 'auto';
+  };
+
+  const handleQuickPrompt = (promptText) => {
+    setInput(promptText);
+    handleSend(promptText);
+  };
+
+  const handleSend = async (overrideText) => {
+    if (!user) {
+      setShowAuthModal(true);
       return;
     }
 
-    // User message
-    const userMsg = { 
-      id: Date.now(), 
-      text: input, 
+    const textToSend = typeof overrideText === 'string' ? overrideText : input;
+    if (!textToSend.trim()) return;
+
+    if (apiStatus !== 'connected') {
+      alert('RAG API is offline. Please start it on port 8001.');
+      return;
+    }
+
+    const newMsgArr = [...messages, {
+      id: Date.now(),
+      text: textToSend,
       sender: 'user',
       timestamp: new Date().toISOString()
-    };
-    setMessages(prev => [...prev, userMsg]);
-    const currentQuestion = input;
+    }];
+    setMessages(newMsgArr);
     setInput("");
+    if (textareaRef.current) textareaRef.current.style.height = 'auto';
     setIsTyping(true);
 
     try {
-      // Call RAG API
       const response = await fetch(`${RAG_API_URL}/qa`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          question: currentQuestion,
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: textToSend })
       });
 
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.status}`);
+      if (!response.ok) throw new Error(`API Error: ${response.status}`);
+      const data = await response.json();
+
+      setMessages(prev => [...prev, {
+        id: Date.now() + 1,
+        text: data.answer,
+        sender: 'bot',
+        timestamp: new Date().toISOString()
+      }]);
+
+      const userId = localStorage.getItem('userId');
+      if (userId) {
+        try {
+          await fetch(`${MAIN_API_URL}/gamification/record-interaction`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, isQuiz: false })
+          });
+        } catch (e) { }
       }
 
-      const data = await response.json();
-      
-      // Bot response
-      // citations from RAG is a dict {key: {title, content...}}, convert to array
-      const citationsArray = data.citations
-        ? Object.values(data.citations)
-        : [];
-
-      const botMsg = { 
-        id: Date.now() + 1, 
-        text: data.answer, 
-        sender: 'bot',
-        citations: citationsArray,
-        timestamp: new Date().toISOString()
-      };
-      
-      setMessages(prev => [...prev, botMsg]);
-      
     } catch (error) {
-      console.error('Error querying RAG:', error);
-      
-      // Error message
-      const errorMsg = {
+      setMessages(prev => [...prev, {
         id: Date.now() + 1,
-        text: "I apologize, but I'm having trouble connecting to my knowledge base right now. Please make sure the RAG API is running and try again.",
+        text: "I apologize, but I'm having trouble connecting to my knowledge base right now.",
         sender: 'bot',
         isError: true,
         timestamp: new Date().toISOString()
-      };
-      
-      setMessages(prev => [...prev, errorMsg]);
+      }]);
     } finally {
       setIsTyping(false);
     }
   };
 
-  const handleClearChat = async () => {
-    try {
-      setMessages([
-        { 
-          id: Date.now(), 
-          text: "Chat history cleared! I'm ready for new questions.", 
-          sender: 'bot',
-          timestamp: new Date().toISOString()
-        }
-      ]);
-    } catch (error) {
-      console.error('Error clearing chat:', error);
-    }
-  };
-
   return (
     <div className="chat-container">
-      <header className="chat-header">
-        <div>
-          <h1>AstraBot 🌟</h1>
-          <p>Your AI Astronomy Assistant</p>
-        </div>
-        <div className="header-controls">
-          <div className={`api-status ${apiStatus}`}>
-            <span className="status-dot"></span>
-            {apiStatus === 'connected' && 'Connected'}
-            {apiStatus === 'checking' && 'Checking...'}
-            {apiStatus === 'error' && 'API Offline'}
-          </div>
-          <button onClick={handleClearChat} className="clear-btn" title="Clear Chat">
-            🗑️ Clear
-          </button>
-        </div>
-      </header>
-
-      <div className="chat-window">
-        {messages.map((msg) => (
-          <div key={msg.id} className={`message-bubble ${msg.sender} ${msg.isError ? 'error' : ''}`}>
-            <div className="message-content">
-              <p>{msg.text}</p>
-              
-              {msg.searchQuery && msg.searchQuery !== msg.text && (
-                <div className="search-query-info">
-                  <small>🔍 Searched for: "{msg.searchQuery}"</small>
-                </div>
-              )}
-              
-              {msg.citations && msg.citations.length > 0 && (
-                <div className="citation-container">
-                  <div className="citation-header">📚 Sources:</div>
-                  {msg.citations.map((cite, idx) => (
-                    <div key={idx} className="source-card">
-                      <div className="source-title">{cite.title}</div>
-                      <div className="source-preview">{cite.content_preview}</div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            
-            <div className="message-timestamp">
-              {new Date(msg.timestamp).toLocaleTimeString([], { 
-                hour: '2-digit', 
-                minute: '2-digit' 
-              })}
-            </div>
-          </div>
-        ))}
-        
-        {isTyping && (
-          <div className="typing-indicator">
-            <div className="typing-dots">
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-            <span className="typing-text">AstraBot is thinking...</span>
-          </div>
-        )}
-        
-        <div ref={messagesEndRef} />
-      </div>
-
-      <div className="chat-input-area">
-        <button 
-          className="voice-input-btn" 
-          title="Voice Input (Coming Soon)"
-          disabled
-        >
-          🎤
-        </button>
-        <input 
-          type="text" 
-          placeholder="Ask about space, planets, stars, galaxies..." 
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-          disabled={isTyping || apiStatus !== 'connected'}
-        />
-        <button 
-          className="send-btn" 
-          onClick={handleSend}
-          disabled={!input.trim() || isTyping || apiStatus !== 'connected'}
-        >
-          {isTyping ? '...' : 'Send'}
-        </button>
-      </div>
+      <StarCanvas />
 
       {apiStatus === 'error' && (
         <div className="api-error-banner">
-      ⚠️ RAG API is not running. Start it with: <code>venv/bin/uvicorn src.app.api:app --reload --port 8001</code>
+          ⚠️ RAG API offline. Start with: uvicorn src.app.api:app --reload --port 8000
         </div>
       )}
+
+      <header className="chat-header">
+        <div className="header-left">
+          <img src="/logo.png" alt="Astrosera Logo" width="40" height="40" className="header-logo" />
+          <div className="status-dot"></div>
+          <div>
+            <h1 className="app-title">Astrosera</h1>
+            <span className="app-subtitle">Online • Astronomy AI</span>
+          </div>
+        </div>
+        <button onClick={clearChat} className="clear-chat-btn">
+          Clear chat
+        </button>
+      </header>
+
+      <div className="chat-window">
+        {messages.length === 0 ? (
+          <div className="welcome-screen">
+            <div className="welcome-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-2.773l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+              </svg>
+            </div>
+            <h2 className="welcome-title">Ask me about space</h2>
+            <p className="welcome-subtitle">Astrosera is ready to explore the cosmos with you.</p>
+            <div className="quick-prompts">
+              {['Universe', 'Black holes', 'Mars', 'Stars', 'Dark matter'].map(p => (
+                <button key={p} className="prompt-chip" onClick={() => handleQuickPrompt(p)}>{p} ✨</button>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="chat-content-wrapper">
+            {messages.map((msg) => (
+              <div key={msg.id} className={`message-row ${msg.sender}`}>
+                {msg.sender === 'bot' && (
+                  <div className="bot-avatar-wrapper">
+                    <div className="bot-avatar">
+                      <img src="/images/bot-avatar.png" alt="Astrosera" className="bot-avatar-img" />
+                    </div>
+                  </div>
+                )}
+                <div className={`message-content ${msg.isError ? 'error' : ''}`}>
+                  {msg.sender === 'user' ? (
+                    <div className="message-box">{msg.text}</div>
+                  ) : (
+                    renderFormattedText(msg.text)
+                  )}
+                  <div className="timestamp">
+                    {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {isTyping && (
+              <div className="message-row bot">
+                <div className="bot-avatar-wrapper">
+                  <div className="bot-avatar">
+                    <img src="/images/bot-avatar.png" alt="Astrosera" className="bot-avatar-img" />
+                  </div>
+                </div>
+                <div className="message-content">
+                  <div className="message-box typing-box">
+                    <div className="typing-indicator">
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+        <div ref={messagesEndRef} style={{ height: '1px' }} />
+      </div>
+
+      <div className="input-container-wrapper">
+        <div className="input-bar">
+          <textarea
+            ref={textareaRef}
+            rows={1}
+            placeholder="Ask about space, planets, stars, galaxies..."
+            value={input}
+            onChange={handleInput}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSend();
+              }
+            }}
+            disabled={isTyping || apiStatus !== 'connected'}
+          />
+          <button
+            className="send-btn"
+            onClick={() => handleSend()}
+            disabled={!input.trim() || isTyping || apiStatus !== 'connected'}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
+        </div>
+        <div className="input-hint">
+          Astrosera can make mistakes. Verify important information.
+        </div>
+      </div>
+      <SignInPromptModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        title="Command Clearance Required"
+        message="Ah, Commander! To interact with the Astrosera Database and submit live queries to the stars, you must be logged in to your comms terminal."
+      />
     </div>
   );
 };

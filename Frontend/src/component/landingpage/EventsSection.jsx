@@ -1,20 +1,152 @@
 import React, { useState } from 'react';
-import { FiCalendar, FiClock, FiMapPin, FiNavigation, FiEye, FiBell } from "react-icons/fi";
-import { IoRocketOutline, IoPlanetOutline } from "react-icons/io5";
-import { BiRadar } from "react-icons/bi";
-import { BsToggleOn, BsToggleOff } from "react-icons/bs";
-import { WiSolarEclipse } from "react-icons/wi";
+import { useNavigate } from 'react-router-dom';
+import { FiCalendar } from 'react-icons/fi';
+import { FiClock } from 'react-icons/fi';
+import { FiMapPin } from 'react-icons/fi';
+import { FiNavigation } from 'react-icons/fi';
+import { FiEye } from 'react-icons/fi';
+import { FiBell } from 'react-icons/fi';
+import { FiMail } from 'react-icons/fi';
+import { FiCheckCircle } from 'react-icons/fi';
+import { IoRocketOutline } from 'react-icons/io5';
+import { IoPlanetOutline } from 'react-icons/io5';
+import { BiRadar } from 'react-icons/bi';
+import { BsToggleOn } from 'react-icons/bs';
+import { BsToggleOff } from 'react-icons/bs';
+import { WiSolarEclipse } from 'react-icons/wi';
 
 const EventsSection = () => {
+    const navigate = useNavigate();
     // State for toggles in the Smart Reminders card
     const [reminders, setReminders] = useState({
         oneHour: true,
         fifteenMinutes: true,
         dailyDigest: false,
     });
+    const [userEmail, setUserEmail] = useState('');
+    const [isEmailSaved, setIsEmailSaved] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
-    const toggleReminder = (key) => {
-        setReminders(prev => ({ ...prev, [key]: !prev[key] }));
+    // Location Widget State
+    const [locationData, setLocationData] = useState({
+        city: 'New York, USA',
+        timezone: 'EST (UTC-5)',
+        coords: '40.7°N, 74.0°W',
+        sky: 'Clear Tonight'
+    });
+    const [isEditingLocation, setIsEditingLocation] = useState(false);
+    const [manualLocation, setManualLocation] = useState('');
+    const [isLocating, setIsLocating] = useState(false);
+
+    // Dynamic backend URL
+    const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+
+    const handleSaveEmail = () => {
+        if (!userEmail || !userEmail.includes('@')) return;
+        setIsSaving(true);
+        // Simulate a tiny delay for UX
+        setTimeout(() => {
+            setIsEmailSaved(true);
+            setIsSaving(false);
+        }, 500);
+    };
+
+    const handleDetectLocation = () => {
+        setIsLocating(true);
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const { latitude, longitude } = position.coords;
+                    try {
+                        const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`);
+                        const data = await res.json();
+                        const city = data.city || data.locality || 'Detected City';
+                        const country = data.countryName || data.countryCode || 'Unknown';
+                        
+                        // Parse localized timezone
+                        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                        
+                        setLocationData({
+                            city: `${city}, ${country}`,
+                            timezone: tz,
+                            coords: `${Math.abs(latitude).toFixed(2)}°${latitude >= 0 ? 'N' : 'S'}, ${Math.abs(longitude).toFixed(2)}°${longitude >= 0 ? 'E' : 'W'}`,
+                            sky: 'Checking...' 
+                        });
+                        
+                        setTimeout(() => {
+                            setLocationData(prev => ({ ...prev, sky: 'Clear Tonight' }));
+                        }, 1200);
+                        
+                    } catch (error) {
+                        alert("Could not reverse geocode your location.");
+                    }
+                    setIsLocating(false);
+                    setIsEditingLocation(false);
+                },
+                (error) => {
+                    alert("Location access denied or unavailable. Please use manual entry.");
+                    setIsLocating(false);
+                }
+            );
+        } else {
+            alert("Geolocation is not supported by your browser.");
+            setIsLocating(false);
+        }
+    };
+
+    const handleManualSubmit = (e) => {
+        e.preventDefault();
+        if (!manualLocation.trim()) return;
+        
+        setLocationData({
+            city: manualLocation,
+            timezone: 'Local Time',
+            coords: 'Variable',
+            sky: 'Unknown'
+        });
+        setIsEditingLocation(false);
+    };
+
+    const sendReminderEmail = async (eventName, reminderType, scheduledTime = '') => {
+        if (!userEmail || !isEmailSaved) {
+            alert('Please enter and save your email address in the Smart Reminders widget first.');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE}/alerts/event-reminder`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: userEmail,
+                    eventName,
+                    reminderType,
+                    scheduledTime
+                })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                alert(`Reminder set! An email confirmation has been sent to ${userEmail}`);
+            } else {
+                alert(`Failed to set reminder: ${data.error}`);
+            }
+        } catch (error) {
+            console.error('Error dispatching reminder:', error);
+            alert('Something went wrong connecting to the notification server.');
+        }
+    };
+
+    const toggleReminder = (key, label) => {
+        const isTurningOn = !reminders[key];
+        setReminders(prev => ({ ...prev, [key]: isTurningOn }));
+        
+        // If they are turning it on, dispatch an email confirmation immediately
+        if (isTurningOn && isEmailSaved) {
+            sendReminderEmail('All Subscribed Events', label);
+        } else if (isTurningOn && !isEmailSaved) {
+            alert('Please add your email to receive this reminder.');
+            setReminders(prev => ({ ...prev, [key]: false }));
+        }
     };
 
     return (
@@ -28,7 +160,7 @@ const EventsSection = () => {
                 muted
                 playsInline
                 className="absolute top-0 left-0 w-full h-full object-cover z-0 opacity-60"
-            >
+             fetchpriority="high" preload="auto">
                 <source src="/videos/back2.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
             </video>
@@ -59,15 +191,15 @@ const EventsSection = () => {
                         </div>
 
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs text-gray-400 mb-5">
-                            <div className="flex items-center"><FiCalendar className="mr-2 text-gray-500" /> Nov 24, 2024</div>
+                            <div className="flex items-center"><FiCalendar className="mr-2 text-gray-500" /> Nov 24, 2026</div>
                             <div className="flex items-center"><FiClock className="mr-2 text-gray-500" /> 6:30 PM EST</div>
                             <div className="flex items-center"><FiNavigation className="mr-2 text-gray-500" /> Southeast</div>
                             <div className="flex items-center"><span className="text-gray-500 mr-2">Elevation:</span> 45°</div>
                         </div>
 
                         <div className="flex space-x-3">
-                            <button className="bg-orange-600 hover:bg-orange-700 text-white px-5 py-2 rounded-full text-xs font-medium transition cursor-pointer hover:shadow-lg hover:shadow-orange-600/30">Set Reminder</button>
-                            <button className="bg-transparent hover:bg-white/5 text-gray-300 px-5 py-2 rounded-full text-xs font-medium border border-gray-700 transition cursor-pointer">View Details</button>
+                            <button onClick={() => navigate('/events')} className="bg-orange-600 hover:bg-orange-700 text-white px-5 py-2 rounded-full text-xs font-medium transition cursor-pointer hover:shadow-lg hover:shadow-orange-600/30">Set Reminder</button>
+                            <button onClick={() => navigate('/events')} className="bg-transparent hover:bg-white/5 text-gray-300 px-5 py-2 rounded-full text-xs font-medium border border-gray-700 transition cursor-pointer">View Details</button>
                         </div>
                     </div>
 
@@ -90,15 +222,15 @@ const EventsSection = () => {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs text-gray-400 mb-5">
-                            <div className="flex items-center"><FiCalendar className="mr-2 text-gray-500" /> Dec 13-14, 2024</div>
+                            <div className="flex items-center"><FiCalendar className="mr-2 text-gray-500" /> Dec 13-14, 2026</div>
                             <div className="flex items-center whitespace-nowrap"><FiClock className="mr-2 text-gray-500" /> 11:00 PM - 4:00 AM</div>
                             <div className="flex items-center"><FiNavigation className="mr-2 text-gray-500" /> Northeast</div>
                             <div className="flex items-center"><span className="text-gray-500 mr-2">Elevation:</span> 70°</div>
                         </div>
 
                         <div className="flex space-x-3">
-                            <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full text-xs font-medium transition cursor-pointer hover:shadow-lg hover:shadow-blue-600/30">Set Reminder</button>
-                            <button className="bg-transparent hover:bg-white/5 text-gray-300 px-5 py-2 rounded-full text-xs font-medium border border-gray-700 transition cursor-pointer">View Details</button>
+                            <button onClick={() => navigate('/events')} className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full text-xs font-medium transition cursor-pointer hover:shadow-lg hover:shadow-blue-600/30">Set Reminder</button>
+                            <button onClick={() => navigate('/events')} className="bg-transparent hover:bg-white/5 text-gray-300 px-5 py-2 rounded-full text-xs font-medium border border-gray-700 transition cursor-pointer">View Details</button>
                         </div>
                     </div>
 
@@ -127,8 +259,8 @@ const EventsSection = () => {
                         </div>
 
                         <div className="flex space-x-3">
-                            <button className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-full text-xs font-medium transition cursor-pointer hover:shadow-lg hover:shadow-purple-600/30">Set Reminder</button>
-                            <button className="bg-transparent hover:bg-white/5 text-gray-300 px-5 py-2 rounded-full text-xs font-medium border border-gray-700 transition cursor-pointer">View Details</button>
+                            <button onClick={() => navigate('/events')} className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-full text-xs font-medium transition cursor-pointer hover:shadow-lg hover:shadow-purple-600/30">Set Reminder</button>
+                            <button onClick={() => navigate('/events')} className="bg-transparent hover:bg-white/5 text-gray-300 px-5 py-2 rounded-full text-xs font-medium border border-gray-700 transition cursor-pointer">View Details</button>
                         </div>
                     </div>
 
@@ -139,28 +271,61 @@ const EventsSection = () => {
                 <div className="space-y-8">
 
                     {/* Widget 1: Your Location */}
-                    <div className="bg-gray-900/40 border border-gray-800 rounded-3xl p-5 hover:border-gray-700 transition">
-                        <div className="flex items-center mb-5">
-                            <div className="bg-green-500/20 p-2.5 rounded-xl mr-3">
-                                <FiMapPin className="text-green-500 text-lg" />
+                    <div className="bg-gray-900/40 border border-gray-800 rounded-3xl p-5 hover:border-gray-700 transition relative overflow-hidden">
+                        {isEditingLocation && (
+                            <div className="absolute inset-0 z-20 bg-gray-900/95 backdrop-blur-md rounded-3xl p-5 flex flex-col justify-center animate-fade-in-up">
+                                <h3 className="text-white font-bold mb-3 text-sm">Update Location</h3>
+                                <button 
+                                    onClick={handleDetectLocation}
+                                    disabled={isLocating}
+                                    className="w-full bg-blue-600/20 text-blue-400 border border-blue-500/30 py-2 rounded-lg text-xs font-bold mb-3 hover:bg-blue-600/40 transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                                >
+                                    <FiNavigation /> {isLocating ? 'Detecting...' : 'Use Current Location'}
+                                </button>
+                                <div className="text-center text-gray-500 text-xs mb-3">OR</div>
+                                <form onSubmit={handleManualSubmit} className="flex gap-2">
+                                    <input 
+                                        type="text" 
+                                        value={manualLocation}
+                                        onChange={(e) => setManualLocation(e.target.value)}
+                                        placeholder="Enter city manually..."
+                                        className="flex-1 bg-black/50 border border-gray-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-green-500"
+                                    />
+                                    <button type="submit" disabled={!manualLocation.trim()} className="bg-green-600 hover:bg-green-700 disabled:bg-gray-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer">Set</button>
+                                </form>
+                                <button onClick={() => setIsEditingLocation(false)} className="absolute top-3 right-3 text-gray-500 hover:text-white transition cursor-pointer">✕</button>
                             </div>
-                            <div>
-                                <h3 className="text-white font-bold text-base">Your Location</h3>
-                                <p className="text-gray-400 text-xs">New York, USA</p>
+                        )}
+
+                        <div className="flex items-center justify-between mb-5">
+                            <div className="flex items-center">
+                                <div className="bg-green-500/20 p-2.5 rounded-xl mr-3">
+                                    <FiMapPin className="text-green-500 text-lg" />
+                                </div>
+                                <div>
+                                    <h3 className="text-white font-bold text-base">Your Location</h3>
+                                    <p className="text-gray-400 text-xs">{locationData.city}</p>
+                                </div>
                             </div>
+                            <button 
+                                onClick={() => { setIsEditingLocation(true); setManualLocation(''); }}
+                                className="text-xs text-gray-500 hover:text-green-400 border border-gray-700 hover:border-green-500/30 bg-black/30 px-2.5 py-1 rounded-lg transition cursor-pointer"
+                            >
+                                Edit
+                            </button>
                         </div>
                         <div className="space-y-3 text-xs">
                             <div className="flex justify-between">
                                 <span className="text-gray-500">Timezone</span>
-                                <span className="text-gray-300">EST (UTC-5)</span>
+                                <span className="text-gray-300">{locationData.timezone}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-gray-500">Coordinates</span>
-                                <span className="text-gray-300">40.7°N, 74.0°W</span>
+                                <span className="text-gray-300">{locationData.coords}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-gray-500">Sky Visibility</span>
-                                <span className="text-green-400 font-medium">Clear Tonight</span>
+                                <span className="text-green-400 font-medium">{locationData.sky}</span>
                             </div>
                         </div>
                     </div>
@@ -173,22 +338,54 @@ const EventsSection = () => {
                             </div>
                             <h3 className="text-white font-bold text-base">Smart Reminders</h3>
                         </div>
+
+                        {/* Email Input Placeholder section */}
+                        <div className="mb-6 pb-6 border-b border-gray-800">
+                            <label className="text-xs text-gray-400 mb-2 block">Alert Email Address</label>
+                            <div className="flex gap-2">
+                                <div className="relative flex-grow">
+                                    <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                                    <input 
+                                        type="email" 
+                                        value={userEmail}
+                                        onChange={(e) => {
+                                            setUserEmail(e.target.value);
+                                            setIsEmailSaved(false);
+                                        }}
+                                        placeholder="astronaut@astrosera.com"
+                                        className="w-full bg-black/50 border border-gray-700 rounded-lg py-2 pl-9 pr-3 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors placeholder-gray-600"
+                                    />
+                                </div>
+                                <button 
+                                    onClick={handleSaveEmail}
+                                    disabled={!userEmail || !userEmail.includes('@') || isSaving || isEmailSaved}
+                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center justify-center min-w-[80px] ${
+                                        isEmailSaved 
+                                            ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
+                                            : 'bg-blue-600 hover:bg-blue-700 text-white disabled:bg-gray-800 disabled:text-gray-500'
+                                    }`}
+                                >
+                                    {isSaving ? '...' : isEmailSaved ? <FiCheckCircle /> : 'Save'}
+                                </button>
+                            </div>
+                        </div>
+
                         <div className="space-y-3">
                             <div className="flex justify-between items-center">
                                 <span className="text-gray-300 text-xs">1 hour before</span>
-                                <button onClick={() => toggleReminder('oneHour')} className="text-xl focus:outline-none cursor-pointer">
+                                <button onClick={() => toggleReminder('oneHour', '1 Hour Before')} className="text-xl focus:outline-none cursor-pointer">
                                     {reminders.oneHour ? <BsToggleOn className="text-blue-500" /> : <BsToggleOff className="text-gray-600" />}
                                 </button>
                             </div>
                             <div className="flex justify-between items-center">
                                 <span className="text-gray-300 text-xs">15 minutes before</span>
-                                <button onClick={() => toggleReminder('fifteenMinutes')} className="text-xl focus:outline-none cursor-pointer">
+                                <button onClick={() => toggleReminder('fifteenMinutes', '15 Minutes Before')} className="text-xl focus:outline-none cursor-pointer">
                                     {reminders.fifteenMinutes ? <BsToggleOn className="text-blue-500" /> : <BsToggleOff className="text-gray-600" />}
                                 </button>
                             </div>
                             <div className="flex justify-between items-center">
                                 <span className="text-gray-300 text-xs">Daily digest</span>
-                                <button onClick={() => toggleReminder('dailyDigest')} className="text-xl focus:outline-none cursor-pointer">
+                                <button onClick={() => toggleReminder('dailyDigest', 'Daily Digest')} className="text-xl focus:outline-none cursor-pointer">
                                     {reminders.dailyDigest ? <BsToggleOn className="text-blue-500" /> : <BsToggleOff className="text-gray-600" />}
                                 </button>
                             </div>

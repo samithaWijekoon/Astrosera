@@ -5,12 +5,52 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/astro.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ASTROSERA</title>
+  <title>Astrosera – AI-Powered Astronomy & Space Exploration</title>
+
+  <!-- SEO Meta -->
+  <meta name="description" content="Astrosera is an AI-powered educational platform that makes space exploration and astronomy interactive and reliable using NASA-verified data, gamified quizzes, and real-time celestial events." />
+  <meta name="keywords" content="astronomy, space, NASA, AI, RAG, quizzes, celestial events, telescope, planets, stars" />
+  <meta name="author" content="Astrosera" />
+  <link rel="canonical" href="https://astrosera.app/" />
+
+  <!-- Open Graph (Social Sharing) -->
+  <meta property="og:title" content="Astrosera – AI-Powered Astronomy & Space Exploration" />
+  <meta property="og:description" content="Explore the universe with AI-powered accuracy. Get NASA-verified astronomy answers, track celestial events, and learn through gamified quizzes." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://astrosera.app/" />
+  <meta property="og:image" content="/logo.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Astrosera – AI-Powered Astronomy" />
+  <meta name="twitter:description" content="Explore the universe with AI-powered accuracy using NASA-verified data." />
+  <meta name="twitter:image" content="/logo.png" />
+
+  <!-- PWA Setup -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#0a0a0a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Astrosera" />
 </head>
 
 <body>
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
+  
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(registration => {
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+          }, err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }
+  </script>
 </body>
 
 </html>
