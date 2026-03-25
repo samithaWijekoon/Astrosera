@@ -226,8 +226,9 @@ const Member3 = () => {
         localStorage.removeItem('astrosera_quiz_state'); setSavedState(null);
         if (userId) {
             try {
+                const currentToken = sessionStorage.getItem('token') || localStorage.getItem('token');
                 await fetch(`${API}/gamification/record-interaction`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    method: 'POST', headers: { 'Content-Type': 'application/json', ...(currentToken ? { Authorization: `Bearer ${currentToken}` } : {}) },
                     body: JSON.stringify({ userId, isQuiz: true, quizScore: finalScore, timeTakenMs, fullMarks }),
                 });
             } catch (e) { console.error('Score sync failed', e); }

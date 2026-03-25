@@ -9,6 +9,7 @@ const newsRoutes = require('./routes/newsRoutes');
 const apodRoutes = require('./routes/apodRoutes');
 const mediaRoutes = require('./routes/mediaRoutes');
 const { startCron } = require('./services/notificationServices');
+const requireDB = require('./middleware/dbCheck');
 
 const PORT = process.env.PORT || 5000;
 
@@ -29,13 +30,12 @@ app.get('/api/health', (_, res) => res.json({ status: 'ok', ts: new Date() }));
 app.use('/api/asteroids', asteroidRoutes);
 app.use('/api/alerts', alertRoutes);
 app.use('/api/news', newsRoutes);
-app.use('/api/apod', apodRoutes);
+app.use('/api/apod', requireDB, apodRoutes);
 app.use('/api/media', mediaRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`)
     console.log(`🚀 AstroSera API → http://localhost:${PORT}`);
-    console.log(`💾 JSON file DB (no MongoDB needed)`);
     startCron();
     console.log(`⏰ Alert cron started (every 30 min)`);
 });

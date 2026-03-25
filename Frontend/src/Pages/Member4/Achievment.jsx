@@ -408,9 +408,11 @@ const Member4 = () => {
 
     const load = async () => {
       try {
+        const token = localStorage.getItem('token');
+        const headers = token ? { Authorization: `Bearer ${token}` } : {};
         const [dashRes, lbRes] = await Promise.all([
-          fetch(`${API}/gamification/dashboard/${userId}`),
-          fetch(`${API}/leaderboard?userId=${userId}`),
+          fetch(`${API}/gamification/dashboard/${userId}`, { headers }),
+          fetch(`${API}/leaderboard?userId=${userId}`, { headers }),
         ]);
 
         const dashData = await dashRes.json();

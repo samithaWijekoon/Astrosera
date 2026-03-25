@@ -25,12 +25,12 @@ const Hero = () => {
                 playsInline
             />
             {/* Overlay for better readability */}
-            <div className="absolute top-0 left-0 w-full h-full bg-black/60 backdrop-blur-sm z-5"></div>
+            <div className="absolute top-0 left-0 w-full h-full bg-black/60 backdrop-blur-sm z-10"></div>
 
             {/* Navigation removed - moved to Navbar.jsx */}
 
             {/* Hero Content */}
-            <div className="relative z-20 flex flex-col items-center justify-center h-full text-center text-white px-4 md:px-0 pb-32 pt-40 md:pt-24 font-outfit">
+            <div className="relative z-20 flex flex-col items-center justify-center min-h-screen text-center text-white px-4 md:px-0 py-20 font-outfit">
                 <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-4 tracking-tight animate-fade-in-up">Astrosera</h1>
                 <h2 className="text-2xl md:text-4xl lg:text-5xl font-semibold mb-6 animate-fade-in-up delay-100">
                     Explore the Universe with <span className="text-purple-400">AI-Powered Accuracy</span>

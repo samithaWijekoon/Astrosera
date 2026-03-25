@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
+import { API_BASE_URL } from '../config/apiConfig';
 
 const VerifyEmail = () => {
     const [otpCode, setOtpCode] = useState('');
@@ -12,9 +13,6 @@ const VerifyEmail = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { login } = useContext(AuthContext);
-
-    // The backend URL is matched to what AuthContext uses
-    const backendurl = "http://localhost:5001";
 
     useEffect(() => {
         const queryParams = new URLSearchParams(location.search);
@@ -36,7 +34,7 @@ const VerifyEmail = () => {
         setIsSubmitting(true);
 
         try {
-            const response = await fetch(`${backendurl}/api/auth/verify-otp`, {
+            const response = await fetch(`${API_BASE_URL}/auth/verify-otp`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, otp_code: otpCode }),
@@ -88,7 +86,7 @@ const VerifyEmail = () => {
         setSuccess('');
 
         try {
-            const response = await fetch(`${backendurl}/api/auth/resend-otp`, {
+            const response = await fetch(`${API_BASE_URL}/auth/resend-otp`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email }),

@@ -36,7 +36,7 @@ const Navbar = () => {
         <>
             {/* ── Main bar ──────────────────────────────────────── */}
             <nav
-                className="sticky top-0 left-0 w-full z-50 transition-all duration-500"
+                className="fixed top-0 left-0 w-full z-[100] transition-all duration-500"
                 style={{
                     background: scrolled
                         ? 'rgba(5, 5, 15, 0.78)'

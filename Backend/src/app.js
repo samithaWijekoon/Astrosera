@@ -9,6 +9,7 @@ const analyticsRoutes = require('./routes/analyticsRoutes');
 const quizRoutes = require('./routes/quizRoutes');
 const fileUpload = require('express-fileupload');
 require('dotenv').config({ override: true });
+const requireDB = require('./middleware/dbCheck');
 
 // Initialize Database
 connectDB();
@@ -39,16 +40,16 @@ app.use(fileUpload());
 console.log("FRONTEND_URI defined as:", process.env.FRONTEND_URI);
 
 // 4. ROUTE MIDDLEWARES
-app.use('/api/auth', authRoutes);
-app.use('/api/leaderboard', leaderboardRoutes);
-app.use('/api/gamification', gamificationRoutes);
-app.use('/api/analytics', analyticsRoutes);
-app.use('/api/quiz', quizRoutes);
+app.use('/api/auth', requireDB, authRoutes);
+app.use('/api/leaderboard', requireDB, leaderboardRoutes);
+app.use('/api/gamification', requireDB, gamificationRoutes);
+app.use('/api/analytics', requireDB, analyticsRoutes);
+app.use('/api/quiz', requireDB, quizRoutes);
 
 // --- THE FIX ---
 // Since she doesn't have a separate file, her frontend likely calls /api/achievements.
 // We map that URL to her gamificationRoutes file.
-app.use('/api/achievements', gamificationRoutes);
+app.use('/api/achievements', requireDB, gamificationRoutes);
 
 app.get('/', (req, res) => {
     res.send('🚀 Astrosera API is running with Analytics & Gamification');
