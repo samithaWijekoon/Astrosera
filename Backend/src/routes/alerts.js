@@ -2,6 +2,7 @@ const express = require('express');
 const router  = express.Router();
 const { v4: uuidv4 } = require('uuid');
 const db      = require('../services/db');
+const { sendEventReminder } = require('../utils/emailUtils');
 
 router.get('/', (req, res) => {
   const { email } = req.query;
@@ -23,6 +24,10 @@ router.post('/', (req, res) => {
   if (existing) return res.json(existing);
   const doc = { id: uuidv4(), email, asteroidId, asteroidName, approachDate, missDistKm, status: 'WATCHING', createdAt: new Date().toISOString() };
   db.insert(doc);
+  
+  // Dispatch asynchronous reminder confirmation email
+  sendEventReminder(email, asteroidName || `Asteroid ${asteroidId}`, approachDate || 'TBD');
+  
   res.status(201).json(doc);
 });
 

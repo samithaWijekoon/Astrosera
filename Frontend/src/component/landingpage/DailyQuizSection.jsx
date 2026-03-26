@@ -6,7 +6,9 @@ import { HiLightBulb } from "react-icons/hi";
 import { BsStars } from "react-icons/bs";
 import AuthContext from '../../context/AuthContext';
 
-const API_BASE = 'http://localhost:5001/api';
+const backendUrl = process.env.VITE_API_URL;
+
+const API_BASE = backendUrl;
 
 const DailyQuizSection = () => {
     // --- AUTH & NAVIGATION ---

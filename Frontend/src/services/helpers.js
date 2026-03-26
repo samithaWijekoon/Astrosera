@@ -47,12 +47,18 @@ export function flattenFeed(feed) {
   const groups = feed?.near_earth_objects;
   if (!groups) return [];
 
+  const CITIES = ['New York', 'London', 'Tokyo', 'Sydney', 'Paris', 'Berlin', 'Global'];
+
   return Object.entries(groups).flatMap(([date, items]) =>
     items.map(neo => {
       const approach = neo.close_approach_data?.[0] || {};
       const miss = approach.miss_distance || {};
       const vel = approach.relative_velocity || {};
       const diam = neo.estimated_diameter?.kilometers || {};
+      
+      // Deterministically assign a Best Viewing Location based on asteroid ID
+      const locIndex = parseInt(neo.id.slice(-2) || '0', 16) % CITIES.length;
+      const viewingLocation = CITIES[locIndex];
 
       return {
         id: neo.id,
@@ -66,6 +72,7 @@ export function flattenFeed(feed) {
         diamMaxKm: toNum(diam.estimated_diameter_max),
         isHazardous: !!neo.is_potentially_hazardous_asteroid,
         nasaJplUrl: neo.nasa_jpl_url,
+        viewingLocation,
       };
     })
   );

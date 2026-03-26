@@ -138,6 +138,7 @@ const loginUser = async (req, res) => {
                 username: user.username,
                 email: user.email,
                 role: user.role,
+                isVerified: user.isVerified,
                 token: token,
             });
         } else {
@@ -185,6 +186,7 @@ const updateProfile = async (req, res) => {
                 avatarInitials: updatedUser.avatarInitials,
                 totalScore: updatedUser.totalScore,
                 streakCount: updatedUser.streakCount,
+                isVerified: updatedUser.isVerified,
                 token: generateToken(updatedUser._id, updatedUser.username, updatedUser.email),
             });
         } else {
@@ -241,7 +243,12 @@ const googleAuth = async (req, res) => {
                 email,
                 password: randomPassword,
                 avatarInitials: name.slice(0, 2).toUpperCase(),
+                isVerified: true, // Auto-verify Google signups
             });
+        } else if (!user.isVerified) {
+            // If the user existed but wasn't verified, mark them verified since Google confirmed their email
+            user.isVerified = true;
+            await user.save();
         }
 
         // Generate JWT token for Astrosera
@@ -253,6 +260,7 @@ const googleAuth = async (req, res) => {
             email: user.email,
             role: user.role,
             avatarInitials: user.avatarInitials,
+            isVerified: user.isVerified,
             token: jwtToken,
         });
         

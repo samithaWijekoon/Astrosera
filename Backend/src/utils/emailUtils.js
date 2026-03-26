@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
     port: 587,
     secure: false, // true for 465, false for other ports
     auth: {
-        user: process.env.SMTP_EMAIL,
+        user: process.env.EMAIL_USER || process.env.SMTP_EMAIL,
         pass: process.env.SMTP_PASSWORD,
     },
 });
@@ -21,13 +21,13 @@ const transporter = nodemailer.createTransport({
 // Send the HTML styled OTP email
 const sendOtpEmail = async (receiverEmail, otpCode) => {
     try {
-        if (!process.env.SMTP_EMAIL || !process.env.SMTP_PASSWORD) {
+        if (!(process.env.EMAIL_USER || process.env.SMTP_EMAIL) || !process.env.SMTP_PASSWORD) {
             console.error("Missing SMTP credentials. Email skipped.");
             return false;
         }
 
         const mailOptions = {
-            from: `"AstroSera Team" <${process.env.SMTP_EMAIL}>`,
+            from: `"AstroSera Team" <${process.env.EMAIL_USER || process.env.SMTP_EMAIL}>`,
             to: receiverEmail,
             subject: 'Your Account Verification Code',
             html: `
@@ -56,7 +56,42 @@ const sendOtpEmail = async (receiverEmail, otpCode) => {
     }
 };
 
+// Send Event Reminder Confirmation Email
+const sendEventReminder = async (receiverEmail, eventName, eventDate) => {
+    try {
+        if (!(process.env.EMAIL_USER || process.env.SMTP_EMAIL) || !process.env.SMTP_PASSWORD) {
+            console.error("Missing SMTP credentials. Event Reminder skipped.");
+            return false;
+        }
+
+        const mailOptions = {
+            from: `"AstroSera Alerts" <${process.env.EMAIL_USER || process.env.SMTP_EMAIL}>`,
+            to: receiverEmail,
+            subject: 'Event Reminder Set Successfully',
+            html: `
+            <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+                <h2 style="color: #a855f7; text-align: center; border-bottom: 1px solid #e5e7eb; padding-bottom: 10px;">Alert Confirmed</h2>
+                <p>Hello Explorer,</p>
+                <p>You have successfully set an alert for <strong>${eventName}</strong>.</p>
+                <p>We will keep an eye on it as it approaches on <strong>${eventDate}</strong> and notify you!</p>
+                <br>
+                <p>Clear skies,<br><strong>AstroSera Team</strong></p>
+            </div>
+            `
+        };
+
+        const info = await transporter.sendMail(mailOptions);
+        console.log(`Reminder email sent successfully: ${info.messageId}`);
+        return true;
+    } catch (error) {
+        console.error('SMTP Connection Failed while sending Event Reminder:', error.message);
+        console.error('Full Error:', error);
+        return false;
+    }
+};
+
 module.exports = {
     generateOtp,
-    sendOtpEmail
+    sendOtpEmail,
+    sendEventReminder
 };
