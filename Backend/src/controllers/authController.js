@@ -138,6 +138,7 @@ const loginUser = async (req, res) => {
                 username: user.username,
                 email: user.email,
                 role: user.role,
+                isVerified: user.isVerified,
                 token: token,
             });
         } else {
@@ -185,6 +186,7 @@ const updateProfile = async (req, res) => {
                 avatarInitials: updatedUser.avatarInitials,
                 totalScore: updatedUser.totalScore,
                 streakCount: updatedUser.streakCount,
+                isVerified: updatedUser.isVerified,
                 token: generateToken(updatedUser._id, updatedUser.username, updatedUser.email),
             });
         } else {
@@ -258,6 +260,7 @@ const googleAuth = async (req, res) => {
             email: user.email,
             role: user.role,
             avatarInitials: user.avatarInitials,
+            isVerified: user.isVerified,
             token: jwtToken,
         });
         
