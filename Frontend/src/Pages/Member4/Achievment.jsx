@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useContext } from 'react';
 import * as THREE from 'three';
 import './Achievment.css';
 import AuthContext from '../../context/AuthContext';
+import SkeletonCard from '../../component/SkeletonCard';
 
 const API = 'http://localhost:5001/api';
 
@@ -97,7 +98,9 @@ function SectionHeader({ title, earnedCount, totalCount }) {
 function BadgeRow({ badges, onSelect, className = '' }) {
   return (
     <div className={`badge-row ${className}`}>
-      {badges.map(b => (
+      {badges.map(b => b.isSkeleton ? (
+        <SkeletonCard key={b.id} />
+      ) : (
         <button
           key={b.id}
           className={`badge-item group overflow-hidden cursor-pointer rounded-3xl backdrop-blur-xl border border-white/10 ${b.earned ? 'earned bg-white/10 border-purple-500/50 shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:bg-white/20 hover:-translate-y-2 hover:rotate-1 hover:shadow-[0_0_30px_rgba(168,85,247,0.6)]' : 'locked bg-black/40 border-white/10 grayscale contrast-75 opacity-60 hover:-translate-y-1 hover:bg-white/5'}`}
@@ -448,22 +451,15 @@ const Member4 = () => {
   const myEntry = leaderboard.find(e => e.isUser);
 
   const maxScore = leaderboard.length > 0 ? Math.max(...leaderboard.map(d => d.score)) : 1;
+  
+  const displayCategories = loading 
+    ? [{ title: 'Mission Master', badges: Array.from({ length: 10 }).map((_, i) => ({ id: `skel-${i}`, isSkeleton: true })) }]
+    : categories;
+    
+  const displayLeaderboard = loading ? [] : leaderboard;
 
   // ── Loading / error states ──────────────────────────────────────────────────
-  if (loading) {
-    return (
-      <div className="relative min-h-screen bg-black overflow-hidden flex items-center justify-center">
-        <GalaxyBackground />
-        <div className="fixed inset-0 bg-black/40 z-0 pointer-events-none" />
-        <div className="relative z-10 flex flex-col items-center gap-6">
-            <div className="w-16 h-16 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin shadow-[0_0_20px_rgba(168,85,247,0.5)]"></div>
-            <div className="font-outfit text-purple-300 tracking-[0.3em] uppercase text-lg animate-pulse drop-shadow-[0_0_10px_rgba(216,180,254,0.8)]">
-                Initializing Cosmos HUD...
-            </div>
-        </div>
-      </div>
-    );
-  }
+  // NOTE: Loading full screen disabled to show Skeleton Loaders instead
 
   if (error) {
     return (
@@ -501,7 +497,7 @@ const Member4 = () => {
           <div className="relative z-10 flex items-center gap-6 w-full md:w-auto">
             <div className="flex-1">
               <h1 className="font-outfit text-4xl md:text-5xl font-bold text-white tracking-[0.1em] uppercase mb-5 drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">
-                {userData?.username || user?.username || 'Astronaut'}
+                {userData?.username || user?.username || (loading ? 'Loading...' : 'Astronaut')}
               </h1>
               <div className="flex flex-wrap items-center gap-4 text-sm md:text-base font-mono">
                 {myEntry && (
@@ -579,7 +575,7 @@ const Member4 = () => {
         <div className="flex flex-col gap-8">
             {/* ─── BADGE CATEGORY CARDS (side by side) ─── */}
             <div className="badges-grid-categories">
-            {categories.filter(c => c.title !== 'Total Days').map((category, idx) => {
+            {displayCategories.filter(c => c.title !== 'Total Days').map((category, idx) => {
                 const earnedCount = category.badges.filter(b => b.earned).length;
                 return (
                 <div
@@ -589,8 +585,8 @@ const Member4 = () => {
                     <div className="relative z-10">
                         <SectionHeader
                             title={category.title}
-                            earnedCount={earnedCount}
-                            totalCount={category.badges.length}
+                            earnedCount={loading ? undefined : earnedCount}
+                            totalCount={loading ? undefined : category.badges.length}
                         />
                         <BadgeRow
                             badges={category.badges}
@@ -603,7 +599,7 @@ const Member4 = () => {
             </div>
 
             {/* ─── TOTAL DAYS (centered below) ─── */}
-            {categories.filter(c => c.title === 'Total Days').map((category, idx) => {
+            {displayCategories.filter(c => c.title === 'Total Days').map((category, idx) => {
                 const earnedCount = category.badges.filter(b => b.earned).length;
                 return (
                 <div
@@ -613,8 +609,8 @@ const Member4 = () => {
                     <div className="relative z-10">
                         <SectionHeader
                             title={category.title}
-                            earnedCount={earnedCount}
-                            totalCount={category.badges.length}
+                            earnedCount={loading ? undefined : earnedCount}
+                            totalCount={loading ? undefined : category.badges.length}
                         />
                         <BadgeRow
                             badges={category.badges}
@@ -635,12 +631,17 @@ const Member4 = () => {
 
                         <div className="lb-content-row">
                             <div className="flex-1 overflow-y-auto pr-3 space-y-2 scrollbar-hide" ref={leaderboardRef} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', maxHeight: '420px' }}>
-                                {leaderboard.length === 0 ? (
+                                {loading ? (
+                                    <div className="text-gray-500 text-center py-12 font-mono text-sm border border-dashed border-gray-700 rounded-2xl bg-black/20">
+                                        <div className="w-8 h-8 mx-auto border-2 border-purple-500/20 border-t-purple-500 rounded-full animate-spin mb-3"></div>
+                                        SYNCING LEADERBOARD...
+                                    </div>
+                                ) : displayLeaderboard.length === 0 ? (
                                     <div className="text-gray-500 text-center py-12 font-mono text-sm border border-dashed border-gray-700 rounded-2xl bg-black/20">
                                         <div className="text-3xl mb-3 opacity-50">📡</div>
                                         NO DATA DETECTED.<br/>INITIALIZE A QUIZ TO BEGIN.
                                     </div>
-                                ) : leaderboard.map((entry, i) => {
+                                ) : displayLeaderboard.map((entry, i) => {
                                     const medals = ['🥇', '🥈', '🥉'];
                                     const hasMedal = i < 3;
                                     return (
