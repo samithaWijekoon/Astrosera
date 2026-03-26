@@ -1,7 +1,16 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FaArrowRight } from "react-icons/fa";
+import AuthContext from '../../context/AuthContext';
 
 const GetStartedSection = () => {
+    const { user } = useContext(AuthContext);
+    const navigate = useNavigate();
+
+    const handleJourney = () => {
+        navigate(user ? '/chat' : '/login');
+    };
+
     const steps = [
         {
             number: 1,
@@ -65,7 +74,10 @@ const GetStartedSection = () => {
                 </div>
 
                 {/* CTA Button */}
-                <button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-lg font-bold py-3 px-10 rounded-full flex items-center justify-center mx-auto transition-all duration-300 mb-4 cursor-pointer hover:scale-105 hover:shadow-[0_0_30px_rgba(236,72,153,0.5)] animate-pulse hover:animate-none">
+                <button 
+                    onClick={handleJourney}
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-lg font-bold py-3 px-10 rounded-full flex items-center justify-center mx-auto transition-all duration-300 mb-4 cursor-pointer hover:scale-105 shadow-[0_0_15px_rgba(168,85,247,0.4)] hover:shadow-[0_0_30px_rgba(168,85,247,0.8)] animate-pulse hover:animate-none"
+                >
                     Start Your Journey <FaArrowRight className="ml-2" />
                 </button>
 

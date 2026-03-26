@@ -113,7 +113,12 @@ const PricingSection = () => {
                             <li className="flex items-center"><span className="w-1.5 h-1.5 bg-purple-500 rounded-full mr-3"></span>Early access to new features</li>
                         </ul>
 
-                        <button className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 transition-all font-semibold shadow-lg shadow-purple-900/30">
+                        <button 
+                            onClick={() => {
+                                window.location.href = 'mailto:astrosera.connect@gmail.com?subject=Inquiry%20regarding%20Astrosera%20Premium%20Upgrade&body=Hi%20Astrosera%20Team,%20I%20am%20interested%20in%20upgrading%20my%20account%20to%20access%20more%20features.%20Please%20let%20me%20know%20the%20next%20steps.';
+                            }}
+                            className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 transition-all font-semibold shadow-[0_0_15px_rgba(168,85,247,0.4)] hover:shadow-[0_0_30px_rgba(168,85,247,0.8)]"
+                        >
                             Upgrade Now
                         </button>
                     </div>

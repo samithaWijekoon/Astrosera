@@ -1,10 +1,11 @@
 import React, { useContext } from 'react';
-import { Link } from 'react-router-dom'; // Make sure react-router-dom is installed
+import { Link, useNavigate } from 'react-router-dom'; // Make sure react-router-dom is installed
 import { IoIosRocket, IoMdCheckmarkCircleOutline } from "react-icons/io"; // Install react-icons
 import AuthContext from '../../context/AuthContext'; // Import the AuthContext
 
 const Hero = () => {
     const { user } = useContext(AuthContext);
+    const navigate = useNavigate();
 
     const scrollToChat = () => {
         const chatSection = document.getElementById('chat');
@@ -25,7 +26,7 @@ const Hero = () => {
                 playsInline
             />
             {/* Overlay for better readability */}
-            <div className="absolute top-0 left-0 w-full h-full bg-black/50 z-10"></div>
+            <div className="absolute top-0 left-0 w-full h-full bg-black/30 backdrop-blur-md z-10"></div>
 
             {/* Navigation removed - moved to Navbar.jsx */}
 
@@ -39,27 +40,12 @@ const Hero = () => {
                     Get accurate astronomy answers, track celestial events, and learn through gamified quizzes—all powered by NASA-verified data with RAG technology.
                 </p>
                 <div className="flex space-x-4 mb-12 animate-fade-in-up delay-300">
-                    {user ? (
-                        <button 
-                            onClick={scrollToChat}
-                            className="bg-purple-600/30 backdrop-blur-xl border border-white/10 hover:bg-purple-600/50 text-white font-bold py-3 px-8 rounded-full transition duration-300 shadow-lg shadow-purple-900/20 transform hover:scale-105"
-                        >
-                            Chat Now
-                        </button>
-                    ) : (
-                        <>
-                            <Link to="/signup">
-                                <button className="bg-purple-600/30 backdrop-blur-xl border border-white/10 hover:bg-purple-600/50 text-white font-bold py-3 px-8 rounded-full transition duration-300 shadow-lg shadow-purple-900/20 transform hover:scale-105">
-                                    Get Started Free
-                                </button>
-                            </Link>
-                            <Link to="/login">
-                                <button className="bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 text-white font-bold py-3 px-8 rounded-full transition duration-300 transform hover:scale-105">
-                                    Login
-                                </button>
-                            </Link>
-                        </>
-                    )}
+                    <button 
+                        onClick={() => navigate(user ? '/chat' : '/login')}
+                        className="bg-purple-600/30 backdrop-blur-xl border border-purple-500/50 hover:bg-purple-600/60 text-white font-bold py-3 px-10 rounded-full transition-all duration-300 shadow-[0_0_15px_rgba(168,85,247,0.4)] hover:shadow-[0_0_30px_rgba(168,85,247,0.8)] transform hover:scale-105"
+                    >
+                        {user ? 'Chat Now' : 'Get Started'}
+                    </button>
                 </div>
                 <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8 text-sm md:text-base animate-fade-in-up delay-300">
                     <div className="flex items-center">
