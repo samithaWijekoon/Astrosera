@@ -192,27 +192,40 @@ export default function Member2() {
   const [editEmail,  setEditEmail]  = useState(false);
   const [draftEmail, setDraftEmail] = useState('');
   const loaded = useRef(false);
+  const locationInputRef = useRef(null);
   const [locationFilter, setLocationFilter] = useState('');
   const [isLocating, setIsLocating] = useState(false);
 
   // Live Location Logic
-  const handleLiveLocation = () => {
+  const handleGeolocation = () => {
     setIsLocating(true);
     if (!navigator.geolocation) {
       alert("Geolocation is unsupported by your browser");
       setIsLocating(false);
+      locationInputRef.current?.focus();
       return;
     }
+    
+    const options = { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 };
+    
     navigator.geolocation.getCurrentPosition((pos) => {
       // Deterministically map coordinates to a demo city for NEO API
       const CITIES = ['New York', 'London', 'Tokyo', 'Sydney', 'Paris', 'Berlin'];
       const index = Math.abs(Math.floor(pos.coords.longitude)) % CITIES.length;
       setLocationFilter(CITIES[index]);
       setIsLocating(false);
-    }, () => {
-      alert("Unable to retrieve location");
+    }, (error) => {
       setIsLocating(false);
-    });
+      if (error.code === error.PERMISSION_DENIED) {
+        alert('Location access denied. Please enable it in your browser settings.');
+      } else if (error.code === error.TIMEOUT) {
+        alert('Location request timed out. Please try again.');
+      } else {
+        alert('Unable to retrieve location');
+      }
+      // Fallback: auto-focus manual input field
+      locationInputRef.current?.focus();
+    }, options);
   };
 
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -416,6 +429,7 @@ export default function Member2() {
             <span className="text-xl">📍</span>
             <div className="flex-1 min-w-[200px] max-w-xs relative">
                 <input 
+                  ref={locationInputRef}
                   type="text" 
                   value={locationFilter} 
                   onChange={e => setLocationFilter(e.target.value)}
@@ -424,10 +438,16 @@ export default function Member2() {
                 />
             </div>
             <button 
-                onClick={handleLiveLocation}
+                onClick={handleGeolocation}
                 disabled={isLocating}
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-purple-600/20 text-purple-400 border border-purple-500/50 hover:bg-purple-600/40 hover:text-white transition-all duration-300 disabled:opacity-50"
             >
+                {isLocating && (
+                  <svg className="animate-spin -ml-1 mr-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                )}
                 {isLocating ? 'Locating...' : 'Use Live Location'}
             </button>
             {locationFilter && (
