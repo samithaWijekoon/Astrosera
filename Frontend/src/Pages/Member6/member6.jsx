@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './member6.css';
 
-const API_BASE = 'http://localhost:5001/api';
+const backendUrl = process.env.VITE_API_URL;
+
+const API_BASE = backendUrl;
 
 const Member6 = () => {
     const [searchTerm, setSearchTerm] = useState("");
@@ -381,14 +383,13 @@ const Member6 = () => {
                                             className="trending-card"
                                             onClick={() => setSelectedArticle(item)}
                                         >
-                                            <div 
-                                                className="trending-image" 
-                                                style={{ 
-                                                    backgroundImage: `url(${
-                                                        item.image && (item.image.includes('youtube.com') || item.image.includes('vimeo.com')) 
-                                                        ? getYouTubeThumbnail(item.image) || 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&h=400&fit=crop' 
-                                                        : (item.image || 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&h=400&fit=crop')
-                                                    })` 
+                                            <div
+                                                className="trending-image"
+                                                style={{
+                                                    backgroundImage: `url(${item.image && (item.image.includes('youtube.com') || item.image.includes('vimeo.com'))
+                                                            ? getYouTubeThumbnail(item.image) || 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&h=400&fit=crop'
+                                                            : (item.image || 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&h=400&fit=crop')
+                                                        })`
                                                 }}>
                                                 <span className="trending-badge">🔥 Trending</span>
                                             </div>
@@ -416,12 +417,11 @@ const Member6 = () => {
                                                 {/* Article Image */}
                                                 <div
                                                     className="news-image"
-                                                    style={{ 
-                                                        backgroundImage: `url(${
-                                                            item.image && (item.image.includes('youtube.com') || item.image.includes('vimeo.com'))
-                                                            ? getYouTubeThumbnail(item.image) || 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&h=400&fit=crop'
-                                                            : (item.image || 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&h=400&fit=crop')
-                                                        })` 
+                                                    style={{
+                                                        backgroundImage: `url(${item.image && (item.image.includes('youtube.com') || item.image.includes('vimeo.com'))
+                                                                ? getYouTubeThumbnail(item.image) || 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&h=400&fit=crop'
+                                                                : (item.image || 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&h=400&fit=crop')
+                                                            })`
                                                     }}
                                                     onClick={() => setSelectedArticle(item)}
                                                 >
@@ -580,15 +580,15 @@ const Member6 = () => {
                         </button>
 
                         <div className="article-header">
-                            <img 
+                            <img
                                 src={
                                     selectedArticle.image && (selectedArticle.image.includes('youtube.com') || selectedArticle.image.includes('vimeo.com'))
-                                    ? getYouTubeThumbnail(selectedArticle.image) || 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&h=400&fit=crop'
-                                    : (selectedArticle.image || 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&h=400&fit=crop')
-                                } 
-                                alt={selectedArticle.title} 
+                                        ? getYouTubeThumbnail(selectedArticle.image) || 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&h=400&fit=crop'
+                                        : (selectedArticle.image || 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&h=400&fit=crop')
+                                }
+                                alt={selectedArticle.title}
                                 onError={(e) => {
-                                    e.target.onerror = null; 
+                                    e.target.onerror = null;
                                     e.target.src = 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&h=400&fit=crop';
                                 }}
                             />

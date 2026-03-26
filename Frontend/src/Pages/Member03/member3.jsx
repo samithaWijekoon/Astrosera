@@ -2,7 +2,11 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom';
 import './member3.css';
 
-const API = 'http://localhost:5001/api';
+const backendUrl = process.env.VITE_API_URL;
+
+const API_BASE = backendUrl;
+
+const API = `${API_BASE}`;
 const QUIZ_TIME_LIMIT_MS = 120_000;
 
 /* Fisher-Yates */
@@ -473,8 +477,8 @@ const Member3 = () => {
                     {/* Pause */}
                     <button onClick={handlePause} disabled={!!selectedOption}
                         className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold tracking-wider uppercase transition-all ${selectedOption
-                                ? 'text-gray-700 cursor-not-allowed'
-                                : 'text-gray-400 hover:text-violet-300 active:scale-95 cursor-pointer'
+                            ? 'text-gray-700 cursor-not-allowed'
+                            : 'text-gray-400 hover:text-violet-300 active:scale-95 cursor-pointer'
                             }`}
                         style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
                         <span>←</span>

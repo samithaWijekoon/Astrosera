@@ -2,6 +2,10 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 
+const backendUrl = process.env.VITE_API_URL;
+
+const API_BASE = backendUrl;
+
 const VerifyEmail = () => {
     const [otpCode, setOtpCode] = useState('');
     const [error, setError] = useState('');
@@ -14,7 +18,7 @@ const VerifyEmail = () => {
     const { login } = useContext(AuthContext);
 
     // The backend URL is matched to what AuthContext uses
-    const backendurl = "http://localhost:5001";
+    const backendurl = API_BASE;
 
     useEffect(() => {
         const queryParams = new URLSearchParams(location.search);
@@ -159,9 +163,8 @@ const VerifyEmail = () => {
                         Didn't receive the code?{' '}
                         <button
                             type="button"
-                            className={`font-medium transition-colors ${
-                                isResending ? 'text-gray-500 cursor-not-allowed' : 'text-purple-400 hover:text-purple-300'
-                            }`}
+                            className={`font-medium transition-colors ${isResending ? 'text-gray-500 cursor-not-allowed' : 'text-purple-400 hover:text-purple-300'
+                                }`}
                             onClick={handleResend}
                             disabled={isResending}
                         >

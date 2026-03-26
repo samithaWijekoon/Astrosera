@@ -2,6 +2,10 @@ import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 
+const backendUrl = process.env.VITE_API_URL;
+
+const API_BASE = backendUrl;
+
 const AVATARS = [
     { id: 'astronaut1', url: '👨‍🚀', name: 'Astronaut 1' },
     { id: 'astronaut2', url: '🧑‍🚀', name: 'Astronaut 2' },
@@ -16,13 +20,13 @@ const AVATARS = [
 const Profile = () => {
     const { user, updateUser } = useContext(AuthContext);
     const navigate = useNavigate();
-    
+
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [avatarInitials, setAvatarInitials] = useState('');
     const [message, setMessage] = useState({ text: '', type: '' });
-    
+
     const [passwordRules, setPasswordRules] = useState({
         length: false,
         uppercase: false,
@@ -65,7 +69,7 @@ const Profile = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:5001/api/auth/profile', {
+            const response = await fetch(`${API_BASE}/auth/profile`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -142,7 +146,7 @@ const Profile = () => {
                     <div className="md:col-span-2">
                         <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 sm:p-8 shadow-[0_0_30px_rgba(168,85,247,0.1)]">
                             <h3 className="text-xl font-bold text-white mb-6">Account Settings</h3>
-                            
+
                             {message.text && (
                                 <div className={`p-4 rounded-xl mb-6 text-sm ${message.type === 'success' ? 'bg-green-500/10 border border-green-500/50 text-green-400' : 'bg-red-500/10 border border-red-500/50 text-red-400'}`}>
                                     {message.text}
@@ -211,7 +215,7 @@ const Profile = () => {
                                             onChange={handlePasswordChange}
                                             placeholder="Enter new password"
                                         />
-                                        
+
                                         {password && (
                                             <div className="mt-3 text-xs space-y-1">
                                                 <p className={passwordRules.length ? "text-green-500" : "text-gray-500"}>

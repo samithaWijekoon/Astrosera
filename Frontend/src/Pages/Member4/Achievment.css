@@ -78,25 +78,25 @@
     width: 100%;
 }
 
-.achievement-leaderboard > div {
+.achievement-leaderboard>div {
     max-height: 400px;
     overflow-y: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
 }
 
-.achievement-leaderboard > div::-webkit-scrollbar {
+.achievement-leaderboard>div::-webkit-scrollbar {
     display: none;
 }
 
-.achievement-leaderboard > div > div > div:last-child {
+.achievement-leaderboard>div>div>div:last-child {
     max-height: 300px;
     overflow-y: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
 }
 
-.achievement-leaderboard > div > div > div:last-child::-webkit-scrollbar {
+.achievement-leaderboard>div>div>div:last-child::-webkit-scrollbar {
     display: none;
 }
 
@@ -151,23 +151,40 @@
 .scrollbar-hide::-webkit-scrollbar {
     display: none;
 }
+
 .scrollbar-hide {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
 }
 
 @keyframes danceSlow {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  25% { transform: translateY(-4px) rotate(-3deg); }
-  50% { transform: translateY(-2px) rotate(0deg); }
-  75% { transform: translateY(2px) rotate(3deg); }
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    25% {
+        transform: translateY(-4px) rotate(-3deg);
+    }
+
+    50% {
+        transform: translateY(-2px) rotate(0deg);
+    }
+
+    75% {
+        transform: translateY(2px) rotate(3deg);
+    }
 }
+
 .dance-slow {
-  animation: danceSlow 4s ease-in-out infinite;
+    animation: danceSlow 4s ease-in-out infinite;
 }
 
 @keyframes shimmer {
-  100% {
-    transform: translateX(100%);
-  }
+    100% {
+        transform: translateX(100%);
+    }
 }

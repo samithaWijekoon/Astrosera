@@ -2,9 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import './chat.css';
 
-// API Configuration
-const RAG_API_URL = import.meta.env.VITE_RAG_API_URL || 'http://localhost:8000';
-const MAIN_API_URL = 'http://localhost:5001/api';
+const backendUrl = process.env.VITE_API_URL;
+
+const API_BASE = backendUrl;
+const MAIN_API_URL = `${API_BASE}`;
 
 const renderFormattedText = (text) => {
   if (!text) return null;

@@ -1,7 +1,9 @@
 import { createContext, useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+const backendUrl = process.env.VITE_API_URL;
+
+const API_BASE = backendUrl;
 
 const AuthContext = createContext();
 
@@ -64,7 +66,7 @@ export const AuthProvider = ({ children }) => {
                 return { success: true };
             } else {
                 const errorMessage = data.message || data.detail || "Invalid credentials";
-                
+
                 // If the user's email is not verified (HTTP 403)
                 if (response.status === 403 && errorMessage.toLowerCase().includes("not verified")) {
                     navigate(`/verify-email?email=${encodeURIComponent(email)}`);
@@ -93,7 +95,7 @@ export const AuthProvider = ({ children }) => {
 
             if (response.ok) {
                 setUser(data);
-                
+
                 // Store identically to standard login
                 localStorage.setItem('user', JSON.stringify(data));
                 localStorage.setItem('token', data.token);
