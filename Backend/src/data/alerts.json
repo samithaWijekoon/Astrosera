@@ -1,0 +1,22 @@
+[
+  {
+    "id": "037971c3-18ca-4a43-b615-e099ed6e2836",
+    "email": "samiyart543@gmai.com",
+    "asteroidId": "3745999",
+    "asteroidName": "(2016 ES84)",
+    "approachDate": "2026-Apr-01 17:14",
+    "missDistKm": 65182199.467441484,
+    "status": "WATCHING",
+    "createdAt": "2026-03-26T05:42:19.463Z"
+  },
+  {
+    "id": "d38fd0df-a079-4a11-b745-4376de78e13e",
+    "email": "samiyart543@gmai.com",
+    "asteroidId": "3802103",
+    "asteroidName": "(2018 FK5)",
+    "approachDate": "2026-Apr-01 21:06",
+    "missDistKm": 7889940.81287639,
+    "status": "WATCHING",
+    "createdAt": "2026-03-26T05:42:27.671Z"
+  }
+]
