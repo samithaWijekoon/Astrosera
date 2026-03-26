@@ -130,8 +130,12 @@ const Member3 = () => {
     /*  1. Fetch questions */
     useEffect(() => {
         const load = async () => {
+            if (!token) {
+                setPhase('briefing');
+                return;
+            }
             try {
-                const headers = token ? { Authorization: `Bearer ${token}` } : {};
+                const headers = { Authorization: `Bearer ${token}` };
                 const res = await fetch(`${API}/quiz`, { headers });
                 if (!res.ok) throw new Error(`Server ${res.status}`);
                 const data = await res.json();
