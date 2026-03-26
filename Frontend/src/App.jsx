@@ -32,13 +32,13 @@ const App = () => {
       <AnimatePresence mode="wait" initial={false}>
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<PageTransition><Home /></PageTransition>} />
-          <Route path="/chat" element={<ProtectedRoute requireVerified={true}><PageTransition><Chat /></PageTransition></ProtectedRoute>} />
+          <Route path="/chat" element={<PageTransition><Chat /></PageTransition>} />
           <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
           <Route path="/signup" element={<PageTransition><Signup /></PageTransition>} />
           <Route path="/profile" element={<ProtectedRoute><PageTransition><Profile /></PageTransition></ProtectedRoute>} />
 
           <Route path="/events" element={<PageTransition><Member2 /></PageTransition>} />
-          <Route path="/achievements" element={<ProtectedRoute requireVerified={true}><PageTransition><Member4 /></PageTransition></ProtectedRoute>} />
+          <Route path="/achievements" element={<PageTransition><Member4 /></PageTransition>} />
           <Route path="/analytics" element={<PageTransition><Home /></PageTransition>} />
           <Route path="/news" element={<PageTransition><Member6 /></PageTransition>} />
           <Route path="/asteroid-alerts" element={<PageTransition><AsteroidAlerts /></PageTransition>} />
