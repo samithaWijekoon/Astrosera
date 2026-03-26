@@ -100,7 +100,7 @@ function BadgeRow({ badges, onSelect, className = '' }) {
       {badges.map(b => (
         <button
           key={b.id}
-          className={`badge-item group overflow-hidden cursor-pointer ${b.earned ? 'earned bg-white/10 border-purple-500/50 hover:bg-white/20 hover:-translate-y-2 hover:rotate-1 hover:shadow-[0_0_25px_rgba(168,85,247,0.5)]' : 'locked bg-black/40 border-white/10 grayscale contrast-75 opacity-60 hover:-translate-y-1 hover:bg-white/5'}`}
+          className={`badge-item group overflow-hidden cursor-pointer rounded-3xl backdrop-blur-xl border border-white/10 ${b.earned ? 'earned bg-white/10 border-purple-500/50 shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:bg-white/20 hover:-translate-y-2 hover:rotate-1 hover:shadow-[0_0_30px_rgba(168,85,247,0.6)]' : 'locked bg-black/40 border-white/10 grayscale contrast-75 opacity-60 hover:-translate-y-1 hover:bg-white/5'}`}
           onClick={() => onSelect(b)}
         >
           <ScannerEffect />
@@ -381,7 +381,7 @@ function GalaxyBackground() {
     };
   }, []);
 
-  return <div className="bg-galaxy" ref={galaxyRef} aria-hidden="true" />;
+  return <div className="absolute inset-0 z-0 pointer-events-none" ref={galaxyRef} aria-hidden="true" />;
 }
 
 // ─── MAIN COMPONENT ───────────────────────────────────────────────────────────
@@ -453,8 +453,8 @@ const Member4 = () => {
   if (loading) {
     return (
       <div className="relative min-h-screen bg-black overflow-hidden flex items-center justify-center">
-        <video className="fixed top-0 left-0 w-full h-full object-cover z-0 pointer-events-none opacity-40 mix-blend-screen" src="/videos/back.mp4" autoPlay loop muted playsInline />
-        <div className="fixed inset-0 bg-gradient-to-b from-black/80 via-[#0d0a1a]/90 to-black z-0 pointer-events-none" />
+        <GalaxyBackground />
+        <div className="fixed inset-0 bg-black/40 z-0 pointer-events-none" />
         <div className="relative z-10 flex flex-col items-center gap-6">
             <div className="w-16 h-16 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin shadow-[0_0_20px_rgba(168,85,247,0.5)]"></div>
             <div className="font-outfit text-purple-300 tracking-[0.3em] uppercase text-lg animate-pulse drop-shadow-[0_0_10px_rgba(216,180,254,0.8)]">
@@ -468,8 +468,8 @@ const Member4 = () => {
   if (error) {
     return (
       <div className="relative min-h-screen bg-black overflow-hidden flex items-center justify-center">
-        <video className="fixed top-0 left-0 w-full h-full object-cover z-0 pointer-events-none opacity-40 mix-blend-screen" src="/videos/back.mp4" autoPlay loop muted playsInline />
-        <div className="fixed inset-0 bg-gradient-to-b from-black/80 via-[#0d0a1a]/90 to-black z-0 pointer-events-none" />
+        <GalaxyBackground />
+        <div className="fixed inset-0 bg-black/40 z-0 pointer-events-none" />
         <div className="relative z-10 bg-red-900/20 backdrop-blur-xl border border-red-500/30 rounded-3xl p-10 max-w-lg text-center shadow-[0_0_40px_rgba(239,68,68,0.2)]">
             <div className="text-6xl mb-6 drop-shadow-[0_0_20px_rgba(239,68,68,0.8)]">⚠️</div>
             <div className="font-outfit text-red-400 tracking-[0.2em] font-bold text-xl mb-4">SYSTEM ERROR</div>
@@ -490,9 +490,9 @@ const Member4 = () => {
         }
       `}</style>
 
-      {/* ─── BACKGROUND VIDEO ─── */}
-      <video className="fixed top-0 left-0 w-full h-full object-cover z-0 pointer-events-none opacity-40 mix-blend-screen" src="/videos/back.mp4" autoPlay loop muted playsInline />
-      <div className="fixed inset-0 bg-gradient-to-b from-black/80 via-[#0d0a1a]/90 to-black z-0 pointer-events-none" />
+      {/* ─── BACKGROUND ─── */}
+      <GalaxyBackground />
+      <div className="fixed inset-0 bg-black/40 z-0 pointer-events-none" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-28">
 
