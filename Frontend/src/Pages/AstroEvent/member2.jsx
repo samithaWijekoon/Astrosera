@@ -192,6 +192,28 @@ export default function Member2() {
   const [editEmail,  setEditEmail]  = useState(false);
   const [draftEmail, setDraftEmail] = useState('');
   const loaded = useRef(false);
+  const [locationFilter, setLocationFilter] = useState('');
+  const [isLocating, setIsLocating] = useState(false);
+
+  // Live Location Logic
+  const handleLiveLocation = () => {
+    setIsLocating(true);
+    if (!navigator.geolocation) {
+      alert("Geolocation is unsupported by your browser");
+      setIsLocating(false);
+      return;
+    }
+    navigator.geolocation.getCurrentPosition((pos) => {
+      // Deterministically map coordinates to a demo city for NEO API
+      const CITIES = ['New York', 'London', 'Tokyo', 'Sydney', 'Paris', 'Berlin'];
+      const index = Math.abs(Math.floor(pos.coords.longitude)) % CITIES.length;
+      setLocationFilter(CITIES[index]);
+      setIsLocating(false);
+    }, () => {
+      alert("Unable to retrieve location");
+      setIsLocating(false);
+    });
+  };
 
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const particles = useMemo(() => Array.from({ length: 30 }).map((_, i) => ({
@@ -241,14 +263,22 @@ export default function Member2() {
   }
 
   const displayed = useMemo(() => {
-    let list = hazardOnly ? asteroids.filter(a => a.isHazardous) : asteroids;
+    // 1. Filter by location if specified
+    let list = locationFilter && locationFilter !== 'All'
+      ? asteroids.filter(a => a.viewingLocation?.toLowerCase() === locationFilter.toLowerCase() || a.viewingLocation?.toLowerCase().includes(locationFilter.toLowerCase()))
+      : asteroids;
+
+    // 2. Filter by hazard
+    if (hazardOnly) list = list.filter(a => a.isHazardous);
+
+    // 3. Sort
     switch (sortBy) {
       case 'distance': return [...list].sort((a,b) => a.missDistKm - b.missDistKm);
       case 'size':     return [...list].sort((a,b) => b.diamMaxKm - a.diamMaxKm);
       case 'velocity': return [...list].sort((a,b) => b.velocityKph - a.velocityKph);
       default:         return list;
     }
-  }, [asteroids, hazardOnly, sortBy]);
+  }, [asteroids, hazardOnly, sortBy, locationFilter]);
 
   const stats = useMemo(() => ({
     total:     asteroids.length,
@@ -381,6 +411,35 @@ export default function Member2() {
             </Link>
           </div>
 
+          {/* Location Filter Bar */}
+          <div className="max-w-7xl mx-auto mb-6 flex flex-wrap items-center gap-3 p-4 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl shadow-[0_0_15px_rgba(168,85,247,0.1)] transition-colors hover:border-purple-500/30">
+            <span className="text-xl">📍</span>
+            <div className="flex-1 min-w-[200px] max-w-xs relative">
+                <input 
+                  type="text" 
+                  value={locationFilter} 
+                  onChange={e => setLocationFilter(e.target.value)}
+                  placeholder="Enter location (e.g. New York)"
+                  className="w-full bg-black/50 border border-gray-700 text-white text-sm px-4 py-2 rounded-lg focus:outline-none focus:border-purple-500 transition-colors"
+                />
+            </div>
+            <button 
+                onClick={handleLiveLocation}
+                disabled={isLocating}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-purple-600/20 text-purple-400 border border-purple-500/50 hover:bg-purple-600/40 hover:text-white transition-all duration-300 disabled:opacity-50"
+            >
+                {isLocating ? 'Locating...' : 'Use Live Location'}
+            </button>
+            {locationFilter && (
+                <button 
+                  onClick={() => setLocationFilter('')}
+                  className="text-gray-400 hover:text-white text-sm px-2"
+                >
+                  Clear
+                </button>
+            )}
+          </div>
+
           {/* Stats */}
           <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {[
@@ -443,7 +502,7 @@ export default function Member2() {
                 <table className="w-full text-base">
                   <thead>
                     <tr className="border-b border-gray-800">
-                      {['Designation', 'Date', 'Velocity', 'Size', 'Threat', 'Alert'].map(h => (
+                      {['Designation', 'Date', 'Velocity', 'Size', 'Best View', 'Threat', 'Alert'].map(h => (
                         <th key={h} className="text-left text-sm text-gray-500 uppercase tracking-widest pb-3 px-3 font-normal whitespace-nowrap">{h}</th>
                       ))}
                     </tr>
@@ -474,6 +533,9 @@ export default function Member2() {
                                 style={{ width: Math.max(sizeRel * 60, 4) + 'px' }} />
                               <span className="text-gray-500 text-sm">{fmtDiam(neo.diamMinKm, neo.diamMaxKm)}</span>
                             </div>
+                          </td>
+                          <td className="px-3 py-3 text-gray-400 text-sm whitespace-nowrap">
+                            {neo.viewingLocation}
                           </td>
                           <td className="px-3 py-3">
                             <span className="text-sm px-2 py-0.5 rounded border" style={{ color: threat.color, borderColor: threat.color + '55', background: threat.color + '15' }}>
