@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 
-const backendUrl = process.env.VITE_API_URL;
+const backendUrl = import.meta.env.VITE_API_URL;
 
 const API_BASE = backendUrl;
 

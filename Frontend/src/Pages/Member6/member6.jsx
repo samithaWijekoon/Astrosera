@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './member6.css';
 
-const backendUrl = process.env.VITE_API_URL;
+const backendUrl = import.meta.env.VITE_API_URL;
 
 const API_BASE = backendUrl;
 

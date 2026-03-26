@@ -6,7 +6,7 @@ import { HiLightBulb } from "react-icons/hi";
 import { BsStars } from "react-icons/bs";
 import AuthContext from '../../context/AuthContext';
 
-const backendUrl = process.env.VITE_API_URL;
+const backendUrl = import.meta.env.VITE_API_URL;
 
 const API_BASE = backendUrl;
 

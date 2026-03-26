@@ -1,7 +1,7 @@
 import { createContext, useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const backendUrl = process.env.VITE_API_URL;
+const backendUrl = import.meta.env.VITE_API_URL;
 
 const API_BASE = backendUrl;
 
@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/auth/login`, {
+            const response = await fetch(`${API_BASE}/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -83,7 +83,7 @@ export const AuthProvider = ({ children }) => {
 
     const googleLogin = async (credential) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/auth/google`, {
+            const response = await fetch(`${API_BASE}/auth/google`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -114,7 +114,7 @@ export const AuthProvider = ({ children }) => {
 
     const signup = async (username, email, password) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+            const response = await fetch(`${API_BASE}/auth/signup`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

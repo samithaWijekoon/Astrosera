@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ManageQuizzes from './ManageQuizzes'; // Your upload component
 
-const backendUrl = process.env.VITE_API_URL;
+const backendUrl = import.meta.env.VITE_API_URL;
 
 const API_BASE = backendUrl;
 
