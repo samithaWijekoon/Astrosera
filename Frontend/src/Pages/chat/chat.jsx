@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import './chat.css';
 
 const backendUrl = import.meta.env.VITE_API_URL;
+const RAG_API_URL = import.meta.env.VITE_RAG_API_URL;
 
 const API_BASE = backendUrl;
 const MAIN_API_URL = `${API_BASE}`;
